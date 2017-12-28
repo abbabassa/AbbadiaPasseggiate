@@ -32,7 +32,7 @@ export class MyMapComponent implements OnInit {
     layers.push(new ol.layer.Tile({
       preload: Infinity,
       source: new ol.source.BingMaps({
-        key: 'Ai9-269FPOE2hv5jRs1OksKKe-XaEyr_TC_61-gmnVMyIz3kzp5YvL50vjj1KiiS',
+        key:  API_KEY_BING.key,
         imagerySet: 'Aerial'
 
       })
