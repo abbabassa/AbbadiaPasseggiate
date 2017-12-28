@@ -1,15 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {API_KEY_BING} from './api-key-bing'
-// import {layer, source, Attribution, View, Map} from 'openlayers';
-import 'ol/ol.css';
-import Map from 'ol/map';
-import View from 'ol/view';
-import TileLayer from 'ol/layer/tile';
-import XYZ from 'ol/source/xyz';
-import OSMSource from 'ol/source/osm';
-import BingSource from 'ol/source/bingmaps';
-import proj from 'ol/proj';
-import Attribution from 'ol/attribution';
+import { API_KEY_BING } from './api-key-bing'
+
+declare var ol: any;
 
 
 @Component({
@@ -18,40 +10,45 @@ import Attribution from 'ol/attribution';
   styleUrls: ['./my-map.component.css']
 })
 export class MyMapComponent implements OnInit {
-  map: Map;
+
 
   constructor() { }
 
   ngOnInit() {
-    let option:any={};
- 
-    new Map({
-      target: 'map',
-      layers: [
-        // new TileLayer({
-        //   source: new XYZ({
-        //     attributions: [
-        //       OSMSource.ATTRIBUTION
-        //     ],
-        //     url: 'http://{a-c}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png'
-        //   })
-        // }),
-        new TileLayer({
-          source: new BingSource({
-           // key: 'Ak-dzM4wZjSqTlzveKz5u0d4IQ4bRzVI309GxmkgSVr1ewS6iPSrOvOKhA-CJlm3',
-            key: API_KEY_BING.key,
-            // use maxZoom 19 to see stretched tiles instead of the BingMaps
-            // "no photos at this zoom level" tiles
-            // maxZoom: 19
-          })
-        })
-      ],
-      view: new View({
-        center: proj.fromLonLat([9.351, 45.89910]),
-        zoom: 15
+    var layers = [];
+    // layers.push(new ol.layer.Tile({
+    //   source: new ol.source.OSM({
+    //     attributions: [
+    //       new ol.Attribution({
+    //         html: 'Tiles &copy; <a href="http://www.opencyclemap.org/">' +
+    //           'OpenCycleMap</a>'
+    //       }),
+    //       ol.source.OSM.ATTRIBUTION
+    //     ],
+    //     url: 'http://{a-c}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png'
+    //   })
+    // }));
+
+    layers.push(new ol.layer.Tile({
+      preload: Infinity,
+      source: new ol.source.BingMaps({
+        key: 'Ai9-269FPOE2hv5jRs1OksKKe-XaEyr_TC_61-gmnVMyIz3kzp5YvL50vjj1KiiS',
+        imagerySet: 'Aerial'
+
       })
+    }));
+    var view = new ol.View({
+      center: ol.proj.fromLonLat([9.351, 45.89910]),
+      zoom: 15
+    });
+    var map = new ol.Map({
+      target: 'map',
+      layers: layers,
+      //  9.33645°E,  45.89910°N
+      view: view
     });
 
   }
+
 
 }
