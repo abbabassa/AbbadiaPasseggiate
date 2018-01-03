@@ -5,7 +5,7 @@ import { API_KEY_BING } from './api-key-bing'
 
 
 
-import 'ol/ol.css';
+// import 'ol/ol.css';
 import Map from 'ol/map';
 import View from 'ol/view';
 import TileLayer from 'ol/layer/tile';

@@ -22,7 +22,7 @@
         "styles.css",
         "ol.css"
       ],
-      "scripts": ["ol.js"],
+      "scripts": [],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",
