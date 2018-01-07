@@ -54,7 +54,7 @@ export class MyMapComponent implements OnInit {
         preload: Infinity,
         source: new BingSource({
           // key: 'Ak-dzM4wZjSqTlzveKz5u0d4IQ4bRzVI309GxmkgSVr1ewS6iPSrOvOKhA-CJlm3',
-          key: 'Ai9-269FPOE2hv5jRs1OksKKe-XaEyr_TC_61-gmnVMyIz3kzp5YvL50vjj1KiiS',
+          key: API_KEY_BING.key,
           imagerySet: styles[i]
           // use maxZoom 19 to see stretched tiles instead of the BingMaps
           // "no photos at this zoom level" tiles
@@ -87,12 +87,16 @@ export class MyMapComponent implements OnInit {
     }));
 
 
-    // layers.push(new TileLayer({
-    //   source: new XYZ({
-    //     attributions: [attributionAP],
-    //     url: 'Tiles/Versione3/{z}/{x}/{-y}.png'
-    //   })
-    // }));
+    layers.push(new TileLayer({
+      minResolution: 0.5,
+      maxResolution: 6,
+      source: new XYZ({
+        attributions: [attributionAP],
+        url: 'http://localhost:3000/tiles/trasCTR/{z}/{x}/{-y}.png',
+        minZoom: 14,
+        maxZoom: 18
+      })
+    }));
 
     var view = new View({
       center: proj.fromLonLat([9.351, 45.89910]),
@@ -111,12 +115,13 @@ export class MyMapComponent implements OnInit {
 
     map.addControl(this.controlloLayer);
 
+
   }
 
 }
 
 
-export class ControlloLayer extends  Control {
+export class ControlloLayer extends Control {
   select;
   constructor(option, private styles, private layers) {
     super(option);
