@@ -9,12 +9,19 @@ import { API_KEY_BING } from './api-key-bing'
 import Map from 'ol/map';
 import View from 'ol/view';
 import TileLayer from 'ol/layer/tile';
+import VectorLayer from 'ol/layer/vector';
 import XYZ from 'ol/source/xyz';
 import OSMSource from 'ol/source/osm';
 import BingSource from 'ol/source/bingmaps';
 import proj from 'ol/proj';
 import Attribution from 'ol/attribution';
 import Control from 'ol/control/control'
+import Style from 'ol/style/style'
+import Stroke from 'ol/style/stroke'
+import Fill from 'ol/style/fill'
+import Circle from 'ol/style/circle'
+import VectorSource from 'ol/source/vector'
+import geoJsonFormat from 'ol/format/geojson'
 
 
 
@@ -88,6 +95,7 @@ export class MyMapComponent implements OnInit {
 
 
     layers.push(new TileLayer({
+      opacity: 0.6,
       minResolution: 0.5,
       maxResolution: 6,
       source: new XYZ({
@@ -116,6 +124,54 @@ export class MyMapComponent implements OnInit {
     map.addControl(this.controlloLayer);
 
 
+    var vectorSource = new VectorSource({
+      // features: (new geoJsonFormat()).readFeatures(geojsonObject),
+      format: new geoJsonFormat(),
+      url: 'http://localhost:3000/vector/SentieriUfficiali.json',
+
+    });
+
+
+    var vectorLayer = new VectorLayer({
+      source: vectorSource,
+      style: this.styleMethod
+    });
+
+    map.addLayer(vectorLayer)
+
+
+
+  }
+
+  styleMethod(feature: any) {
+    var image = new Circle({
+      radius: 5,
+      fill: null,
+      stroke: new Stroke({ color: 'red', width: 1 })
+    });
+
+    var stylesForVector = {
+      'Point': new Style({
+        image: image
+      }),
+      'LineString': new Style({
+        stroke: new Stroke({
+          color: 'red',
+          width: 3
+        })
+      }),
+      'MultiLineString': new Style({
+        stroke: new Stroke({
+          color: 'red',
+          width: 3
+        })
+      }),
+      'MultiPoint': new Style({
+        image: image
+      }),
+
+    };
+    return stylesForVector[feature.getGeometry().getType()];
   }
 
 }
