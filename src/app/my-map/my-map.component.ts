@@ -15,13 +15,15 @@ import OSMSource from 'ol/source/osm';
 import BingSource from 'ol/source/bingmaps';
 import proj from 'ol/proj';
 import Attribution from 'ol/attribution';
-import Control from 'ol/control/control'
-import Style from 'ol/style/style'
-import Stroke from 'ol/style/stroke'
-import Fill from 'ol/style/fill'
-import Circle from 'ol/style/circle'
-import VectorSource from 'ol/source/vector'
-import geoJsonFormat from 'ol/format/geojson'
+import Control from 'ol/control/control';
+import Style from 'ol/style/style';
+import Stroke from 'ol/style/stroke';
+import Fill from 'ol/style/fill';
+import Circle from 'ol/style/circle';
+import VectorSource from 'ol/source/vector';
+import geoJsonFormat from 'ol/format/geojson';
+import Text from 'ol/style/text';
+import TextPlacement from 'ol/style/textplacement'
 
 
 
@@ -150,22 +152,33 @@ export class MyMapComponent implements OnInit {
       stroke: new Stroke({ color: 'red', width: 1 })
     });
 
+    var styleForLines= new Style({
+      stroke: new Stroke({
+        color: 'red',
+        width: 3,
+        lineDash: [8, 10]
+      }),
+      text: new Text({
+        text: feature.getProperties().name,
+        font: "14px sans-serif",
+        placement:TextPlacement.LINE,
+        fill: new Fill({
+          color:'white'
+        }),
+        stroke: new Stroke({
+          color: 'black',
+          width: 3,
+        
+        }),
+      })
+    });
+
     var stylesForVector = {
       'Point': new Style({
         image: image
       }),
-      'LineString': new Style({
-        stroke: new Stroke({
-          color: 'red',
-          width: 3
-        })
-      }),
-      'MultiLineString': new Style({
-        stroke: new Stroke({
-          color: 'red',
-          width: 3
-        })
-      }),
+      'LineString':styleForLines,
+      'MultiLineString': styleForLines,
       'MultiPoint': new Style({
         image: image
       }),
