@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { API_KEY_BING } from './api-key-bing'
+import { vectorStyles } from './vector-styles';
 
 
 
@@ -97,7 +98,7 @@ export class MyMapComponent implements OnInit {
 
 
     layers.push(new TileLayer({
-      opacity: 0.6,
+      opacity: 0.45,
       minResolution: 0.5,
       maxResolution: 6,
       source: new XYZ({
@@ -125,66 +126,62 @@ export class MyMapComponent implements OnInit {
 
     map.addControl(this.controlloLayer);
 
-
-    var vectorSource = new VectorSource({
-      // features: (new geoJsonFormat()).readFeatures(geojsonObject),
-      format: new geoJsonFormat(),
-      url: 'http://localhost:3000/vector/SentieriUfficiali.json',
-
-    });
-
-
-    var vectorLayer = new VectorLayer({
-      source: vectorSource,
-      style: this.styleMethod
-    });
-
-    map.addLayer(vectorLayer)
+    map.addLayer(this.getJsonLayerFromUrl('http://localhost:3000/vector/sentieriUfficiali.json',"SENTIERI_UFFICIALI"));
+    map.addLayer(this.getJsonLayerFromUrl('http://localhost:3000/vector/piste.json',"PISTE"));
+    map.addLayer(this.getJsonLayerFromUrl('http://localhost:3000/vector/strade.json',"STRADE"));
+    map.addLayer(this.getJsonLayerFromUrl('http://localhost:3000/vector/traccia.json',"TRACCE"));
+    map.addLayer(this.getJsonLayerFromUrl('http://localhost:3000/vector/tracceImboscate.json',"IMBOSCATE"));
+    map.addLayer(this.getJsonLayerFromUrl('http://localhost:3000/vector/viandante.json',"VIANDANTE"));
 
 
 
   }
 
-  styleMethod(feature: any) {
-    var image = new Circle({
-      radius: 5,
-      fill: null,
-      stroke: new Stroke({ color: 'red', width: 1 })
+  
+
+
+  getFunctionStyle(tipoStrada: string) {
+    return function(feature: any) {
+      var image = new Circle({
+        radius: 5,
+        fill: null,
+        stroke: new Stroke({ color: 'red', width: 1 })
+      });
+
+      let styleForLines = vectorStyles[tipoStrada]? vectorStyles[tipoStrada] : vectorStyles["SENTIERI_UFFICIALI"];
+
+      if (styleForLines.getText()) {
+        styleForLines.getText().setText(feature.getProperties().name)
+      }
+
+      var stylesForVector = {
+        'Point': new Style({
+          image: image
+        }),
+        'LineString': styleForLines,
+        'MultiLineString': styleForLines,
+        'MultiPoint': new Style({
+          image: image
+        }),
+
+      };
+      return stylesForVector[feature.getGeometry().getType()];
+    }
+  }
+  getJsonLayerFromUrl(url: string, tipoStrada: string) {
+    var vectorSource = new VectorSource({
+      // features: (new geoJsonFormat()).readFeatures(geojsonObject),
+      format: new geoJsonFormat(),
+      url: url,
+
     });
 
-    var styleForLines= new Style({
-      stroke: new Stroke({
-        color: 'red',
-        width: 3,
-        lineDash: [8, 10]
-      }),
-      text: new Text({
-        text: feature.getProperties().name,
-        font: "14px sans-serif",
-        placement:TextPlacement.LINE,
-        fill: new Fill({
-          color:'white'
-        }),
-        stroke: new Stroke({
-          color: 'black',
-          width: 3,
-        
-        }),
-      })
+
+    return new VectorLayer({
+      source: vectorSource,
+      style: this.getFunctionStyle(tipoStrada)
     });
 
-    var stylesForVector = {
-      'Point': new Style({
-        image: image
-      }),
-      'LineString':styleForLines,
-      'MultiLineString': styleForLines,
-      'MultiPoint': new Style({
-        image: image
-      }),
-
-    };
-    return stylesForVector[feature.getGeometry().getType()];
   }
 
 }
