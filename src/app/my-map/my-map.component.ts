@@ -11,6 +11,7 @@ import Map from 'ol/map';
 import View from 'ol/view';
 import TileLayer from 'ol/layer/tile';
 import VectorLayer from 'ol/layer/vector';
+import GroupLayer from 'ol/layer/group';
 import XYZ from 'ol/source/xyz';
 import OSMSource from 'ol/source/osm';
 import BingSource from 'ol/source/bingmaps';
@@ -43,6 +44,8 @@ export class MyMapComponent implements OnInit {
 
   ngOnInit() {
 
+
+
     var attributionArcGIS = new Attribution({
       html: 'Tiles &copy; <a href="http://services.arcgisonline.com/ArcGIS/' +
         'rest/services/World_Topo_Map/MapServer">ArcGIS</a>'
@@ -51,29 +54,56 @@ export class MyMapComponent implements OnInit {
     var attributionAP = new Attribution({
       html: 'Tiles &copy; <a href="http://www.abbadiapasseggiate.altervista.org">ABBADIA PASSEGGIATE</a>'
     });
-    var styles = [
-      'Road',
-      'Aerial',
-      'AerialWithLabels',
-    ];
+
+    var layerMap: { [property: string]: any } = {
+      'Road': null,
+      'Aerial': null,
+      'AerialWithLabels': null
+    };
+
     var layers = [];
-    var i, ii;
-    for (i = 0, ii = styles.length; i < ii; ++i) {
-      layers.push(new TileLayer({
-        visible: false,
+    Object.keys(layerMap).forEach(property => {
+      let layer = new TileLayer({
+        visible: true,
         preload: Infinity,
         source: new BingSource({
-          // key: 'Ak-dzM4wZjSqTlzveKz5u0d4IQ4bRzVI309GxmkgSVr1ewS6iPSrOvOKhA-CJlm3',
           key: API_KEY_BING.key,
-          imagerySet: styles[i]
+          imagerySet: property
           // use maxZoom 19 to see stretched tiles instead of the BingMaps
           // "no photos at this zoom level" tiles
           // maxZoom: 19
         })
-      }));
-    }
-    styles.push('ArcGIS terrain');
-    layers.push(new TileLayer({
+      })
+
+      let layerCtr = new TileLayer({
+        opacity: 0.3,
+        minResolution: 0.5,
+        maxResolution: 6,
+        visible: true,
+        source: new XYZ({
+          attributions: [attributionAP],
+          url: 'http://localhost:3000/tiles/trasCTR/{z}/{x}/{-y}.png',
+          minZoom: 14,
+          maxZoom: 18
+        })
+      });
+
+      let gruppo = new GroupLayer({
+        layers: [layer, layerCtr],
+        visible: false
+      });
+    
+      layers.push(gruppo);
+      layerMap[property] = gruppo;
+
+
+    });
+
+
+
+
+
+    layerMap['ArcGIS terrain'] = new TileLayer({
       source: new XYZ({
         attributions: [attributionArcGIS],
         url: 'http://server.arcgisonline.com/ArcGIS/rest/services/' +
@@ -81,10 +111,10 @@ export class MyMapComponent implements OnInit {
 
 
       })
-    }));
+    })
+    layers.push(layerMap['ArcGIS terrain']);
 
-    styles.push('OpenCycleMap');
-    layers.push(new TileLayer({
+    layerMap['OpenCycleMap'] = new TileLayer({
       source: new OSMSource({
         attributions: [
           new Attribution({
@@ -94,20 +124,11 @@ export class MyMapComponent implements OnInit {
         ],
         url: 'http://{a-c}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png'
       })
-    }));
+    });
+    layers.push(layerMap['OpenCycleMap']);
 
 
-    layers.push(new TileLayer({
-      opacity: 0.45,
-      minResolution: 0.5,
-      maxResolution: 6,
-      source: new XYZ({
-        attributions: [attributionAP],
-        url: 'http://localhost:3000/tiles/trasCTR/{z}/{x}/{-y}.png',
-        minZoom: 14,
-        maxZoom: 18
-      })
-    }));
+
 
     var view = new View({
       center: proj.fromLonLat([9.351, 45.89910]),
@@ -121,34 +142,40 @@ export class MyMapComponent implements OnInit {
     });
 
 
-    this.controlloLayer = new ControlloLayer({ element: this.select.nativeElement }, styles, layers);
+
+    this.controlloLayer = new ControlloLayer({ element: this.select.nativeElement }, layerMap);
     this.controlloLayer.onChange();
 
     map.addControl(this.controlloLayer);
 
-    map.addLayer(this.getJsonLayerFromUrl('http://localhost:3000/vector/sentieriUfficiali.json',"SENTIERI_UFFICIALI"));
-    map.addLayer(this.getJsonLayerFromUrl('http://localhost:3000/vector/piste.json',"PISTE"));
-    map.addLayer(this.getJsonLayerFromUrl('http://localhost:3000/vector/strade.json',"STRADE"));
-    map.addLayer(this.getJsonLayerFromUrl('http://localhost:3000/vector/traccia.json',"TRACCE"));
-    map.addLayer(this.getJsonLayerFromUrl('http://localhost:3000/vector/tracceImboscate.json',"IMBOSCATE"));
-    map.addLayer(this.getJsonLayerFromUrl('http://localhost:3000/vector/viandante.json',"VIANDANTE"));
+    let layersPercorsi = [];
+
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/sentieriUfficiali.json', "SENTIERI_UFFICIALI"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/piste.json', "PISTE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/strade.json', "STRADE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/traccia.json', "TRACCE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/tracceImboscate.json', "IMBOSCATE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/viandante.json', "VIANDANTE"));
+
+
+    map.addLayer(new GroupLayer({ layers: layersPercorsi }));
 
 
 
   }
 
-  
+
 
 
   getFunctionStyle(tipoStrada: string) {
-    return function(feature: any) {
+    return function (feature: any) {
       var image = new Circle({
         radius: 5,
         fill: null,
         stroke: new Stroke({ color: 'red', width: 1 })
       });
 
-      let styleForLines = vectorStyles[tipoStrada]? vectorStyles[tipoStrada] : vectorStyles["SENTIERI_UFFICIALI"];
+      let styleForLines = vectorStyles[tipoStrada] ? vectorStyles[tipoStrada] : vectorStyles["SENTIERI_UFFICIALI"];
 
       if (styleForLines.getText()) {
         styleForLines.getText().setText(feature.getProperties().name)
@@ -179,6 +206,8 @@ export class MyMapComponent implements OnInit {
 
     return new VectorLayer({
       source: vectorSource,
+      minResolution: 0.5,
+      maxResolution: 20,
       style: this.getFunctionStyle(tipoStrada)
     });
 
@@ -189,15 +218,22 @@ export class MyMapComponent implements OnInit {
 
 export class ControlloLayer extends Control {
   select;
-  constructor(option, private styles, private layers) {
+  constructor(option, private layerMap) {
     super(option);
     this.select = option.element;
   }
 
   onChange(evento?) {
-    var style = this.select.value;
-    for (var i = 0, ii = this.styles.length; i < ii; ++i) {
-      this.layers[i].setVisible(this.styles[i] === style);
+    var chosenStyle = this.select.value;
+    if (chosenStyle == "OpenCycleMap" || "ArcGIS terrain" || "Road") {
+      //TODO disabilitare layer livelli
     }
+
+    Object.keys(this.layerMap).forEach(property => {
+      this.layerMap[property].setVisible(property === chosenStyle);
+    }, this)
+
+
+  
   }
 }
