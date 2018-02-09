@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { API_KEY_BING } from './api-key-bing'
-import { vectorStyles } from './vector-styles';
+
+import{ControlloLayer} from '../ol-custom/controls/controllo-layer'
+
+import{SentieriLayerService} from '../services/my-map/sentieri-layer.service'
 
 
 
@@ -10,22 +13,11 @@ import { vectorStyles } from './vector-styles';
 import Map from 'ol/map';
 import View from 'ol/view';
 import TileLayer from 'ol/layer/tile';
-import VectorLayer from 'ol/layer/vector';
-import GroupLayer from 'ol/layer/group';
 import XYZ from 'ol/source/xyz';
 import OSMSource from 'ol/source/osm';
 import BingSource from 'ol/source/bingmaps';
 import proj from 'ol/proj';
 import Attribution from 'ol/attribution';
-import Control from 'ol/control/control';
-import Style from 'ol/style/style';
-import Stroke from 'ol/style/stroke';
-import Fill from 'ol/style/fill';
-import Circle from 'ol/style/circle';
-import VectorSource from 'ol/source/vector';
-import geoJsonFormat from 'ol/format/geojson';
-import Text from 'ol/style/text';
-import TextPlacement from 'ol/style/textplacement'
 
 
 
@@ -33,14 +25,15 @@ import TextPlacement from 'ol/style/textplacement'
 @Component({
   selector: 'app-my-map',
   templateUrl: './my-map.component.html',
-  styleUrls: ['./my-map.component.css']
+  styleUrls: ['./my-map.component.css'],
+  providers:[SentieriLayerService]
 })
 export class MyMapComponent implements OnInit {
   controlloLayer: ControlloLayer;
   @ViewChild("selectMappa", { read: ElementRef }) select: ElementRef;
 
 
-  constructor() { }
+  constructor(private sentieriLayerService:SentieriLayerService) { }
 
   ngOnInit() {
 
@@ -128,16 +121,8 @@ export class MyMapComponent implements OnInit {
 
     layers.push(layersMap.overlaysAP["ctr"]);
 
-    let layersPercorsi = [];
 
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/sentieriUfficiali.json', "SENTIERI_UFFICIALI"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/piste.json', "PISTE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/strade.json', "STRADE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/traccia.json', "TRACCE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/tracceImboscate.json', "IMBOSCATE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/viandante.json', "VIANDANTE"));
-
-    layersMap.overlaysAP["sentieri"]=new GroupLayer({ layers: layersPercorsi });
+    layersMap.overlaysAP["sentieri"]=this.sentieriLayerService.getSentieri();
     layers.push(layersMap.overlaysAP["sentieri"]);
 
 
@@ -161,80 +146,6 @@ export class MyMapComponent implements OnInit {
     this.controlloLayer.onChange();
 
     map.addControl(this.controlloLayer);
-
-   
-
-
-  }
-
-
-
-
-  getFunctionStyle(tipoStrada: string) {
-    return function (feature: any) {
-      var image = new Circle({
-        radius: 5,
-        fill: null,
-        stroke: new Stroke({ color: 'red', width: 1 })
-      });
-
-      let styleForLines = vectorStyles[tipoStrada] ? vectorStyles[tipoStrada] : vectorStyles["SENTIERI_UFFICIALI"];
-
-      if (styleForLines.getText()) {
-        styleForLines.getText().setText(feature.getProperties().name)
-      }
-
-      var stylesForVector = {
-        'Point': new Style({
-          image: image
-        }),
-        'LineString': styleForLines,
-        'MultiLineString': styleForLines,
-        'MultiPoint': new Style({
-          image: image
-        }),
-
-      };
-      return stylesForVector[feature.getGeometry().getType()];
-    }
-  }
-  getJsonLayerFromUrl(url: string, tipoStrada: string) {
-    var vectorSource = new VectorSource({
-      // features: (new geoJsonFormat()).readFeatures(geojsonObject),
-      format: new geoJsonFormat(),
-      url: url,
-
-    });
-
-
-    return new VectorLayer({
-      source: vectorSource,
-      minResolution: 0.5,
-      maxResolution: 20,
-      style: this.getFunctionStyle(tipoStrada)
-    });
-
-  }
-
-}
-
-
-export class ControlloLayer extends Control {
-  select;
-  constructor(option, private layerMap) {
-    super(option);
-    this.select = option.element;
-  }
-
-  onChange(evento?) {
-    var chosenStyle = this.select.value;
-  
-    Object.keys(this.layerMap.layersPrimariMap).forEach(property => {
-      this.layerMap.layersPrimariMap[property].setVisible(property === chosenStyle);
-    }, this)
-
-    this.layerMap.overlaysAP["ctr"].setVisible(this.layerMap.layersPrimariMap[chosenStyle].isCtrVisible);
-    this.layerMap.overlaysAP["sentieri"].setVisible(this.layerMap.layersPrimariMap[chosenStyle].isSentieriVisible);
 
 
   }
