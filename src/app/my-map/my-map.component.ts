@@ -55,46 +55,31 @@ export class MyMapComponent implements OnInit {
       html: 'Tiles &copy; <a href="http://www.abbadiapasseggiate.altervista.org">ABBADIA PASSEGGIATE</a>'
     });
 
-    var layerMap: { [property: string]: any } = {
+    var layersPrimariMap: { [property: string]: any } = {
       'Road': null,
       'Aerial': null,
       'AerialWithLabels': null
     };
+    var layersMap={
+      layersPrimariMap: layersPrimariMap,
+      overlaysAP: {}
+    }
 
     var layers = [];
-    Object.keys(layerMap).forEach(property => {
+    Object.keys(layersPrimariMap).forEach(property => {
       let layer = new TileLayer({
-        visible: true,
+        visible: false,
         preload: Infinity,
         source: new BingSource({
           key: API_KEY_BING.key,
           imagerySet: property
-          // use maxZoom 19 to see stretched tiles instead of the BingMaps
-          // "no photos at this zoom level" tiles
-          // maxZoom: 19
         })
       })
 
-      let layerCtr = new TileLayer({
-        opacity: 0.3,
-        minResolution: 0.5,
-        maxResolution: 6,
-        visible: true,
-        source: new XYZ({
-          attributions: [attributionAP],
-          url: 'http://localhost:3000/tiles/trasCTR/{z}/{x}/{-y}.png',
-          minZoom: 14,
-          maxZoom: 18
-        })
-      });
-
-      let gruppo = new GroupLayer({
-        layers: [layer, layerCtr],
-        visible: false
-      });
-    
-      layers.push(gruppo);
-      layerMap[property] = gruppo;
+      layers.push(layer);
+      layer.isCtrVisible=property!="Road";
+      layer.isSentieriVisible=true;
+      layersPrimariMap[property] = layer;
 
 
     });
@@ -103,7 +88,7 @@ export class MyMapComponent implements OnInit {
 
 
 
-    layerMap['ArcGIS terrain'] = new TileLayer({
+    layersPrimariMap['ArcGIS terrain'] = new TileLayer({
       source: new XYZ({
         attributions: [attributionArcGIS],
         url: 'http://server.arcgisonline.com/ArcGIS/rest/services/' +
@@ -112,9 +97,10 @@ export class MyMapComponent implements OnInit {
 
       })
     })
-    layers.push(layerMap['ArcGIS terrain']);
+    layersPrimariMap['ArcGIS terrain'].isSentieriVisible=true;
+    layers.push(layersPrimariMap['ArcGIS terrain']);
 
-    layerMap['OpenCycleMap'] = new TileLayer({
+    layersPrimariMap['OpenCycleMap'] = new TileLayer({
       source: new OSMSource({
         attributions: [
           new Attribution({
@@ -125,7 +111,35 @@ export class MyMapComponent implements OnInit {
         url: 'http://{a-c}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png'
       })
     });
-    layers.push(layerMap['OpenCycleMap']);
+    layers.push(layersPrimariMap['OpenCycleMap']);
+
+    layersMap.overlaysAP["ctr"]=new TileLayer({
+      opacity: 0.3,
+      minResolution: 0.5,
+      maxResolution: 6,
+      visible: true,
+      source: new XYZ({
+        attributions: [attributionAP],
+        url: 'http://localhost:3000/tiles/trasCTR/{z}/{x}/{-y}.png',
+        minZoom: 14,
+        maxZoom: 18
+      })
+    })
+
+    layers.push(layersMap.overlaysAP["ctr"]);
+
+    let layersPercorsi = [];
+
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/sentieriUfficiali.json', "SENTIERI_UFFICIALI"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/piste.json', "PISTE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/strade.json', "STRADE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/traccia.json', "TRACCE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/tracceImboscate.json', "IMBOSCATE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/viandante.json', "VIANDANTE"));
+
+    layersMap.overlaysAP["sentieri"]=new GroupLayer({ layers: layersPercorsi });
+    layers.push(layersMap.overlaysAP["sentieri"]);
+
 
 
 
@@ -143,23 +157,12 @@ export class MyMapComponent implements OnInit {
 
 
 
-    this.controlloLayer = new ControlloLayer({ element: this.select.nativeElement }, layerMap);
+    this.controlloLayer = new ControlloLayer({ element: this.select.nativeElement }, layersMap);
     this.controlloLayer.onChange();
 
     map.addControl(this.controlloLayer);
 
-    let layersPercorsi = [];
-
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/sentieriUfficiali.json', "SENTIERI_UFFICIALI"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/piste.json', "PISTE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/strade.json', "STRADE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/traccia.json', "TRACCE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/tracceImboscate.json', "IMBOSCATE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/viandante.json', "VIANDANTE"));
-
-
-    map.addLayer(new GroupLayer({ layers: layersPercorsi }));
-
+   
 
 
   }
@@ -225,15 +228,14 @@ export class ControlloLayer extends Control {
 
   onChange(evento?) {
     var chosenStyle = this.select.value;
-    if (chosenStyle == "OpenCycleMap" || "ArcGIS terrain" || "Road") {
-      //TODO disabilitare layer livelli
-    }
-
-    Object.keys(this.layerMap).forEach(property => {
-      this.layerMap[property].setVisible(property === chosenStyle);
+  
+    Object.keys(this.layerMap.layersPrimariMap).forEach(property => {
+      this.layerMap.layersPrimariMap[property].setVisible(property === chosenStyle);
     }, this)
 
+    this.layerMap.overlaysAP["ctr"].setVisible(this.layerMap.layersPrimariMap[chosenStyle].isCtrVisible);
+    this.layerMap.overlaysAP["sentieri"].setVisible(this.layerMap.layersPrimariMap[chosenStyle].isSentieriVisible);
 
-  
+
   }
 }
