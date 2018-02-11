@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { API_KEY_BING } from './api-key-bing'
 
-import{ControlloLayer} from '../ol-custom/controls/controllo-layer'
+import { ControlloLayer } from '../ol-custom/controls/controllo-layer'
 
-import{SentieriLayerService} from '../services/my-map/sentieri-layer.service'
+import { SentieriLayerService } from '../services/my-map/sentieri-layer.service'
 
 
 
@@ -18,6 +18,7 @@ import OSMSource from 'ol/source/osm';
 import BingSource from 'ol/source/bingmaps';
 import proj from 'ol/proj';
 import Attribution from 'ol/attribution';
+import SelectInteraction from 'ol/interaction/select';
 
 
 
@@ -26,14 +27,14 @@ import Attribution from 'ol/attribution';
   selector: 'app-my-map',
   templateUrl: './my-map.component.html',
   styleUrls: ['./my-map.component.css'],
-  providers:[SentieriLayerService]
+  providers: [SentieriLayerService]
 })
 export class MyMapComponent implements OnInit {
   controlloLayer: ControlloLayer;
   @ViewChild("selectMappa", { read: ElementRef }) select: ElementRef;
 
 
-  constructor(private sentieriLayerService:SentieriLayerService) { }
+  constructor(private sentieriLayerService: SentieriLayerService) { }
 
   ngOnInit() {
 
@@ -53,7 +54,7 @@ export class MyMapComponent implements OnInit {
       'Aerial': null,
       'AerialWithLabels': null
     };
-    var layersMap={
+    var layersMap = {
       layersPrimariMap: layersPrimariMap,
       overlaysAP: {}
     }
@@ -70,8 +71,8 @@ export class MyMapComponent implements OnInit {
       })
 
       layers.push(layer);
-      layer.isCtrVisible=property!="Road";
-      layer.isSentieriVisible=true;
+      layer.isCtrVisible = property != "Road";
+      layer.isSentieriVisible = true;
       layersPrimariMap[property] = layer;
 
 
@@ -90,7 +91,7 @@ export class MyMapComponent implements OnInit {
 
       })
     })
-    layersPrimariMap['ArcGIS terrain'].isSentieriVisible=true;
+    layersPrimariMap['ArcGIS terrain'].isSentieriVisible = true;
     layers.push(layersPrimariMap['ArcGIS terrain']);
 
     layersPrimariMap['OpenCycleMap'] = new TileLayer({
@@ -106,7 +107,7 @@ export class MyMapComponent implements OnInit {
     });
     layers.push(layersPrimariMap['OpenCycleMap']);
 
-    layersMap.overlaysAP["ctr"]=new TileLayer({
+    layersMap.overlaysAP["ctr"] = new TileLayer({
       opacity: 0.3,
       minResolution: 0.5,
       maxResolution: 6,
@@ -122,7 +123,7 @@ export class MyMapComponent implements OnInit {
     layers.push(layersMap.overlaysAP["ctr"]);
 
 
-    layersMap.overlaysAP["sentieri"]=this.sentieriLayerService.getSentieri();
+    layersMap.overlaysAP["sentieri"] = this.sentieriLayerService.getSentieri();
     layers.push(layersMap.overlaysAP["sentieri"]);
 
 
@@ -144,8 +145,34 @@ export class MyMapComponent implements OnInit {
 
     this.controlloLayer = new ControlloLayer({ element: this.select.nativeElement }, layersMap);
     this.controlloLayer.onChange();
-
     map.addControl(this.controlloLayer);
+
+
+    let layerLuoghi = this.sentieriLayerService.getLuoghi();
+    map.addLayer(layerLuoghi);
+    // create a Select interaction and add it to the map
+    var select = new SelectInteraction({
+      layers: [layerLuoghi],
+      style: this.sentieriLayerService.getFunctionStyle("SENTIERI_UFFICIALI")
+    });
+
+
+    map.addInteraction(select);
+
+    // use the features Collection to detect when a feature is selected,
+    // the collection will emit the add event
+    var selectedFeatures = select.getFeatures();
+    selectedFeatures.on('add', function (event) {
+      var feature = event.target.item(0);
+      var name = feature.getProperties().name;
+      console.log(name)
+
+    });
+
+    // when a feature is removed, clear the photo-info div
+    selectedFeatures.on('remove', function (event) {
+
+    });
 
 
   }

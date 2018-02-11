@@ -25,8 +25,8 @@ export class SentieriLayerService {
     return function (feature: any) {
       var image = new Circle({
         radius: 5,
-        fill: null,
-        stroke: new Stroke({ color: 'red', width: 1 })
+        fill: new Fill({color: 'green'}),
+        stroke: new Stroke({ color: '#00CC00', width: 1 })
       });
 
       let styleForLines = vectorStyles[tipoStrada] ? vectorStyles[tipoStrada] : vectorStyles["SENTIERI_UFFICIALI"];
@@ -76,6 +76,10 @@ export class SentieriLayerService {
     layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/tracceImboscate.json', "IMBOSCATE"));
     layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/viandante.json', "VIANDANTE"));
     return new GroupLayer({ layers: layersPercorsi });
+  }
+
+  getLuoghi():VectorLayer{
+    return this.getJsonLayerFromUrl('http://localhost:3000/vector/luoghi.json',"LUOGHI")
   }
 
 
