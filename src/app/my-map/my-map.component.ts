@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Self } from '@angular/core';
 import { API_KEY_BING } from './api-key-bing'
-
+import{Router} from '@angular/router'
 import { ControlloLayer } from '../ol-custom/controls/controllo-layer'
 
 import { SentieriLayerService } from '../services/my-map/sentieri-layer.service'
@@ -34,7 +34,8 @@ export class MyMapComponent implements OnInit {
   @ViewChild("selectMappa", { read: ElementRef }) select: ElementRef;
 
 
-  constructor(private sentieriLayerService: SentieriLayerService) { }
+  constructor(private sentieriLayerService: SentieriLayerService,
+  private router:Router) { }
 
   ngOnInit() {
 
@@ -162,10 +163,13 @@ export class MyMapComponent implements OnInit {
     // use the features Collection to detect when a feature is selected,
     // the collection will emit the add event
     var selectedFeatures = select.getFeatures();
+    var self=this;
     selectedFeatures.on('add', function (event) {
       var feature = event.target.item(0);
       var name = feature.getProperties().name;
+      self.router.navigate([{ outlets: { popup: ['luoghiPrewiew'] } }]);
       console.log(name)
+
 
     });
 
