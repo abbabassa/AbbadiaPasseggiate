@@ -167,7 +167,7 @@ export class MyMapComponent implements OnInit {
     selectedFeatures.on('add', function (event) {
       var feature = event.target.item(0);
       var name = feature.getProperties().name;
-      self.router.navigate([{ outlets: { popup: ['luoghiPrewiew'] } }]);
+      self.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', name]} }]);
       console.log(name)
 
 

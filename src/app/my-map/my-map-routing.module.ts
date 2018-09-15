@@ -9,9 +9,9 @@ const myMapRoutes: Routes = [
         component: MyMapComponent
       },
     {
-        path: 'luoghiPrewiew',
+        path: 'luoghiPrewiew/:id',
         component: LuoghiPreviewComponent,
-        outlet: 'popup'
+        outlet: 'luoghiPopup'
       }
   ];    
 
