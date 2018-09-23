@@ -11,6 +11,7 @@ import Text from 'ol/style/text';
 import TextPlacement from 'ol/style/textplacement'
 import VectorLayer from 'ol/layer/vector';
 import GroupLayer from 'ol/layer/group';
+import { environment } from '../../../environments/environment';
 
 
 @Injectable()
@@ -69,17 +70,17 @@ export class SentieriLayerService {
   getSentieri(){
     let layersPercorsi = [];
 
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/sentieriUfficiali.json', "SENTIERI_UFFICIALI"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/piste.json', "PISTE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/strade.json', "STRADE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/traccia.json', "TRACCE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/tracceImboscate.json', "IMBOSCATE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://localhost:3000/vector/viandante.json', "VIANDANTE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://'+environment.serverName +'/vector/sentieriUfficiali.json', "SENTIERI_UFFICIALI"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://'+environment.serverName +'/vector/piste.json', "PISTE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://'+environment.serverName +'/vector/strade.json', "STRADE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://'+environment.serverName +'/vector/traccia.json', "TRACCE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://'+environment.serverName +'/vector/tracceImboscate.json', "IMBOSCATE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl('http://'+environment.serverName +'/vector/viandante.json', "VIANDANTE"));
     return new GroupLayer({ layers: layersPercorsi });
   }
 
   getLuoghi():VectorLayer{
-    return this.getJsonLayerFromUrl('http://localhost:3000/vector/luoghi.json',"LUOGHI")
+    return this.getJsonLayerFromUrl('http://'+ environment.serverName +'/vector/luoghi.json',"LUOGHI")
   }
 
 

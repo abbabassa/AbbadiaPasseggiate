@@ -19,6 +19,7 @@ import BingSource from 'ol/source/bingmaps';
 import proj from 'ol/proj';
 import Attribution from 'ol/attribution';
 import SelectInteraction from 'ol/interaction/select';
+import { environment } from '../../environments/environment';
 
 
 
@@ -115,7 +116,7 @@ export class MyMapComponent implements OnInit {
       visible: true,
       source: new XYZ({
         attributions: [attributionAP],
-        url: 'http://localhost:3000/tiles/trasCTR/{z}/{x}/{-y}.png',
+        url: 'http://'+ environment.serverName +  '/tiles/trasCTR/{z}/{x}/{-y}.png',
         minZoom: 14,
         maxZoom: 18
       })
