@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Self } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Self, HostListener } from '@angular/core';
 import { API_KEY_BING } from './api-key-bing'
 import{Router} from '@angular/router'
 import { ControlloLayer } from '../ol-custom/controls/controllo-layer'
@@ -37,6 +37,8 @@ export class MyMapComponent implements OnInit {
 
   constructor(private sentieriLayerService: SentieriLayerService,
   private router:Router) { }
+
+  private map:Map;
 
   ngOnInit() {
 
@@ -136,7 +138,7 @@ export class MyMapComponent implements OnInit {
       center: proj.fromLonLat([9.351, 45.89910]),
       zoom: 15
     });
-    var map = new Map({
+    this.map = new Map({
       target: 'map',
       layers: layers,
       //  9.33645°E,  45.89910°N
@@ -147,11 +149,11 @@ export class MyMapComponent implements OnInit {
 
     this.controlloLayer = new ControlloLayer({ element: this.select.nativeElement }, layersMap);
     this.controlloLayer.onChange();
-    map.addControl(this.controlloLayer);
+    this.map.addControl(this.controlloLayer);
 
 
     let layerLuoghi = this.sentieriLayerService.getLuoghi();
-    map.addLayer(layerLuoghi);
+    this.map.addLayer(layerLuoghi);
     // create a Select interaction and add it to the map
     var select = new SelectInteraction({
       layers: [layerLuoghi],
@@ -159,7 +161,7 @@ export class MyMapComponent implements OnInit {
     });
 
 
-    map.addInteraction(select);
+    this.map.addInteraction(select);
 
     // use the features Collection to detect when a feature is selected,
     // the collection will emit the add event
@@ -180,5 +182,11 @@ export class MyMapComponent implements OnInit {
     });
 
 
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    event.target.innerWidth;
+    this.map.updateSize();
   }
 }

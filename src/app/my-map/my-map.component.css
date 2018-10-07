@@ -2,3 +2,7 @@
     top:0px;
     left:50%;
 }
+
+#map {
+    height: 100vh;
+}
