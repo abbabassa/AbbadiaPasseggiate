@@ -3,6 +3,8 @@ import Stroke from 'ol/style/stroke';
 import Fill from 'ol/style/fill';
 import Text from 'ol/style/text';
 import TextPlacement from 'ol/style/textplacement'
+import RegularShape from 'ol/style/regularshape'
+import Circle from 'ol/style/circle';
 
 
 export const vectorStyles = {
@@ -95,6 +97,80 @@ export const vectorStyles = {
             lineDash: [5, 10]
         })
     }),
+    LUOGHI: new Style({
+        image: new RegularShape({
+          fill: new Fill({color: 'red'}),
+          stroke: new Stroke({color: 'black', width: 2}),
+          points: 5,
+          radius: 10,
+          radius2: 4,
+          angle: 0
+        })
+    })
+
+    
 
 
 }
+
+var stroke =   new Stroke({ color: '#004000', width: 2 });
+var fill =new Fill({color: '#33CC66'});
+
+export const pointStyles = {
+    CIRCLE :  new Style({
+        image: new Circle({
+            radius: 10,
+            fill: new Fill({color: '#33CC66'}),
+            stroke: new Stroke({ color: '#004000', width: 2 })
+        })
+    }),
+    SQUARE: new Style({
+        image: new RegularShape({
+        fill: fill,
+        stroke: stroke,
+        points: 4,
+        radius: 12,
+        angle: Math.PI / 4
+        })
+    }),
+    TRIANGLE: new Style({
+        image: new RegularShape({
+        fill: fill,
+        stroke: stroke,
+        points: 3,
+        radius: 10,
+        rotation: Math.PI / 4,
+        angle: 0
+        })
+    }),
+    STAR : new Style({
+        image: new RegularShape({
+        fill: fill,
+        stroke: stroke,
+        points: 5,
+        radius: 15,
+        radius2: 7,
+        angle: 0
+        })
+    }),
+    CROSS: new Style({
+        image: new RegularShape({
+        fill: fill,
+        stroke: stroke,
+        points: 4,
+        radius: 10,
+        radius2: 0,
+        angle: 0
+        })
+    }),
+    X: new Style({
+        image: new RegularShape({
+        fill: fill,
+        stroke: stroke,
+        points: 4,
+        radius: 10,
+        radius2: 0,
+        angle: Math.PI / 4
+        })
+    })
+};

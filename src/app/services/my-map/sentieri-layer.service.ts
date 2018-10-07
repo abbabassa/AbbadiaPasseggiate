@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { vectorStyles } from './vector-styles';
+import { vectorStyles, pointStyles } from './vector-styles';
 
 import Style from 'ol/style/style';
 import Stroke from 'ol/style/stroke';
@@ -24,27 +24,29 @@ export class SentieriLayerService {
 
   getFunctionStyle(tipoStrada: string) {
     return function (feature: any) {
-      var image = new Circle({
-        radius: 5,
-        fill: new Fill({color: 'green'}),
-        stroke: new Stroke({ color: '#00CC00', width: 1 })
-      });
+      let convPointStyleMap:any = {
+        comune:"STAR",
+        frazione: "SQUARE",
+        luogo: "CIRCLE",
+        default: "CIRCLE"
+      }
 
       let styleForLines = vectorStyles[tipoStrada] ? vectorStyles[tipoStrada] : vectorStyles["SENTIERI_UFFICIALI"];
+      let styleForPoint;
 
       if (styleForLines.getText()) {
         styleForLines.getText().setText(feature.getProperties().name)
       }
 
+      if(feature.getGeometry().getType()== "Point"){
+        styleForPoint= pointStyles[convPointStyleMap[feature.getProperties().style? feature.getProperties().style : "default" ]]
+       }
+
       var stylesForVector = {
-        'Point': new Style({
-          image: image
-        }),
+        'Point': styleForPoint,
         'LineString': styleForLines,
         'MultiLineString': styleForLines,
-        'MultiPoint': new Style({
-          image: image
-        }),
+        'MultiPoint': styleForPoint,
 
       };
       return stylesForVector[feature.getGeometry().getType()];
