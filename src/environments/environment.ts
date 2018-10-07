@@ -5,5 +5,6 @@
 
 export const environment = {
   production: false,
-  serverName: "localhost:3000"
+  serverName: "localhost:3000",
+  protocolName: "http://"
 };

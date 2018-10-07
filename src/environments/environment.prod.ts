@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  serverName: "lokipc:3000"
+  serverName: "abbadiapasseggiate-test.herokuapp.com",
+  protocolName: "https://"
 };
