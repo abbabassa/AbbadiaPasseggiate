@@ -1,7 +1,10 @@
 <div class="alert alert-primary mb-0">
-  <h3> {{title}}</h3>
+  <h3> {{luogoInfos?.locData.name}}</h3>
   <div >
-    {{luogoInfos}}
+      <p *ngFor="let par of luogoInfos?.locData?.description">
+          {{par}}
+      </p>
+
   </div> 
   <button (click)="closePopup()">Close</button>
 </div>

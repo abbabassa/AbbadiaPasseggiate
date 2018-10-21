@@ -1,5 +1,10 @@
 import { Component, OnInit, HostBinding } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { switchMap} from 'rxjs/operators';
+
+import {LocationsService} from '../../services/locations/locations.service'
+import { LocationPreviewResponse } from '../../om/locPrevResponse';
+
 @Component({
   selector: 'app-luoghi-preview',
   templateUrl: './luoghi-preview.component.html',
@@ -10,14 +15,19 @@ export class LuoghiPreviewComponent implements OnInit {
   @HostBinding('style.display') display = 'block';
   @HostBinding('style.position') position = 'absolute';
 
-  title: string = "";
-  luogoInfos: string = "";
+ 
+  luogoInfos: LocationPreviewResponse = null;
 
   constructor(private router: Router,
-    private activatedRoute: ActivatedRoute ) { }
+    private activatedRoute: ActivatedRoute,
+    private locationService: LocationsService ) { }
 
   ngOnInit() {
-    this.activatedRoute.paramMap.subscribe((params: ParamMap) => this.title=params.get('id'));
+    this.activatedRoute.paramMap
+    .pipe(
+      switchMap((params: ParamMap) =>  this.locationService.getLocationData( +params.get('id')))  
+    )
+    .subscribe(res => this.luogoInfos=res )
   }
 
 

@@ -169,9 +169,9 @@ export class MyMapComponent implements OnInit {
     var self=this;
     selectedFeatures.on('add', function (event) {
       var feature = event.target.item(0);
-      var name = feature.getProperties().name;
-      self.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', name]} }]);
-      console.log(name)
+      var locId = feature.getProperties().id;
+      self.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', locId]} }]);
+      
 
 
     });
