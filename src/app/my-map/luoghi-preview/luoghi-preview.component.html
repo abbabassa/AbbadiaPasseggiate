@@ -4,7 +4,16 @@
       <p *ngFor="let par of luogoInfos?.locData?.description">
           {{par}}
       </p>
-
   </div> 
-  <button (click)="closePopup()">Close</button>
+  <ng-container *ngIf="luogoInfos && luogoInfos.trailData && luogoInfos.trailData.length>0">
+    <h4>Come raggiungerlo?</h4>
+    <div>
+        <ul>
+            <li *ngFor="let trailData of luogoInfos?.trailData">
+                <a>{{trailData.name}} </a></li>
+        </ul>
+        
+    </div>
+</ng-container>
+  <button type="button" class="btn btn-primary" (click)="closePopup()">X</button>
 </div>
