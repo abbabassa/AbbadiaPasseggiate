@@ -4,6 +4,7 @@ import{Router} from '@angular/router'
 import { ControlloLayer } from '../ol-custom/controls/controllo-layer'
 
 import { SentieriLayerService } from '../services/my-map/sentieri-layer.service'
+import { PreviewStateService } from '../services/communication/preview-state.service'
 
 
 
@@ -35,8 +36,10 @@ export class MyMapComponent implements OnInit {
   @ViewChild("selectMappa", { read: ElementRef }) select: ElementRef;
 
 
-  constructor(private sentieriLayerService: SentieriLayerService,
-  private router:Router) { }
+  constructor(  
+    private sentieriLayerService: SentieriLayerService,
+    private router:Router,
+    private previewStateService:PreviewStateService ){ }
 
   private map:Map;
 
@@ -167,9 +170,11 @@ export class MyMapComponent implements OnInit {
     // the collection will emit the add event
     var selectedFeatures = select.getFeatures();
     var self=this;
+  
     selectedFeatures.on('add', function (event) {
       var feature = event.target.item(0);
       var locId = feature.getProperties().id;
+      self.previewStateService.setState(true);
       self.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', locId]} }]);
       
 
@@ -178,8 +183,16 @@ export class MyMapComponent implements OnInit {
 
     // when a feature is removed, clear the photo-info div
     selectedFeatures.on('remove', function (event) {
-
+      console.log("ciao")
     });
+
+    this.previewStateService.isOpen$.subscribe(isOpen => 
+      {
+        if(!isOpen)
+        {
+          selectedFeatures.clear();
+        }
+      })
 
 
   }

@@ -2,7 +2,8 @@ import { Component, OnInit, HostBinding } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap} from 'rxjs/operators';
 
-import {LocationsService} from '../../services/locations/locations.service'
+import {LocationsService} from '../../services/locations/locations.service';
+import { PreviewStateService } from '../../services/communication/preview-state.service';
 import { LocationPreviewResponse } from '../../om/locPrevResponse';
 
 @Component({
@@ -20,7 +21,8 @@ export class LuoghiPreviewComponent implements OnInit {
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
-    private locationService: LocationsService ) { }
+    private locationService: LocationsService,
+    private previewStateService:PreviewStateService ) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap
@@ -35,7 +37,11 @@ export class LuoghiPreviewComponent implements OnInit {
   closePopup() {
     // Providing a `null` value to the named outlet
     // clears the contents of the named outlet
-    this.router.navigate([{ outlets: { luoghiPopup: null } }]);
+    this.previewStateService.setState(false);
+    this.router.navigate(
+      [{ outlets: { luoghiPopup: null } }],
+      {relativeTo: this.activatedRoute.parent} // <--- PARENT activated route.
+      );
   }
 
 }

@@ -5,6 +5,7 @@ import {MyMapRoutingModule} from './my-map/my-map-routing.module'
 import { HttpClientModule } from '@angular/common/http';
 
 import {LocationsService} from './services/locations/locations.service'
+import {PreviewStateService} from './services/communication/preview-state.service'
 
 import { AppComponent } from './app.component';
 import { MyMapComponent } from './my-map/my-map.component';
@@ -23,7 +24,7 @@ import { LuoghiPreviewComponent } from './my-map/luoghi-preview/luoghi-preview.c
     MyMapRoutingModule,
     HttpClientModule
   ],
-  providers: [LocationsService],
+  providers: [LocationsService,PreviewStateService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
