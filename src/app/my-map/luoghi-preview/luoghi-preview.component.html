@@ -1,4 +1,4 @@
-<div class="alert alert-primary mb-0">
+<div class="alert alert-light mb-0">
   <h3> {{luogoInfos?.locData.name}}</h3>
   <div >
       <p *ngFor="let par of luogoInfos?.locData?.description">
@@ -15,5 +15,5 @@
         
     </div>
 </ng-container>
-  <button type="button" class="btn btn-primary" (click)="closePopup()">X</button>
+  <button type="button" class="btn btn-outline-danger" (click)="closePopup()">X</button>
 </div>
