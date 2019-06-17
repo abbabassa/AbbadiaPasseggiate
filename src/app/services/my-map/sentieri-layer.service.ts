@@ -14,6 +14,15 @@ import GroupLayer from 'ol/layer/group';
 import { environment } from '../../../environments/environment';
 
 
+export const  GEOJESON_SENT_UFF = "SENTIERI_UFFICIALI"
+export const  GEOJESON_PISTE = "PISTE"
+export const  GEOJESON_STRADE = "STRADE"
+export const  GEOJESON_TRACCE = "TRACCE"
+export const  GEOJESON_IMB = "IMBOSCATE"
+export const  GEOJESON_VIANDANTE = "VIANDANTE"
+export const GEOJESON_LUOGHI="LUOGHI"
+
+
 @Injectable()
 export class SentieriLayerService {
 
@@ -31,7 +40,7 @@ export class SentieriLayerService {
         default: "CIRCLE"
       }
 
-      let styleForLines = vectorStyles[tipoStrada] ? vectorStyles[tipoStrada] : vectorStyles["SENTIERI_UFFICIALI"];
+      let styleForLines = vectorStyles[tipoStrada] ? vectorStyles[tipoStrada] : vectorStyles[GEOJESON_SENT_UFF];
       let styleForPoint;
 
       if (styleForLines.getText()) {
@@ -72,17 +81,17 @@ export class SentieriLayerService {
   getSentieri(){
     let layersPercorsi = [];
 
-    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/sentieriUfficiali.json', "SENTIERI_UFFICIALI"));
-    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/piste.json', "PISTE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/strade.json', "STRADE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/traccia.json', "TRACCE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/tracceImboscate.json', "IMBOSCATE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/viandante.json', "VIANDANTE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/sentieriUfficiali.json', GEOJESON_SENT_UFF));
+    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/piste.json', GEOJESON_PISTE));
+    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/strade.json', GEOJESON_STRADE));
+    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/traccia.json', GEOJESON_TRACCE));
+    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/tracceImboscate.json', GEOJESON_IMB));
+    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/viandante.json', GEOJESON_VIANDANTE));
     return new GroupLayer({ layers: layersPercorsi });
   }
 
   getLuoghi():VectorLayer{
-    return this.getJsonLayerFromUrl(environment.protocolName+ environment.serverName +'/vector/luoghi.json',"LUOGHI")
+    return this.getJsonLayerFromUrl(environment.protocolName+ environment.serverName +'/vector/luoghi.json',GEOJESON_LUOGHI)
   }
 
 

@@ -3,7 +3,7 @@ import { API_KEY_BING } from './api-key-bing'
 import{Router} from '@angular/router'
 import { ControlloLayer } from '../ol-custom/controls/controllo-layer'
 
-import { SentieriLayerService } from '../services/my-map/sentieri-layer.service'
+import { SentieriLayerService, GEOJESON_SENT_UFF } from '../services/my-map/sentieri-layer.service'
 import { PreviewStateService } from '../services/communication/preview-state.service'
 
 
@@ -25,6 +25,13 @@ import { environment } from '../../environments/environment';
 
 
 
+const LAYER_ROAD:string ='Road'
+const LAYER_AERIAL:string ='Aerial'
+const LAYER_AERIAL_LBLS:string ='AerialWithLabels'
+const LAYER_ARC_GIS:string ='ArcGIS terrain'
+const LAYER_OPEN_TOPO:string ='OpenCycleMap'
+
+
 @Component({
   selector: 'app-my-map',
   templateUrl: './my-map.component.html',
@@ -41,7 +48,9 @@ export class MyMapComponent implements OnInit {
     private router:Router,
     private previewStateService:PreviewStateService ){ }
 
-  private map:Map;
+  private map:Map
+
+
 
   ngOnInit() {
 
@@ -56,11 +65,13 @@ export class MyMapComponent implements OnInit {
       html: 'Tiles &copy; <a href="http://www.abbadiapasseggiate.altervista.org">ABBADIA PASSEGGIATE</a>'
     });
 
-    var layersPrimariMap: { [property: string]: any } = {
-      'Road': null,
-      'Aerial': null,
-      'AerialWithLabels': null
-    };
+    var layersPrimariMap: { [property: string]: any } = {};
+    layersPrimariMap[LAYER_ROAD] = null;
+    layersPrimariMap[LAYER_AERIAL] = null;
+    layersPrimariMap[LAYER_AERIAL_LBLS] = null;
+
+    
+
     var layersMap = {
       layersPrimariMap: layersPrimariMap,
       overlaysAP: {}
@@ -78,7 +89,7 @@ export class MyMapComponent implements OnInit {
       })
 
       layers.push(layer);
-      layer.isCtrVisible = property != "Road";
+      layer.isCtrVisible = property != LAYER_ROAD;
       layer.isSentieriVisible = true;
       layersPrimariMap[property] = layer;
 
@@ -89,7 +100,7 @@ export class MyMapComponent implements OnInit {
 
 
 
-    layersPrimariMap['ArcGIS terrain'] = new TileLayer({
+    layersPrimariMap[LAYER_ARC_GIS] = new TileLayer({
       source: new XYZ({
         attributions: [attributionArcGIS],
         url: 'http://server.arcgisonline.com/ArcGIS/rest/services/' +
@@ -98,21 +109,20 @@ export class MyMapComponent implements OnInit {
 
       })
     })
-    layersPrimariMap['ArcGIS terrain'].isSentieriVisible = true;
-    layers.push(layersPrimariMap['ArcGIS terrain']);
+    layersPrimariMap[LAYER_ARC_GIS].isSentieriVisible = true;
+    layers.push(layersPrimariMap[LAYER_ARC_GIS]);
 
-    layersPrimariMap['OpenCycleMap'] = new TileLayer({
+    layersPrimariMap[LAYER_OPEN_TOPO] = new TileLayer({
       source: new OSMSource({
         attributions: [
           new Attribution({
-            html: 'Tiles &copy; <a href="http://www.opencyclemap.org/">' +
-              'OpenCycleMap</a>'
+            html:  'Kartendaten: © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, SRTM | Kartendarstellung: © <a href="http://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)' 
           })
         ],
-        url: 'http://{a-c}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png'
+        url: 'https://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
       })
     });
-    layers.push(layersPrimariMap['OpenCycleMap']);
+    layers.push(layersPrimariMap[LAYER_OPEN_TOPO]);
 
     layersMap.overlaysAP["ctr"] = new TileLayer({
       opacity: 0.3,
@@ -160,7 +170,7 @@ export class MyMapComponent implements OnInit {
     // create a Select interaction and add it to the map
     var select = new SelectInteraction({
       layers: [layerLuoghi],
-      style: this.sentieriLayerService.getFunctionStyle("SENTIERI_UFFICIALI")
+      style: this.sentieriLayerService.getFunctionStyle(GEOJESON_SENT_UFF)
     });
 
 
@@ -183,7 +193,7 @@ export class MyMapComponent implements OnInit {
 
     // when a feature is removed, clear the photo-info div
     selectedFeatures.on('remove', function (event) {
-      console.log("ciao")
+      //console.log("ciao")
     });
 
     this.previewStateService.isOpen$.subscribe(isOpen => 
