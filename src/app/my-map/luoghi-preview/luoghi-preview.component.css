@@ -1,6 +1,11 @@
-:host { 
-    position: relative;
-    bottom: 10%;
+ :host() { 
+    
     background-color: rgba(256,256,256,0.6);
-    padding: 0em
-}
+    display: block;
+    left: 0;
+    width: 35%;
+    top: 10%;
+   
+
+    /*TODO: sostituire classe host con qualcosa di meglio => laterale se monitor, centrale altrimenti, al massimo con parte sotto libera*/
+} 

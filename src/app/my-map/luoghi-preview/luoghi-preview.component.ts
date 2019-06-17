@@ -15,6 +15,7 @@ export class LuoghiPreviewComponent implements OnInit {
   // @HostBinding('@routeAnimation') routeAnimation = true;
   @HostBinding('style.display') display = 'block';
   @HostBinding('style.position') position = 'absolute';
+ // @HostBinding('class.modal') 
 
  
   luogoInfos: LocationPreviewResponse = null;

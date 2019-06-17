@@ -1,19 +1,34 @@
-<div class="alert alert-light mb-0">
-  <h3> {{luogoInfos?.locData.name}}</h3>
-  <div >
-      <p *ngFor="let par of luogoInfos?.locData?.description">
-          {{par}}
-      </p>
-  </div> 
-  <ng-container *ngIf="luogoInfos && luogoInfos.trailData && luogoInfos.trailData.length>0">
-    <h4>Come raggiungerlo?</h4>
-    <div>
-        <ul>
-            <li *ngFor="let trailData of luogoInfos?.trailData">
-                <a>{{trailData.name}} </a></li>
-        </ul>
-        
-    </div>
-</ng-container>
-  <button type="button" class="btn btn-outline-danger" (click)="closePopup()">X</button>
-</div>
+
+<div class="modal-dialog 	modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{luogoInfos?.locData.name}}</h4>
+            <button type="button" class="close" (click)="closePopup()" aria-label="Close"> 
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <!-- <button type="button" class="close"  aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button> -->
+          </div>
+          <div class="modal-body">
+            <div >
+                <p *ngFor="let par of luogoInfos?.locData?.description">
+                    {{par}}
+                </p>
+            </div> 
+            <ng-container *ngIf="luogoInfos && luogoInfos.trailData && luogoInfos.trailData.length>0">
+                <h5>Come raggiungerlo?</h5>
+                <div>
+                    <ul>
+                        <li *ngFor="let trailData of luogoInfos?.trailData">
+                            <a>{{trailData.name}} </a></li>
+                    </ul>
+                    
+                </div>
+            </ng-container>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-danger" (click)="closePopup()"  >Close</button>
+          </div>
+        </div>
+      </div>
