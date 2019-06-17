@@ -6,5 +6,6 @@
 export const environment = {
   production: false,
   serverName: "lokipc:3000",
-  protocolName: "http://"
+  protocolName: "http://",
+  tileServerName:"lokipc:3001"
 };
