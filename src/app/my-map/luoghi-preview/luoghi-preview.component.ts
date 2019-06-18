@@ -26,9 +26,16 @@ export class LuoghiPreviewComponent implements OnInit {
     private previewStateService:PreviewStateService ) { }
 
   ngOnInit() {
+    
     this.activatedRoute.paramMap
     .pipe(
-      switchMap((params: ParamMap) =>  this.locationService.getLocationData( +params.get('id')))  
+      switchMap((params: ParamMap) =>  
+        {
+          // reset iniziale per quando cambio luogo da una scheda all'altra
+          this.luogoInfos = null;
+          return this.locationService.getLocationData( +params.get('id'));
+        }
+      )  
     )
     .subscribe(res => this.luogoInfos=res )
   }

@@ -6,11 +6,16 @@
             <button type="button" class="close" (click)="closePopup()" aria-label="Close"> 
                 <span aria-hidden="true">&times;</span>
             </button>
-            <!-- <button type="button" class="close"  aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button> -->
           </div>
           <div class="modal-body">
+
+
+            <div class="d-flex justify-content-center" *ngIf="!luogoInfos">
+              <div class="spinner-grow  text-primary" role="status">
+                <span class="sr-only">Caricamento...</span>
+              </div>
+            </div>
+
             <div >
                 <p *ngFor="let par of luogoInfos?.locData?.description">
                     {{par}}
