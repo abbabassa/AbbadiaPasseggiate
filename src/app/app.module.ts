@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import {AppRoutingModule} from './app-routing.module'
 import {MyMapRoutingModule} from './my-map/my-map-routing.module'
 import { HttpClientModule } from '@angular/common/http';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 import {LocationsService} from './services/locations/locations.service'
 import {PreviewStateService} from './services/communication/preview-state.service'
@@ -22,8 +23,8 @@ import { LuoghiPreviewComponent } from './my-map/luoghi-preview/luoghi-preview.c
     BrowserModule,
     AppRoutingModule,
     MyMapRoutingModule,
-    HttpClientModule
-  ],
+    HttpClientModule,
+    NgbModule  ],
   providers: [LocationsService,PreviewStateService],
   bootstrap: [AppComponent]
 })
