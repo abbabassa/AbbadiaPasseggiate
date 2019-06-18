@@ -40,7 +40,7 @@ const LAYER_OPEN_TOPO:string ='OpenCycleMap'
 })
 export class MyMapComponent implements OnInit {
   controlloLayer: ControlloLayer;
-  @ViewChild("selectMappa", { read: ElementRef }) select: ElementRef;
+  @ViewChild("selectMappa", { read: ElementRef, static: true }) select: ElementRef;
 
 
   constructor(  
