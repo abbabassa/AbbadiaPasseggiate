@@ -131,7 +131,7 @@ export class MyMapComponent implements OnInit {
       visible: true,
       source: new XYZ({
         attributions: [attributionAP],
-        url: 'http://'+ environment.tileServerName +  '/tiles/trasCTR/{z}/{x}/{-y}.png',
+        url: environment.protocolName + environment.tileServerName +  '/tiles/trasCTR/{z}/{x}/{-y}.png',
         minZoom: 14,
         maxZoom: 18
       })
