@@ -11,13 +11,16 @@ import {PreviewStateService} from './services/communication/preview-state.servic
 import { AppComponent } from './app.component';
 import { MyMapComponent } from './my-map/my-map.component';
 import { LuoghiPreviewComponent } from './my-map/luoghi-preview/luoghi-preview.component';
+import { ImgUrlPipe } from './pipes/img-url.pipe';
+
 
 
 @NgModule({
   declarations: [
     AppComponent,
     MyMapComponent,
-    LuoghiPreviewComponent
+    LuoghiPreviewComponent,
+    ImgUrlPipe
   ],
   imports: [
     BrowserModule,

@@ -1,39 +1,59 @@
 
-<div class="modal-dialog 	modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">{{luogoInfos?.locData.name}}</h4>
-            <button type="button" class="close" (click)="closePopup()" aria-label="Close"> 
-                <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
+<div class="modal-dialog 	modal-lg modal-dialog-scrollable m-0" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">{{luogoInfos?.locData.name}}</h4>
+      <button type="button" class="close" (click)="closePopup()" aria-label="Close"> 
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
 
 
-            <div class="d-flex justify-content-center" *ngIf="!luogoInfos">
-              <div class="spinner-grow  text-primary" role="status">
-                <span class="sr-only">Caricamento...</span>
-              </div>
-            </div>
+    <div class="d-flex justify-content-center" *ngIf="!luogoInfos">
+      <div class="spinner-grow  text-primary" role="status">
+        <span class="sr-only">Caricamento...</span>
+      </div>
+    </div>
 
-            <div >
-                <p *ngFor="let par of luogoInfos?.locData?.description">
-                    {{par}}
-                </p>
-            </div> 
-            <ng-container *ngIf="luogoInfos && luogoInfos.trailData && luogoInfos.trailData.length>0">
-                <h5>Come raggiungerlo?</h5>
-                <div>
-                    <ul>
-                        <li *ngFor="let trailData of luogoInfos?.trailData">
-                            <a>{{trailData.name}} </a></li>
-                    </ul>
-                    
-                </div>
-            </ng-container>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-outline-danger" (click)="closePopup()"  >Close</button>
+    <div >
+      <p *ngFor="let par of luogoInfos?.locData?.description">
+        {{par}}
+      </p>
+    </div> 
+    <ng-container *ngIf="luogoInfos && luogoInfos.trailData && luogoInfos.trailData.length>0">
+      <h5>Come raggiungerlo?</h5>
+      <div>
+        <ul>
+          <li *ngFor="let trailData of luogoInfos?.trailData">
+            <a>{{trailData.name}} </a>
+          </li>
+        </ul>
+          
+      </div>
+    </ng-container>
+    
+
+    <div class="card-group" *ngIf="luogoInfos && luogoInfos.imagesData && luogoInfos.imagesData.length>0">
+        <div class="card" *ngFor="let imgData of luogoInfos?.imagesData" ngbPopover="{{imgData?.description[0]}}" triggers="mouseenter:mouseleave" popoverTitle="{{imgData.title}}">
+
+          
+          <img [src]="imgData | imgUrl"  class="card-img-top" alt="{{imgData.title}}"> 
+          <div class="card-footer">
+            <small class="text-muted">&copy; AbbadiaPasseggiate</small>
           </div>
         </div>
       </div>
+
+
+
+
+
+
+
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-danger" (click)="closePopup()"    >Close</button>
+    </div>
+
+</div>

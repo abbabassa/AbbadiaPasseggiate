@@ -6,6 +6,7 @@ import {LocationsService} from '../../services/locations/locations.service';
 import { PreviewStateService } from '../../services/communication/preview-state.service';
 import { LocationPreviewResponse } from '../../om/locPrevResponse';
 
+
 @Component({
   selector: 'app-luoghi-preview',
   templateUrl: './luoghi-preview.component.html',

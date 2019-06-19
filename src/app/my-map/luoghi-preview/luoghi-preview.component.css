@@ -1,11 +1,26 @@
  :host() { 
     
-    background-color: rgba(256,256,256,0.6);
+    background-color: rgba(256,256,256,0);
     display: block;
     left: 0;
-    width: 35%;
+    width: 100%;
     top: 10%;
+    padding: 0;
    
 
     /*TODO: sostituire classe host con qualcosa di meglio => laterale se monitor, centrale altrimenti, al massimo con parte sotto libera*/
 } 
+
+.modal-content
+{
+    height: 90vh;
+}
+
+@media only screen and (min-width: 600px) and (orientation: landscape   )
+{
+    :host() { 
+    
+        width: 30%;
+    
+    } 
+}
