@@ -16,11 +16,19 @@
     height: 90vh;
 }
 
-@media only screen and (min-width: 600px) and (orientation: landscape   )
-{
+
+@media (min-width: 992px) {
+    :host() { 
+    
+        width: 60%;
+    
+    } 
+}
+
+@media (min-width: 1200px) { 
     :host() { 
     
         width: 30%;
     
     } 
-}
+ }
