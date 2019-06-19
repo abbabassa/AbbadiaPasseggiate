@@ -5,6 +5,8 @@ import { switchMap} from 'rxjs/operators';
 import {LocationsService} from '../../services/locations/locations.service';
 import { PreviewStateService } from '../../services/communication/preview-state.service';
 import { LocationPreviewResponse } from '../../om/locPrevResponse';
+import { Lightbox } from 'ngx-lightbox';
+import { ImgUrlPipe } from '../../pipes/img-url.pipe';
 
 
 @Component({
@@ -24,7 +26,9 @@ export class LuoghiPreviewComponent implements OnInit {
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
     private locationService: LocationsService,
-    private previewStateService:PreviewStateService ) { }
+    private previewStateService:PreviewStateService,
+    private lightBox : Lightbox,
+    private imgPipe : ImgUrlPipe ) { }
 
   ngOnInit() {
     
@@ -41,6 +45,23 @@ export class LuoghiPreviewComponent implements OnInit {
     .subscribe(res => this.luogoInfos=res )
   }
 
+  openLightBox(index: number): void {
+    // open lightbox
+    let lightBoxAlbum = this.luogoInfos.imagesData.map (image=> 
+    {
+      let desc: string = "<h5>" +image.title + "</h5>";
+      if(image.description != null)
+        image.description.forEach(descPar => desc += "<p>" + descPar + "</p> ");
+
+      return {
+        src : this.imgPipe.transform(image, true) ,
+        caption : desc,
+        thumb: this.imgPipe.transform(image, false) 
+        
+      } ;
+    });
+    this.lightBox.open(lightBoxAlbum, index);
+  }
 
 
   closePopup() {

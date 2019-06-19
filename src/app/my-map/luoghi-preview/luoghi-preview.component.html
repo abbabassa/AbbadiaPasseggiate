@@ -45,8 +45,8 @@
         </ng-container>
 
         <ng-container #noDesc>
-            <div class="card" *ngFor="let imgData of luogoInfos?.imagesData" ngbPopover="{{imgData.title}}" triggers="mouseenter:mouseleave" popoverTitle="{{imgData.title}}">
-              <img [src]="imgData | imgUrl"  class="card-img-top" alt="{{imgData.title}}"> 
+            <div class="card" *ngFor="let imgData of luogoInfos?.imagesData; let i = index" ngbPopover="{{imgData.title}}" triggers="mouseenter:mouseleave" popoverTitle="{{imgData.title}}">
+              <img [src]="imgData | imgUrl"  class="card-img-top" alt="{{imgData.title}}" (click)="openLightBox(i)"> 
               <div class="card-footer">
                 <small class="text-muted">&copy; AbbadiaPasseggiate</small>
               </div>

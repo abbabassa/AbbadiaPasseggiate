@@ -4,6 +4,7 @@ import {AppRoutingModule} from './app-routing.module'
 import {MyMapRoutingModule} from './my-map/my-map-routing.module'
 import { HttpClientModule } from '@angular/common/http';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { LightboxModule } from 'ngx-lightbox';
 
 import {LocationsService} from './services/locations/locations.service'
 import {PreviewStateService} from './services/communication/preview-state.service'
@@ -27,8 +28,9 @@ import { ImgUrlPipe } from './pipes/img-url.pipe';
     AppRoutingModule,
     MyMapRoutingModule,
     HttpClientModule,
-    NgbModule  ],
-  providers: [LocationsService,PreviewStateService],
+    NgbModule,
+    LightboxModule  ],
+  providers: [LocationsService,PreviewStateService, ImgUrlPipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
