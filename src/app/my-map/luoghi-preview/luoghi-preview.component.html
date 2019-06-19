@@ -34,8 +34,8 @@
     </ng-container>
     
 
-      <div class="card-group" *ngIf="luogoInfos && luogoInfos.imagesData && luogoInfos.imagesData.length>0; else noDesc">
-        <ng-container *ngIf="imgData && imgData.description && imgData.description.length>0">
+      <div class="card-group" *ngIf="luogoInfos && luogoInfos.imagesData && luogoInfos.imagesData.length>0">
+        <ng-container *ngIf="imgData && imgData.description && imgData.description.length>0; else noDesc">
           <div class="card" *ngFor="let imgData of luogoInfos?.imagesData" ngbPopover="{{imgData?.description[0]}}" triggers="mouseenter:mouseleave" popoverTitle="{{imgData.title}}">
             <img [src]="imgData | imgUrl"  class="card-img-top" alt="{{imgData.title}}"> 
             <div class="card-footer">
@@ -44,14 +44,14 @@
           </div>
         </ng-container>
 
-        <ng-container #noDesc>
+        <ng-template #noDesc>
             <div class="card" *ngFor="let imgData of luogoInfos?.imagesData; let i = index" ngbPopover="{{imgData.title}}" triggers="mouseenter:mouseleave" popoverTitle="{{imgData.title}}">
               <img [src]="imgData | imgUrl"  class="card-img-top" alt="{{imgData.title}}" (click)="openLightBox(i)"> 
               <div class="card-footer">
                 <small class="text-muted">&copy; AbbadiaPasseggiate</small>
               </div>
             </div>
-          </ng-container>
+          </ng-template>
       </div>
 
 
