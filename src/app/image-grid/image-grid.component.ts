@@ -21,7 +21,7 @@ export class ImageGridComponent implements OnInit, OnChanges {
   @Input()
   private useLightBox :boolean
 
-  private colsInfo : APImageData[][];
+  colsInfo : APImageData[][];
   
   constructor(private lightBox : Lightbox,
               private imgPipe : ImgUrlPipe) { }
