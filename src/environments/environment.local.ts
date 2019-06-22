@@ -5,7 +5,7 @@
 
 export const environment = {
   production: false,
-  serverName: "lokipc:3000",
+  serverName: "paolopc:3000",
   protocolName: "http://",
-  tileServerName:"lokipc:3001"
+  tileServerName:"paolopc:3001"
 };

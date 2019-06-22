@@ -6,3 +6,13 @@
 #map {
     height: 100vh;
 }
+
+.geo-dot circle
+{
+    stroke:#fff;
+    stroke-width:3;
+    fill:#2A93EE;
+    fill-opacity:1;
+    opacity:1;
+}
+

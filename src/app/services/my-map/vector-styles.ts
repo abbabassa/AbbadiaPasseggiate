@@ -174,3 +174,12 @@ export const pointStyles = {
         })
     })
 };
+
+
+export const geolocationStyle = {
+    ACCURANCY : new Style({
+        fill: new Fill({
+            color: 'rgba(0, 0, 255, 0.2)'
+        })
+    })
+}

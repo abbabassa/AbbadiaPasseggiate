@@ -7,20 +7,28 @@ import { SentieriLayerService, GEOJESON_SENT_UFF } from '../services/my-map/sent
 import { PreviewStateService } from '../services/communication/preview-state.service'
 
 
-
+import { environment } from '../../environments/environment';
 
 
 // import 'ol/ol.css';
 import Map from 'ol/map';
 import View from 'ol/view';
 import TileLayer from 'ol/layer/tile';
+import VectorLayer from 'ol/layer/vector';
 import XYZ from 'ol/source/xyz';
 import OSMSource from 'ol/source/osm';
 import BingSource from 'ol/source/bingmaps';
+import VectorSource from 'ol/source/vector';
 import proj from 'ol/proj';
 import Attribution from 'ol/attribution';
 import SelectInteraction from 'ol/interaction/select';
-import { environment } from '../../environments/environment';
+import Geolocation from 'ol/geolocation';
+import Overlay from 'ol/overlay';
+import Feature from 'ol/feature';
+import { geolocationStyle } from '../services/my-map/vector-styles';
+import { GeolocationData, GeolocationStatus } from '../om/geolocationData';
+
+
 
 
 
@@ -30,6 +38,10 @@ const LAYER_AERIAL:string ='Aerial'
 const LAYER_AERIAL_LBLS:string ='AerialWithLabels'
 const LAYER_ARC_GIS:string ='ArcGIS terrain'
 const LAYER_OPEN_TOPO:string ='OpenCycleMap'
+
+const GEOLOCATION_DISABLED: number = 0;
+const GEOLOCATION_ACTIVE: number = 1;
+const GEOLOCATION_ACTIVE_WITH_ERROR: number = 2;
 
 
 @Component({
@@ -42,13 +54,21 @@ export class MyMapComponent implements OnInit {
   controlloLayer: ControlloLayer;
   @ViewChild("selectMappa", { read: ElementRef, static: true }) select: ElementRef;
 
+  @ViewChild("loc",  { read: ElementRef, static: true }) locationEl : ElementRef
+
+
+  geolocationData:GeolocationData;
+  private map:Map
+  private marker:Overlay;
+  private geolocation:Geolocation;
+  private accuracyLayer: VectorLayer;
+
+  private originalMapCentre= [9.351, 45.89910];
 
   constructor(  
     private sentieriLayerService: SentieriLayerService,
     private router:Router,
     private previewStateService:PreviewStateService ){ }
-
-  private map:Map
 
 
 
@@ -146,9 +166,9 @@ export class MyMapComponent implements OnInit {
 
 
 
-
-    var view = new View({
-      center: proj.fromLonLat([9.351, 45.89910]),
+    this.originalMapCentre = proj.fromLonLat([9.351, 45.89910]);
+    var view : View  = new View({
+      center: this.originalMapCentre,
       zoom: 15
     });
     this.map = new Map({
@@ -168,7 +188,7 @@ export class MyMapComponent implements OnInit {
     let layerLuoghi = this.sentieriLayerService.getLuoghi();
     this.map.addLayer(layerLuoghi);
     // create a Select interaction and add it to the map
-    var select = new SelectInteraction({
+    var select : SelectInteraction= new SelectInteraction({
       layers: [layerLuoghi],
       style: this.sentieriLayerService.getFunctionStyle(GEOJESON_SENT_UFF)
     });
@@ -191,10 +211,6 @@ export class MyMapComponent implements OnInit {
 
     });
 
-    // when a feature is removed, clear the photo-info div
-    selectedFeatures.on('remove', function (event) {
-      //console.log("ciao")
-    });
 
     this.previewStateService.isOpen$.subscribe(isOpen => 
       {
@@ -203,9 +219,103 @@ export class MyMapComponent implements OnInit {
           selectedFeatures.clear();
         }
       })
+    // ====================== GEOLOCATION ===========================
+    // create a Geolocation object setup to track the position of the device
+    this.setUpGeolocation();
+  }
 
+  private setUpGeolocation() {
+    // init without tracking, it will be enable from GUI
+    this.geolocation = new Geolocation({
+      tracking: false,
+      projection: this.map.getView().getProjection(),
+      enableHighAccuracy: true
+    });
+    // create an Overlay using the div with id location.
+    this.marker  = new Overlay({
+      element: this.locationEl.nativeElement,
+      positioning: 'center-center',
+      stopEvent: false
+    });
+
+    this.geolocationData = new GeolocationData(GeolocationStatus.Disabled);
+
+    this.map.addOverlay(this.marker);
+
+    this.geolocation.on('change:position', () => {
+      if (this.geolocationData.status== GeolocationStatus.ActiveWithError)
+        this.manageLocation(true, false)
+      var p = this.geolocation.getPosition();
+      this.manageMapViewConfiguration();
+      this.marker.setPosition([parseFloat(p[0]), parseFloat(p[1])]);
+    });
+
+    this.geolocation.on('error', () =>{
+      this.manageLocation(true,true);
+    })
+
+    let accuracyFeature: Feature = new Feature();
+ 
+    this.geolocation.on('change:accuracyGeometry', () => {
+      accuracyFeature.setGeometry(this.geolocation.getAccuracyGeometry());
+      accuracyFeature.setStyle(() => geolocationStyle.ACCURANCY);
+     
+    });
+    
+    this.accuracyLayer = new VectorLayer({
+      map: this.map,
+      source: new VectorSource({
+        features: [accuracyFeature]
+      }),
+    });
+    
+    
+    
 
   }
+
+  toggleLocation()
+  {
+    let isTracking:boolean = this.geolocation.getTracking();
+    this.manageLocation(!isTracking);
+  }
+
+  private manageLocation(active:boolean, error:boolean = false)
+  {
+    let locStatus:number
+    if(!active){
+      locStatus = GeolocationStatus.Disabled;
+    }else if (!error){
+      locStatus = GeolocationStatus.Active;
+    }else{
+      locStatus = GeolocationStatus.ActiveWithError;
+    }
+
+    this.geolocation.setTracking(active);
+    this.geolocationData.status = locStatus;
+    this.accuracyLayer.setVisible(active && !error);
+    this.map.updateSize();
+
+    if(!active)
+      this.manageMapViewConfiguration();
+    
+  }
+
+
+  private manageMapViewConfiguration()
+  {
+    if (this.geolocationData.status == GeolocationStatus.Disabled)
+    {
+      this.map.getView().setCenter(this.originalMapCentre);
+    }
+    else if (this.geolocationData.status == GeolocationStatus.Active && this.geolocationData.firstActivation)
+    {
+      this.map.getView().setCenter(this.geolocation.getPosition());
+      this.geolocationData.confirmStatus();
+
+    }
+  }
+
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
