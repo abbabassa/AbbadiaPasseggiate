@@ -1,16 +1,10 @@
 import { Injectable } from '@angular/core';
 import { vectorStyles, pointStyles } from './vector-styles';
 
-import Style from 'ol/style/style';
-import Stroke from 'ol/style/stroke';
-import Fill from 'ol/style/fill';
-import Circle from 'ol/style/circle';
-import VectorSource from 'ol/source/vector';
-import geoJsonFormat from 'ol/format/geojson';
-import Text from 'ol/style/text';
-import TextPlacement from 'ol/style/textplacement'
-import VectorLayer from 'ol/layer/vector';
-import GroupLayer from 'ol/layer/group';
+import {Vector as VectorSource} from 'ol/source';
+import {GeoJSON as geoJsonFormat} from 'ol/format';
+
+import {Vector as VectorLayer, Group as GroupLayer} from 'ol/layer';
 import { environment } from '../../../environments/environment';
 
 

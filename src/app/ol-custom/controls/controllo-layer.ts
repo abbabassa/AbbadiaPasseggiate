@@ -1,4 +1,4 @@
-import Control from 'ol/control/control';
+import {Control }from 'ol/control';
 
 export class ControlloLayer extends Control {
     select;

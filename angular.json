@@ -24,7 +24,8 @@
               "src/assets/scss/custom.scss",
               "src/styles.css",
               "src/ol.css",
-              "./node_modules/ngx-lightbox/lightbox.css"
+              "./node_modules/ngx-lightbox/lightbox.css",
+              "src/assets/icons/material-design-icons/material-icons.css"
             ],
             "scripts": []
           },

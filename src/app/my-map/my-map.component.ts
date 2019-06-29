@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Self, HostListener } from '@angular/core';
 import { API_KEY_BING } from './api-key-bing'
 import{Router} from '@angular/router'
-import { ControlloLayer } from '../ol-custom/controls/controllo-layer'
+
 
 import { SentieriLayerService, GEOJESON_SENT_UFF } from '../services/my-map/sentieri-layer.service'
 import { PreviewStateService } from '../services/communication/preview-state.service'
@@ -11,22 +11,18 @@ import { environment } from '../../environments/environment';
 
 
 // import 'ol/ol.css';
-import Map from 'ol/map';
-import View from 'ol/view';
-import TileLayer from 'ol/layer/tile';
-import VectorLayer from 'ol/layer/vector';
-import XYZ from 'ol/source/xyz';
-import OSMSource from 'ol/source/osm';
-import BingSource from 'ol/source/bingmaps';
-import VectorSource from 'ol/source/vector';
-import proj from 'ol/proj';
-import Attribution from 'ol/attribution';
-import SelectInteraction from 'ol/interaction/select';
-import Geolocation from 'ol/geolocation';
-import Overlay from 'ol/overlay';
-import Feature from 'ol/feature';
-import { geolocationStyle } from '../services/my-map/vector-styles';
-import { GeolocationData, GeolocationStatus } from '../om/geolocationData';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import {Tile as TileLayer} from 'ol/layer';
+import {BingMaps as BingSource, OSM as OSMSource, XYZ  } from 'ol/source';
+import {fromLonLat} from 'ol/proj';
+import {Select as SelectInteraction} from 'ol/interaction';
+import {defaults as controlDefaults, Control} from 'ol/control'
+
+import { ControlloLayer } from '../ol-custom/controls/controllo-layer'
+import { GeolocControl } from '../ol-custom/controls/geoloc-control';
+import { MyAttributionControl } from '../ol-custom/controls/my-attribution-control';
+
 
 
 
@@ -39,9 +35,7 @@ const LAYER_AERIAL_LBLS:string ='AerialWithLabels'
 const LAYER_ARC_GIS:string ='ArcGIS terrain'
 const LAYER_OPEN_TOPO:string ='OpenCycleMap'
 
-const GEOLOCATION_DISABLED: number = 0;
-const GEOLOCATION_ACTIVE: number = 1;
-const GEOLOCATION_ACTIVE_WITH_ERROR: number = 2;
+
 
 
 @Component({
@@ -52,18 +46,23 @@ const GEOLOCATION_ACTIVE_WITH_ERROR: number = 2;
 })
 export class MyMapComponent implements OnInit {
   controlloLayer: ControlloLayer;
-  @ViewChild("selectMappa", { read: ElementRef, static: true }) select: ElementRef;
+  geolocControl: GeolocControl;
+  @ViewChild("selectMappa", { read: ElementRef, static: true }) 
+  select: ElementRef;
 
-  @ViewChild("loc",  { read: ElementRef, static: true }) locationEl : ElementRef
+  @ViewChild("geolocBtn", { read: ElementRef, static: true }) 
+  geolcationButtonElement: ElementRef;
+
+  @ViewChild("attributionCtrl", { read: ElementRef, static: true }) 
+  attributionControlElement: ElementRef;
 
 
-  geolocationData:GeolocationData;
+
+  attributionControl:MyAttributionControl
+  
+
   private map:Map
-  private marker:Overlay;
-  private geolocation:Geolocation;
-  private accuracyLayer: VectorLayer;
 
-  private originalMapCentre= [9.351, 45.89910];
 
   constructor(  
     private sentieriLayerService: SentieriLayerService,
@@ -76,15 +75,9 @@ export class MyMapComponent implements OnInit {
 
 
 
-    var attributionArcGIS = new Attribution({
-      html: 'Tiles &copy; <a href="http://services.arcgisonline.com/ArcGIS/' +
-        'rest/services/World_Topo_Map/MapServer">ArcGIS</a>'
-    });
-
-    var attributionAP = new Attribution({
-      html: 'Tiles &copy; <a href="http://www.abbadiapasseggiate.altervista.org">ABBADIA PASSEGGIATE</a>'
-    });
-
+    var attributionArcGIS = 'Tiles &copy; <a href="http://services.arcgisonline.com/ArcGIS/' +
+         'rest/services/World_Topo_Map/MapServer">ArcGIS</a>';
+    var attributionAP ='Tiles &copy; <a href="http://www.abbadiapasseggiate.altervista.org">ABBADIA PASSEGGIATE</a>';
     var layersPrimariMap: { [property: string]: any } = {};
     layersPrimariMap[LAYER_ROAD] = null;
     layersPrimariMap[LAYER_AERIAL] = null;
@@ -135,9 +128,7 @@ export class MyMapComponent implements OnInit {
     layersPrimariMap[LAYER_OPEN_TOPO] = new TileLayer({
       source: new OSMSource({
         attributions: [
-          new Attribution({
-            html:  'Kartendaten: © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, SRTM | Kartendarstellung: © <a href="http://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)' 
-          })
+          'Kartendaten: © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, SRTM | Kartendarstellung: © <a href="http://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)' 
         ],
         url: 'https://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
       })
@@ -166,24 +157,41 @@ export class MyMapComponent implements OnInit {
 
 
 
-    this.originalMapCentre = proj.fromLonLat([9.351, 45.89910]);
-    var view : View  = new View({
-      center: this.originalMapCentre,
+    
+    var view:View = new View({
+      center: fromLonLat([9.351, 45.89910]),
       zoom: 15
     });
+
+    
+    let controls: Control = controlDefaults(
+      {
+        attribution:false,
+        rotate : true,
+        zoom: true
+      }
+    ).getArray();
+    
+
+
+
+    
+    
     this.map = new Map({
+      controls: controls,
       target: 'map',
       layers: layers,
-      //  9.33645°E,  45.89910°N
       view: view
     });
 
 
+    
 
     this.controlloLayer = new ControlloLayer({ element: this.select.nativeElement }, layersMap);
     this.controlloLayer.onChange();
     this.map.addControl(this.controlloLayer);
 
+    
 
     let layerLuoghi = this.sentieriLayerService.getLuoghi();
     this.map.addLayer(layerLuoghi);
@@ -213,107 +221,20 @@ export class MyMapComponent implements OnInit {
 
 
     this.previewStateService.isOpen$.subscribe(isOpen => 
+    {
+      if(!isOpen)
       {
-        if(!isOpen)
-        {
-          selectedFeatures.clear();
-        }
-      })
-    // ====================== GEOLOCATION ===========================
-    // create a Geolocation object setup to track the position of the device
-    this.setUpGeolocation();
-  }
-
-  private setUpGeolocation() {
-    // init without tracking, it will be enable from GUI
-    this.geolocation = new Geolocation({
-      tracking: false,
-      projection: this.map.getView().getProjection(),
-      enableHighAccuracy: true
-    });
-    // create an Overlay using the div with id location.
-    this.marker  = new Overlay({
-      element: this.locationEl.nativeElement,
-      positioning: 'center-center',
-      stopEvent: false
-    });
-
-    this.geolocationData = new GeolocationData(GeolocationStatus.Disabled);
-
-    this.map.addOverlay(this.marker);
-
-    this.geolocation.on('change:position', () => {
-      if (this.geolocationData.status== GeolocationStatus.ActiveWithError)
-        this.manageLocation(true, false)
-      var p = this.geolocation.getPosition();
-      this.manageMapViewConfiguration();
-      this.marker.setPosition([parseFloat(p[0]), parseFloat(p[1])]);
-    });
-
-    this.geolocation.on('error', () =>{
-      this.manageLocation(true,true);
+        selectedFeatures.clear();
+      }
     })
 
-    let accuracyFeature: Feature = new Feature();
- 
-    this.geolocation.on('change:accuracyGeometry', () => {
-      accuracyFeature.setGeometry(this.geolocation.getAccuracyGeometry());
-      accuracyFeature.setStyle(() => geolocationStyle.ACCURANCY);
-     
-    });
-    
-    this.accuracyLayer = new VectorLayer({
-      map: this.map,
-      source: new VectorSource({
-        features: [accuracyFeature]
-      }),
-    });
-    
-    
+
+    this.geolocControl = new GeolocControl({element: this.geolcationButtonElement.nativeElement}, this.map);
+
+    this.attributionControl = new MyAttributionControl({element: this.attributionControlElement.nativeElement}, this.map);
     
 
-  }
 
-  toggleLocation()
-  {
-    let isTracking:boolean = this.geolocation.getTracking();
-    this.manageLocation(!isTracking);
-  }
-
-  private manageLocation(active:boolean, error:boolean = false)
-  {
-    let locStatus:number
-    if(!active){
-      locStatus = GeolocationStatus.Disabled;
-    }else if (!error){
-      locStatus = GeolocationStatus.Active;
-    }else{
-      locStatus = GeolocationStatus.ActiveWithError;
-    }
-
-    this.geolocation.setTracking(active);
-    this.geolocationData.status = locStatus;
-    this.accuracyLayer.setVisible(active && !error);
-    this.map.updateSize();
-
-    if(!active)
-      this.manageMapViewConfiguration();
-    
-  }
-
-
-  private manageMapViewConfiguration()
-  {
-    if (this.geolocationData.status == GeolocationStatus.Disabled)
-    {
-      this.map.getView().setCenter(this.originalMapCentre);
-    }
-    else if (this.geolocationData.status == GeolocationStatus.Active && this.geolocationData.firstActivation)
-    {
-      this.map.getView().setCenter(this.geolocation.getPosition());
-      this.geolocationData.confirmStatus();
-
-    }
   }
 
 

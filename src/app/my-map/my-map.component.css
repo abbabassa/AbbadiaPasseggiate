@@ -16,3 +16,18 @@
     opacity:1;
 }
 
+.ap-control
+{
+    position: absolute;
+    right: 0.5em;
+}
+
+.ap-control.my-geoloc
+{
+    top: 3em;
+}
+
+.ap-control.my-attribution 
+{
+    top: 6em;
+}

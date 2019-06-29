@@ -1,10 +1,9 @@
-import Style from 'ol/style/style';
-import Stroke from 'ol/style/stroke';
-import Fill from 'ol/style/fill';
-import Text from 'ol/style/text';
-import TextPlacement from 'ol/style/textplacement'
-import RegularShape from 'ol/style/regularshape'
-import Circle from 'ol/style/circle';
+
+import TextPlacement from 'ol/style/TextPlacement'
+import RegularShape from 'ol/style/RegularShape'
+
+
+import {Style, Stroke, Fill, Text, Circle} from  'ol/style';
 
 
 export const vectorStyles = {
@@ -180,6 +179,18 @@ export const geolocationStyle = {
     ACCURANCY : new Style({
         fill: new Fill({
             color: 'rgba(0, 0, 255, 0.2)'
+        })
+    }),
+    POSITION :   new Style({
+        image: new Circle({
+            radius: 6,
+            fill: new Fill({
+                color: '#3399CC'
+            }),
+            stroke: new Stroke({
+                color: '#fff',
+                width: 2
+            })
         })
     })
 }

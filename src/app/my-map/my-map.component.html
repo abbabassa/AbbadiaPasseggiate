@@ -1,4 +1,5 @@
 <div id="map" class="p-0"></div>
+
 <select #selectMappa id="layer-select" class="ol-unselectable ol-control" (change)="this.controlloLayer.onChange($event)">
 <option value="Aerial" selected>Mappa Satellitare</option>
 <option value="AerialWithLabels">Mappa Ibrida</option>
@@ -6,12 +7,24 @@
 <option value="ArcGIS terrain">ArcGIS terrain</option>
 <option value="OpenCycleMap">OpenTopoMap</option>
 </select>
-<div #loc id="location" class="ol-unselectable" [hidden]="geolocationData.status != 1">
-    <svg xmlns="http://www.w3.org/2000/svg" class="geo-dot"  width="24" height="24" version="1.1" viewBox="-12 -12 24 24"><circle r="9" ></circle></svg>
+
+<button  #geolocBtn class="ap-control my-geoloc btn "     
+    [class.btn-outline-danger]="geolocControl.geolocationData.status==0"   
+    [class.btn-outline-warning]="geolocControl.geolocationData.status==2"   
+    [class.btn-outline-success]="geolocControl.geolocationData.status==1"   
+    (click)="geolocControl.toggleLocation()" > <span><i class="material-icons">
+        my_location
+        </i></span></button>
+
+
+
+
+
+<div  #attributionCtrl class="ap-control my-attribution" >
+    <button type="button" class="btn btn-outline-primary"  [hidden]="attributionControl.collapsed" (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> info </i></span></button>
+    <button type="button" class="btn btn-outline-primary"  [hidden]="!attributionControl.collapsed"  (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
+    <div [ngbCollapse]= "!attributionControl.collapsed">
+        <span *ngFor= "let attr of attributionControl.attribution" [innerHTML]="attr"></span>
+    </div>
 </div>
 
-<button class="ol-unselectable ol-control btn "     
-    [class.btn-outline-danger]="geolocationData.status==0"   
-    [class.btn-outline-warning]="geolocationData.status==2"   
-    [class.btn-outline-success]="geolocationData.status==1"   
-    (click)="this.toggleLocation()" >Track</button>
