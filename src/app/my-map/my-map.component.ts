@@ -19,10 +19,11 @@ import {fromLonLat} from 'ol/proj';
 import {Select as SelectInteraction} from 'ol/interaction';
 import {defaults as controlDefaults, Control} from 'ol/control'
 
-import { ControlloLayer } from '../ol-custom/controls/controllo-layer'
+
 import { GeolocControl } from '../ol-custom/controls/geoloc-control';
 import { MyAttributionControl } from '../ol-custom/controls/my-attribution-control';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { LayerControl } from '../ol-custom/controls/layer-control';
 
 
 
@@ -33,8 +34,8 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 const LAYER_ROAD:string ='Road'
 const LAYER_AERIAL:string ='Aerial'
 const LAYER_AERIAL_LBLS:string ='AerialWithLabels'
-const LAYER_ARC_GIS:string ='ArcGIS terrain'
-const LAYER_OPEN_TOPO:string ='OpenCycleMap'
+const LAYER_ARC_GIS:string ='ArcGIS'
+const LAYER_OPEN_TOPO:string ='OpenTopoMap'
 
 
 
@@ -46,10 +47,9 @@ const LAYER_OPEN_TOPO:string ='OpenCycleMap'
   providers: [SentieriLayerService]
 })
 export class MyMapComponent implements OnInit {
-  controlloLayer: ControlloLayer;
   geolocControl: GeolocControl;
-  @ViewChild("selectMappa", { read: ElementRef, static: true }) 
-  select: ElementRef;
+  attributionControl:MyAttributionControl
+  layerControl: LayerControl;
 
   @ViewChild("geolocBtn", { read: ElementRef, static: true }) 
   geolcationButtonElement: ElementRef;
@@ -57,12 +57,15 @@ export class MyMapComponent implements OnInit {
   @ViewChild("attributionCtrl", { read: ElementRef, static: true }) 
   attributionControlElement: ElementRef;
 
+  @ViewChild("LayerCtrl", { read: ElementRef, static: true }) 
+  layerControlElement: ElementRef;
 
 
-  attributionControl:MyAttributionControl
-  
+
+
 
   private map:Map
+  
 
 
   constructor(  
@@ -211,10 +214,6 @@ export class MyMapComponent implements OnInit {
 
     
 
-    this.controlloLayer = new ControlloLayer({ element: this.select.nativeElement }, layersMap);
-    this.controlloLayer.onChange();
-    this.map.addControl(this.controlloLayer);
-
     
 
     let layerLuoghi = this.sentieriLayerService.getLuoghi();
@@ -257,6 +256,9 @@ export class MyMapComponent implements OnInit {
 
     this.attributionControl = new MyAttributionControl({element: this.attributionControlElement.nativeElement}, this.map);
     
+    this.layerControl = new LayerControl({ element: this.layerControlElement.nativeElement }, layersMap, this.map)
+
+    this.layerControl.setLayerVisible(LAYER_AERIAL);
 
   }
 

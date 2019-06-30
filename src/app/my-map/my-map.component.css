@@ -1,8 +1,4 @@
-#layer-select{
-    top:0px;
-    left:calc(50% - 5em);
-    width:10em;
-}
+
 
 #map {
     height: 100vh;
@@ -23,21 +19,38 @@
     top: 10em;
 }
 
-.ap-control.my-attribution.btn
+.ap-control.my-attribution.btn, div.ap-control.my-attribution
 {
     top: 13em;
 }
 
+.ap-control.my-layer-ctrl.btn, div.ap-control.my-layer-ctrl
+{
+    top: 16em;
+}
 div.ap-control.my-attribution
 {
-    top: 13em;
     background-color: rgba(255,255,255,0.5);
+}
+div.ap-control.my-layer-ctrl
+{
+    background-color: rgba(255,255,255,0);
+}
+div.ap-control.my-attribution, div.ap-control.my-layer-ctrl
+{
+    
+    
     padding: 0.2em;
     right: 3.75em;
     min-height:2.25em;
-    max-width:30%;
+    max-width:50%;
 
 }
 
+.layer-prew
+{
+    max-width: 10em;
+    cursor: pointer;
+}
 
 

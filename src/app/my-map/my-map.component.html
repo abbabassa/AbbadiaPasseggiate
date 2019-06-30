@@ -1,12 +1,5 @@
 <div id="map" class="p-0"></div>
 
-<select #selectMappa id="layer-select" class="ol-unselectable ol-control" (change)="this.controlloLayer.onChange($event)">
-<option value="Aerial" selected>Mappa Satellitare</option>
-<option value="AerialWithLabels">Mappa Ibrida</option>
-<option value="Road">Mappa stradale</option>
-<option value="ArcGIS terrain">ArcGIS terrain</option>
-<option value="OpenCycleMap">OpenTopoMap</option>
-</select>
 
 <button  #geolocBtn class="ap-control my-geoloc btn "     
     [class.btn-outline-danger]="geolocControl.geolocationData.status==0"   
@@ -26,6 +19,21 @@
     <button type="button" class="ap-control my-attribution btn btn-outline-primary tras02"  [hidden]="!attributionControl.collapsed"  (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
     <div [ngbCollapse]= "!attributionControl.collapsed" class= "ap-control my-attribution card">
         <span *ngFor= "let attr of attributionControl.attribution" [innerHTML]="attr"></span>
+    </div>
+</div>
+
+<div  #LayerCtrl class="" >
+    <button type="button" class="ap-control my-layer-ctrl btn btn-outline-primary tras02"  [hidden]="layerControl.collapsed" (click)="layerControl.toggleCollapsed()"><span ><i class="material-icons"> layers </i></span></button>
+    <button type="button" class="ap-control my-layer-ctrl btn btn-outline-primary tras02"  [hidden]="!layerControl.collapsed"  (click)="layerControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
+    <div [ngbCollapse]= "!layerControl.collapsed" class= "ap-control my-layer-ctrl card">
+        <div class="row no-gutters" >
+            <div class="col layer-prew" *ngFor="let opt of layerControl.visibleLayersKeys" >
+                    <a  (click)="layerControl.setLayerVisible(opt)"  >
+                        <img  [src]="'assets/img/thumb/' + opt + '.jpg'" class="img-thumbnail" [class.border-primary]="layerControl.activeLayerKey==opt"  > 
+                    </a>
+            </div>
+        </div>
+        
     </div>
 </div>
 
