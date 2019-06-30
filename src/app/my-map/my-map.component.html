@@ -11,7 +11,8 @@
 <button  #geolocBtn class="ap-control my-geoloc btn "     
     [class.btn-outline-danger]="geolocControl.geolocationData.status==0"   
     [class.btn-outline-warning]="geolocControl.geolocationData.status==2"   
-    [class.btn-outline-success]="geolocControl.geolocationData.status==1"   
+    [class.btn-outline-success]="geolocControl.geolocationData.status==1"  
+    [class.tras02]="true" 
     (click)="geolocControl.toggleLocation()" > <span><i class="material-icons">
         my_location
         </i></span></button>
@@ -20,10 +21,10 @@
 
 
 
-<div  #attributionCtrl class="ap-control my-attribution" >
-    <button type="button" class="btn btn-outline-primary"  [hidden]="attributionControl.collapsed" (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> info </i></span></button>
-    <button type="button" class="btn btn-outline-primary"  [hidden]="!attributionControl.collapsed"  (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
-    <div [ngbCollapse]= "!attributionControl.collapsed">
+<div  #attributionCtrl class="" >
+    <button type="button" class="ap-control my-attribution btn btn-outline-primary tras02"  [hidden]="attributionControl.collapsed" (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> info </i></span></button>
+    <button type="button" class="ap-control my-attribution btn btn-outline-primary tras02"  [hidden]="!attributionControl.collapsed"  (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
+    <div [ngbCollapse]= "!attributionControl.collapsed" class= "ap-control my-attribution card">
         <span *ngFor= "let attr of attributionControl.attribution" [innerHTML]="attr"></span>
     </div>
 </div>

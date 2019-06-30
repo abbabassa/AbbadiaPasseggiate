@@ -3,3 +3,62 @@ $theme-colors: (
   );
 @import "./node_modules/bootstrap/scss/bootstrap";
 
+
+.ap-control
+{
+    position: absolute;
+    right: 0.5em;
+}
+
+
+.ap-control.my-rot
+{
+    top:1em;
+}
+
+
+.ap-control.my-zoom
+{
+    top:3em;
+
+}
+
+.ap-control.my-zoom
+{
+    top:4em;
+}
+
+.ap-control.my-zoom-in, .ap-control.my-zoom-out, .ap-control.my-rot-reset
+{
+    position: unset;
+    display: block;
+
+}
+
+.btn-outline-success.tras02, .btn-outline-warning.tras02, .btn-outline-danger.tras02, .btn-outline-primary.tras02
+{
+    background-color: rgba(255,255,255,0.1)
+}
+
+.btn-outline-primary.tras02:hover
+{
+    background-color:map-get($theme-colors, "primary") ;
+}
+
+.btn-outline-success.tras02:hover
+{
+    background-color:map-get($theme-colors, "success") ;
+}
+
+.btn-outline-warning.tras02:hover
+{
+    background-color:map-get($theme-colors, "warning") ;
+}
+
+
+
+.btn-outline-danger.tras02:hover
+{
+    
+    background-color:map-get($theme-colors, "danger") ;
+}

@@ -16,18 +16,27 @@
     opacity:1;
 }
 
-.ap-control
-{
-    position: absolute;
-    right: 0.5em;
-}
 
 .ap-control.my-geoloc
 {
-    top: 3em;
+    top: 10em;
 }
 
-.ap-control.my-attribution 
+.ap-control.my-attribution.btn
 {
-    top: 6em;
+    top: 13em;
 }
+
+div.ap-control.my-attribution
+{
+    top: 13em;
+    background-color: rgba(255,255,255,0.5);
+    padding: 0.2em;
+    right: 3.75em;
+    min-height:2.25em;
+    max-width:30%;
+
+}
+
+
+

@@ -163,18 +163,41 @@ export class MyMapComponent implements OnInit {
       zoom: 15
     });
 
+    let zoomInEl :HTMLElement = document.createElement("i");
+    zoomInEl.innerText = "add";
+    zoomInEl.className = "material-icons"
+
+    let zoomOutEl :HTMLElement = document.createElement("i");
+    zoomOutEl.innerText = "remove";
+    zoomOutEl.className = "material-icons"
+
+    let rotateEl :HTMLElement = document.createElement("i");
+    rotateEl.innerText = "navigation";
+    rotateEl.className = "material-icons"
     
     let controls: Control = controlDefaults(
       {
         attribution:false,
         rotate : true,
-        zoom: true
+        rotateOptions:
+        {
+          label: rotateEl,
+          // autoHide:false, // for always visible
+          className:  "ap-control btn btn-outline-primary tras02 my-rot"
+        },
+        zoom: true,
+        zoomOptions : 
+        {
+          className : "ap-control btn btn-outline-primary tras02 my-zoom",
+          zoomInLabel: zoomInEl,
+          zoomOutLabel: zoomOutEl
+        }
       }
     ).getArray();
     
-
-
-
+    (controls[0].element.classList as DOMTokenList).remove("btn", "btn-outline-primary","ol-control", "ol-unselectable");
+    (controls[1].element.classList as DOMTokenList).remove("btn", "btn-outline-primary","ol-control", "ol-unselectable");                                
+    
     
     
     this.map = new Map({
