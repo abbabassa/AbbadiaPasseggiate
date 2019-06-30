@@ -22,6 +22,7 @@ import {defaults as controlDefaults, Control} from 'ol/control'
 import { ControlloLayer } from '../ol-custom/controls/controllo-layer'
 import { GeolocControl } from '../ol-custom/controls/geoloc-control';
 import { MyAttributionControl } from '../ol-custom/controls/my-attribution-control';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 
 
@@ -256,7 +257,6 @@ export class MyMapComponent implements OnInit {
 
     this.attributionControl = new MyAttributionControl({element: this.attributionControlElement.nativeElement}, this.map);
     
-
 
   }
 

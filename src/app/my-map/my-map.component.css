@@ -1,6 +1,7 @@
-.ol-unselectable{
+#layer-select{
     top:0px;
-    left:50%;
+    left:calc(50% - 5em);
+    width:10em;
 }
 
 #map {
