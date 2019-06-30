@@ -1,7 +1,9 @@
-import { ElementRef } from '@angular/core';
+import { ElementRef, DebugElement } from '@angular/core';
 import { Map } from 'ol/map';
 import {Control} from 'ol/control'
 import {Layer} from 'ol/layer'
+import {Tile as TileLayer, Group as GroupLayer} from 'ol/layer';
+import { debug } from 'util';
 
 export class MyAttributionControl extends Control {
     attribution:string[];
@@ -38,36 +40,45 @@ export class MyAttributionControl extends Control {
 
     onLayerVisibilityChange(currentLayer : Layer, map : Map)
     {
-        if(!currentLayer || currentLayer.constructor.name == "LayerGroup")
-        return;
-    
-    let attributionFunc : any =currentLayer.getSource().getAttributions();
-    if (!attributionFunc )
-        return;
 
-    
-    let currentAttr : string[] =attributionFunc(
+        // PB [30/06/2019]: this control doesn't work after a build with minimizing process (the contructor name may have changed)
+        //                  better check for actual type
+        //if(!currentLayer || currentLayer.constructor.name == "LayerGroup")
+        if(!currentLayer || (currentLayer instanceof GroupLayer))
         {
-            extent: map.getView().calculateExtent(),
-            viewState: map.getView().getState()
-        });
-    
-    // se passa da visibile a non visibile
+            console.log(currentLayer);
+            return;
 
+        }
+        
     
-    currentAttr.forEach( el => 
-        {
-            let index = this.attribution.indexOf(el);
+        let attributionFunc : any =currentLayer.getSource().getAttributions();
+        if (!attributionFunc )
+            return;
 
-            // se layer visibile aggiungo solo se non c'è già
-            if(currentLayer.getVisible() && index == -1)
+        
+        let currentAttr : string[] =attributionFunc(
             {
-                this.attribution.push(el);
-            }else if(!currentLayer.getVisible() && index >= 0)
+                extent: map.getView().calculateExtent(),
+                viewState: map.getView().getState()
+            });
+        
+        // se passa da visibile a non visibile
+
+        
+        currentAttr.forEach( el => 
             {
-                this.attribution.splice(index,1);
-            }
-        })
+                let index = this.attribution.indexOf(el);
+
+                // se layer visibile aggiungo solo se non c'è già
+                if(currentLayer.getVisible() && index == -1)
+                {
+                    this.attribution.push(el);
+                }else if(!currentLayer.getVisible() && index >= 0)
+                {
+                    this.attribution.splice(index,1);
+                }
+            })
     }
 
     toggleCollapsed()
