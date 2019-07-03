@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { vectorStyles, pointStyles } from './vector-styles';
+import { vectorStyles, pointStyles, convertIconName } from './vector-styles';
+import { Icon } from 'ol/style';
 
 import {Vector as VectorSource} from 'ol/source';
 import {GeoJSON as geoJsonFormat} from 'ol/format';
@@ -23,10 +24,13 @@ export class SentieriLayerService {
   constructor() { }
 
 
+  
+ 
 
+  
 
   getFunctionStyle(tipoStrada: string) {
-    return function (feature: any) {
+    return function (feature: any, resolution) {
       let convPointStyleMap:any = {
         comune:"STAR",
         frazione: "SQUARE",
@@ -43,6 +47,27 @@ export class SentieriLayerService {
 
       if(feature.getGeometry().getType()== "Point"){
         styleForPoint= pointStyles[convPointStyleMap[feature.getProperties().style? feature.getProperties().style : "default" ]]
+        
+        if(styleForPoint.getText())
+        {
+          if(resolution < 10 || feature.getProperties().style == "comune"  )
+            styleForPoint.getText().setText(feature.getProperties().name);
+          else
+            styleForPoint.getText().setText("");
+        }
+        
+        if(feature.getProperties().icon != "")
+        {
+          let icon = new Icon({
+            src: convertIconName(feature.getProperties().icon ),
+            scale : 1.25
+          })
+          styleForPoint.setImage(icon);
+
+        }
+
+        
+        
        }
 
       var stylesForVector = {

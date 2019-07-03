@@ -3,7 +3,76 @@ import TextPlacement from 'ol/style/TextPlacement'
 import RegularShape from 'ol/style/RegularShape'
 
 
-import {Style, Stroke, Fill, Text, Circle} from  'ol/style';
+import {Style, Stroke, Fill, Text, Circle, Icon} from  'ol/style';
+
+
+
+
+export enum FontSizes
+{
+    Small,
+    Medium,
+    Big
+}
+
+
+export enum FontWeights
+{
+     Default,
+     Italic,
+     Bold
+}
+function getFont(size:FontSizes, weight:FontWeights = FontWeights.Default)
+{
+    var fontType= "sans-serif"
+    var sizeConcat ="";
+    var weightConcat ="";
+
+    switch(size){
+        case FontSizes.Small:
+            sizeConcat += "14px ";
+            break;
+        case FontSizes.Medium:
+            sizeConcat += "16px ";
+            break;
+        case FontSizes.Big:
+            sizeConcat += "20px ";
+            break;
+    }
+
+
+    switch(weight)
+    {
+        case FontWeights.Bold:
+            weightConcat += "bold ";
+            break;
+        case FontWeights.Italic:
+            weightConcat += "italic ";
+            break;
+        case FontWeights.Default:
+            weightConcat += " ";
+            break;
+    }
+
+    return weightConcat +  sizeConcat + fontType 
+}
+
+
+export function convertIconName(GeoJSONIconName : string): string
+{
+    let map =
+    {
+      "peak": "assets/icons/material-design-icons/baseline-terrain-24px.svg",
+      "cascata" : "assets/icons/material-design-icons/baseline-terrain-24px.svg",
+      "rifugio": "assets/icons/material-design-icons/baseline-home-24px.svg",
+      "museo": "assets/icons/material-design-icons/baseline-home-24px.svg",
+      "vista": "assets/icons/material-design-icons/baseline-terrain-24px.svg"
+
+
+    }
+
+    return map[GeoJSONIconName];
+}
 
 
 export const vectorStyles = {
@@ -14,7 +83,7 @@ export const vectorStyles = {
             lineDash: [8, 10]
         }),
         text: new Text({
-            font: "14px sans-serif",
+            font: getFont(FontSizes.Small),
             placement: TextPlacement.LINE,
             fill: new Fill({
                 color: 'white'
@@ -33,7 +102,7 @@ export const vectorStyles = {
             lineDash: [8, 10]
         }),
         text: new Text({
-            font: "14px sans-serif",
+            font: getFont(FontSizes.Small),
             placement: TextPlacement.LINE,
             fill: new Fill({
                 color: 'white'
@@ -52,7 +121,7 @@ export const vectorStyles = {
             width: 7,
         }),
         text: new Text({
-            font: "14px sans-serif",
+            font: getFont(FontSizes.Small),
             placement: TextPlacement.LINE,
             fill: new Fill({
                 color: 'white'
@@ -70,7 +139,7 @@ export const vectorStyles = {
             width: 6,
         }),
         text: new Text({
-            font: "14px sans-serif",
+            font: getFont(FontSizes.Small),
             placement: TextPlacement.LINE,
             fill: new Fill({
                 color: 'white'
@@ -115,63 +184,58 @@ export const vectorStyles = {
 var stroke =   new Stroke({ color: '#004000', width: 2 });
 var fill =new Fill({color: '#33CC66'});
 
+
+
+
 export const pointStyles = {
     CIRCLE :  new Style({
-        image: new Circle({
-            radius: 10,
-            fill: new Fill({color: '#33CC66'}),
-            stroke: new Stroke({ color: '#004000', width: 2 })
+       
+        text: new Text({
+            font: getFont(FontSizes.Small),
+            // placement: TextPlacement.LINE,
+            fill: new Fill({
+                color: 'white'
+            }),
+            stroke: new Stroke({
+                color: 'black',
+                width: 3,
+
+            }),
+            offsetY: 16
         })
     }),
     SQUARE: new Style({
-        image: new RegularShape({
-        fill: fill,
-        stroke: stroke,
-        points: 4,
-        radius: 12,
-        angle: Math.PI / 4
+        
+        text: new Text({
+            font: getFont(FontSizes.Medium),
+            // placement: TextPlacement.LINE,
+            fill: new Fill({
+                color: 'white'
+            }),
+            stroke: new Stroke({
+                color: 'black',
+                width: 3,
+
+            }),
         })
     }),
-    TRIANGLE: new Style({
-        image: new RegularShape({
-        fill: fill,
-        stroke: stroke,
-        points: 3,
-        radius: 10,
-        rotation: Math.PI / 4,
-        angle: 0
-        })
-    }),
+   
     STAR : new Style({
-        image: new RegularShape({
-        fill: fill,
-        stroke: stroke,
-        points: 5,
-        radius: 15,
-        radius2: 7,
-        angle: 0
+      
+        text: new Text({
+            font: getFont(FontSizes.Big),
+            // placement: TextPlacement.LINE,
+            fill: new Fill({
+                color: 'white'
+            }),
+            stroke: new Stroke({
+                color: 'black',
+                width: 4,
+
+            }),
         })
     }),
-    CROSS: new Style({
-        image: new RegularShape({
-        fill: fill,
-        stroke: stroke,
-        points: 4,
-        radius: 10,
-        radius2: 0,
-        angle: 0
-        })
-    }),
-    X: new Style({
-        image: new RegularShape({
-        fill: fill,
-        stroke: stroke,
-        points: 4,
-        radius: 10,
-        radius2: 0,
-        angle: Math.PI / 4
-        })
-    })
+   
 };
 
 

@@ -13,7 +13,7 @@ import { environment } from '../../environments/environment';
 // import 'ol/ol.css';
 import Map from 'ol/Map';
 import View from 'ol/View';
-import {Tile as TileLayer} from 'ol/layer';
+import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
 import {BingMaps as BingSource, OSM as OSMSource, XYZ  } from 'ol/source';
 import {fromLonLat} from 'ol/proj';
 import {Select as SelectInteraction} from 'ol/interaction';
@@ -22,7 +22,6 @@ import {defaults as controlDefaults, Control} from 'ol/control'
 
 import { GeolocControl } from '../ol-custom/controls/geoloc-control';
 import { MyAttributionControl } from '../ol-custom/controls/my-attribution-control';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { LayerControl } from '../ol-custom/controls/layer-control';
 
 
@@ -216,7 +215,7 @@ export class MyMapComponent implements OnInit {
 
     
 
-    let layerLuoghi = this.sentieriLayerService.getLuoghi();
+    let layerLuoghi : VectorLayer = this.sentieriLayerService.getLuoghi();
     this.map.addLayer(layerLuoghi);
     // create a Select interaction and add it to the map
     var select : SelectInteraction= new SelectInteraction({
