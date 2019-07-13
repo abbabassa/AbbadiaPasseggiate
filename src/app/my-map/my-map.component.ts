@@ -3,7 +3,7 @@ import { API_KEY_BING } from './api-key-bing'
 import{Router} from '@angular/router'
 
 
-import { SentieriLayerService, GEOJESON_SENT_UFF } from '../services/my-map/sentieri-layer.service'
+import { SentieriLayerService } from '../services/my-map/sentieri-layer.service'
 import { PreviewStateService } from '../services/communication/preview-state.service'
 
 
@@ -23,6 +23,7 @@ import {defaults as controlDefaults, Control} from 'ol/control'
 import { GeolocControl } from '../ol-custom/controls/geoloc-control';
 import { MyAttributionControl } from '../ol-custom/controls/my-attribution-control';
 import { LayerControl } from '../ol-custom/controls/layer-control';
+import { VectorStyleType } from '../services/my-map/vector-styles';
 
 
 
@@ -220,7 +221,7 @@ export class MyMapComponent implements OnInit {
     // create a Select interaction and add it to the map
     var select : SelectInteraction= new SelectInteraction({
       layers: [layerLuoghi],
-      style: this.sentieriLayerService.getFunctionStyle(GEOJESON_SENT_UFF)
+      style: this.sentieriLayerService.getFunctionStyle(VectorStyleType.SentieriUfficiali, true)
     });
 
 

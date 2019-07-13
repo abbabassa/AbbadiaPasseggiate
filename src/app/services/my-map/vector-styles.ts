@@ -58,185 +58,285 @@ function getFont(size:FontSizes, weight:FontWeights = FontWeights.Default)
 }
 
 
+export enum VectorStyleType
+{
+    SentieriUfficiali,
+    Piste,
+    Strade,
+    Tracce,
+    Imboscate,
+    Viandante,
+    Luoghi
+}
+
+
+export const ICON_TYPE_PEAK = "peak";
+export const ICON_TYPE_WATERFALL = "cascata";
+export const ICON_TYPE_HUT = "rifugio";
+export const ICON_TYPE_MUSEUM = "museo";
+export const ICON_TYPE_VIEWSIGHT = "vista";
+
+
+export const LOC_TYPE_COMUNE = "comune";
+export const LOC_TYPE_FRAZIONE = "frazione";
+export const LOC_TYPE_LUOGO = "luogo";
+
+
 export function convertIconName(GeoJSONIconName : string): string
 {
-    let map =
-    {
-      "peak": "assets/icons/material-design-icons/baseline-terrain-24px.svg",
-      "cascata" : "assets/icons/material-design-icons/baseline-terrain-24px.svg",
-      "rifugio": "assets/icons/material-design-icons/baseline-home-24px.svg",
-      "museo": "assets/icons/material-design-icons/baseline-home-24px.svg",
-      "vista": "assets/icons/material-design-icons/baseline-terrain-24px.svg"
+    let map = {};
+
+    map[ICON_TYPE_PEAK] = "assets/icons/material-design-icons/baseline-terrain-24px.svg";
+    map[ICON_TYPE_WATERFALL] =  "assets/icons/map-icons/waterfall.svg";
+    map[ICON_TYPE_HUT] = "assets/icons/material-design-icons/baseline-home-24px.svg";
+    map[ICON_TYPE_MUSEUM] ="assets/icons/map-icons/museum.svg";
+    map[ICON_TYPE_VIEWSIGHT] = "assets/icons/map-icons/viewpoint.svg";
 
 
-    }
+    
 
+    // if(!map[GeoJSONIconName])
+    // {
+    //     map[GeoJSONIconName] = map["peak"];
+    // }
     return map[GeoJSONIconName];
 }
 
 
-export const vectorStyles = {
-    SENTIERI_UFFICIALI: new Style({
-        stroke: new Stroke({
-            color: 'red',
-            width: 4,
-            lineDash: [8, 10]
-        }),
-        text: new Text({
-            font: getFont(FontSizes.Small),
-            placement: TextPlacement.LINE,
-            fill: new Fill({
-                color: 'white'
-            }),
-            stroke: new Stroke({
-                color: 'black',
-                width: 3,
+export function getVectorStyle(styleType:VectorStyleType, resolution )
+{
+    let style : Style = new Style({});
+    switch(styleType)
+    {
+        case VectorStyleType.SentieriUfficiali:
+            style = new Style({
+                stroke: new Stroke({
+                    color: 'red',
+                    width: resolution < 10? 4 :3,
+                    lineDash: [8, 10]
+                }),
+                text: new Text({
+                    font: getFont(FontSizes.Small),
+                    placement: TextPlacement.LINE,
+                    fill: new Fill({
+                        color: 'white'
+                    }),
+                    stroke: new Stroke({
+                        color: 'black',
+                        width: resolution < 10 ? 3: 2,
+            
+                        }),
+                    })
+                });
+            break;
+        case VectorStyleType.Viandante:
+            style = new Style({
+                stroke: new Stroke({
+                    color: [255, 102, 204],
+                    width: resolution < 10? 4 :3,
+                    lineDash: [8, 10]
+                }),
+                text: new Text({
+                    font: getFont(FontSizes.Small),
+                    placement: TextPlacement.LINE,
+                    fill: new Fill({
+                        color: 'white'
+                    }),
+                    stroke: new Stroke({
+                        color: 'black',
+                        width: resolution < 10 ? 3: 2,
+        
+                        }),
+                    })
+                });
+            break;
+        case VectorStyleType.Strade:
+            style = new Style({
+                stroke: new Stroke({
+                    color: [196, 196, 196],
+                    width: resolution < 10? 7 :5,
+                }),
+                text: new Text({
+                    font: getFont(FontSizes.Small),
+                    placement: TextPlacement.LINE,
+                    fill: new Fill({
+                        color: 'white'
+                    }),
+                    stroke: new Stroke({
+                        color: 'black',
+                        width: resolution < 10 ? 3: 2,
+        
+                        }),
+                    })
+                });
+            break;
 
-            }),
-        })
-    }),
-    VIANDANTE: new Style({
-        stroke: new Stroke({
-            color: [255, 102, 204],
-            width: 4,
-            lineDash: [8, 10]
-        }),
-        text: new Text({
-            font: getFont(FontSizes.Small),
-            placement: TextPlacement.LINE,
-            fill: new Fill({
-                color: 'white'
-            }),
-            stroke: new Stroke({
-                color: 'black',
-                width: 3,
+        case VectorStyleType.Piste:
+            style=new Style({
+                stroke: new Stroke({
+                    color: [80, 40, 0],
+                    width: resolution < 10? 6 :4,
+                }),
+                text: new Text({
+                    font: getFont(FontSizes.Small),
+                    placement: TextPlacement.LINE,
+                    fill: new Fill({
+                        color: 'white'
+                    }),
+                    stroke: new Stroke({
+                        color: 'black',
+                        width: resolution < 10 ? 3: 2,
+        
+                        }),
+                    })
+                });
+            break;
+        case VectorStyleType.Tracce:
+            if (resolution < 10)
+            {
+                style = new Style({
+                    stroke: new Stroke({
+                        color: [102, 51, 0],
+                        width: 3,
+                        lineDash: [5, 10]
+                        })
+                    });
+            }
+           
+            break;
+        case VectorStyleType.Imboscate:
+            if(resolution < 8)
+            {
+                style = new Style({
+                    stroke: new Stroke({
+                        color: [256, 196, 0],
+                        width: 2,
+                        lineDash: [5, 10]
+                        })
+                    });
+            }
+     
+           
+            break;
 
-            }),
-        })
-    }),
+        case VectorStyleType.Luoghi:
+            style = new Style({
+                image: new RegularShape({
+                  fill: new Fill({color: 'red'}),
+                  stroke: new Stroke({color: 'black', width: 2}),
+                  points: 5,
+                  radius: 10,
+                  radius2: 4,
+                  angle: 0
+                    })
+                });
+            break;
 
-    STRADE: new Style({
-        stroke: new Stroke({
-            color: [196, 196, 196],
-            width: 7,
-        }),
-        text: new Text({
-            font: getFont(FontSizes.Small),
-            placement: TextPlacement.LINE,
-            fill: new Fill({
-                color: 'white'
-            }),
-            stroke: new Stroke({
-                color: 'black',
-                width: 3,
 
-            }),
-        })
-    }),
-    PISTE: new Style({
-        stroke: new Stroke({
-            color: [80, 40, 0],
-            width: 6,
-        }),
-        text: new Text({
-            font: getFont(FontSizes.Small),
-            placement: TextPlacement.LINE,
-            fill: new Fill({
-                color: 'white'
-            }),
-            stroke: new Stroke({
-                color: 'black',
-                width: 3,
-
-            }),
-        })
-    }),
-    TRACCE: new Style({
-        stroke: new Stroke({
-            color: [102, 51, 0],
-            width: 3,
-            lineDash: [5, 10]
-        })
-    }),
-    IMBOSCATE: new Style({
-        stroke: new Stroke({
-            color: [256, 196, 0],
-            width: 2,
-            lineDash: [5, 10]
-        })
-    }),
-    LUOGHI: new Style({
-        image: new RegularShape({
-          fill: new Fill({color: 'red'}),
-          stroke: new Stroke({color: 'black', width: 2}),
-          points: 5,
-          radius: 10,
-          radius2: 4,
-          angle: 0
-        })
-    })
-
-    
-
+    }
+    return style;
 
 }
 
-var stroke =   new Stroke({ color: '#004000', width: 2 });
-var fill =new Fill({color: '#33CC66'});
 
 
+export function getPointStyle(feature, resolution, selected : boolean) : string
+{
+    let style : Style;
 
-
-export const pointStyles = {
-    CIRCLE :  new Style({
-       
-        text: new Text({
-            font: getFont(FontSizes.Small),
-            // placement: TextPlacement.LINE,
-            fill: new Fill({
-                color: 'white'
-            }),
-            stroke: new Stroke({
-                color: 'black',
-                width: 3,
-
-            }),
-            offsetY: 16
-        })
-    }),
-    SQUARE: new Style({
-        
-        text: new Text({
-            font: getFont(FontSizes.Medium),
-            // placement: TextPlacement.LINE,
-            fill: new Fill({
-                color: 'white'
-            }),
-            stroke: new Stroke({
-                color: 'black',
-                width: 3,
-
-            }),
-        })
-    }),
-   
-    STAR : new Style({
+    let luogo = feature.getProperties().style
+    if (luogo == LOC_TYPE_COMUNE)
+    {
+        style = new Style({
       
-        text: new Text({
-            font: getFont(FontSizes.Big),
-            // placement: TextPlacement.LINE,
-            fill: new Fill({
-                color: 'white'
-            }),
-            stroke: new Stroke({
-                color: 'black',
-                width: 4,
+            text: new Text({
+                font: getFont(FontSizes.Big),
+                fill: new Fill({
+                    color: 'white'
+                }),
+                stroke: new Stroke({
+                    color: 'black',
+                    width: 4,
+    
+                    }),
+                })
+            });
+        
+    }
+    else if (luogo == LOC_TYPE_FRAZIONE)
+    {
+        style = new Style({
+        
+            text: new Text({
+                font: getFont(FontSizes.Medium),
+                fill: new Fill({
+                    color: 'white'
+                }),
+                stroke: new Stroke({
+                    color: 'black',
+                    width: 3,
+    
+                    }),
+                })
+            });
 
-            }),
-        })
-    }),
+    }
+    else 
+    {
+        style = new Style({
+       
+            text: new Text({
+                font: getFont(FontSizes.Small),
+                fill: new Fill({
+                    color: 'white'
+                }),
+                stroke: new Stroke({
+                    color: 'black',
+                    width: 3,
+    
+                }),
+                offsetY: 16
+                })
+            });
+    }
+
+    
+
    
-};
+   
+    if(resolution < 10 || luogo == LOC_TYPE_COMUNE  )
+        style.getText().setText(feature.getProperties().name);
+    else
+        style.getText().setText("");
+
+
+    let imageName:string = convertIconName(feature.getProperties().icon );
+    if (imageName && resolution <10)
+    {
+        let icon = new Icon({
+        src: imageName,
+        color: 'white',
+        scale : resolution < 8? 1.15 : 0.8,
+        anchor: [0.5, 0.7]
+        })
+        style.setImage(icon);
+    }
+    else 
+        style.setImage(null);
+
+    
+
+    if (selected)
+    {
+        let oldWidth =style.getText().getStroke().getWidth();
+        style.getText().getStroke().setWidth(oldWidth * 1.5);
+        style.getText().getStroke().setColor("#004000");
+    }
+
+    return style;
+
+}
+
 
 
 export const geolocationStyle = {
