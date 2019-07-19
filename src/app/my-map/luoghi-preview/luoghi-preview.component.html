@@ -16,10 +16,18 @@
       </div>
     </div>
 
-    <div >
-      <p *ngFor="let par of luogoInfos?.locData?.description">
-        {{par}}
+    <div *ngIf="luogoInfos && luogoInfos.locData && luogoInfos.locData  && luogoInfos.locData.description && luogoInfos.locData.description.length> 0 ">
+
+      <p *ngFor="let desc of descData?.descriptions; let i = index">
+        
+        <span *ngFor="let subdesc of desc; let j = index">
+          {{subdesc}}
+          <a class ="text-primary " *ngIf= "j<desc.length -1" (click)=onDescLinkClick(descData.descRefs[i][j])> {{descData.descRefs[i][j].name}}</a>
+        </span>
+   
       </p>
+
+      
     </div> 
     <ng-container *ngIf="luogoInfos && luogoInfos.trailData && luogoInfos.trailData.length>0">
       <h5>Come raggiungerlo?</h5>

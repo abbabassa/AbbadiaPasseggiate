@@ -4,7 +4,7 @@ import{Router} from '@angular/router'
 
 
 import { SentieriLayerService } from '../services/my-map/sentieri-layer.service'
-import { PreviewStateService } from '../services/communication/preview-state.service'
+import { PreviewService } from '../services/communication/preview.service'
 
 
 import { environment } from '../../environments/environment';
@@ -16,6 +16,7 @@ import View from 'ol/View';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
 import {BingMaps as BingSource, OSM as OSMSource, XYZ  } from 'ol/source';
 import {fromLonLat} from 'ol/proj';
+import {Feature } from 'ol/Feature';
 import {Select as SelectInteraction} from 'ol/interaction';
 import {defaults as controlDefaults, Control} from 'ol/control'
 
@@ -24,6 +25,7 @@ import { GeolocControl } from '../ol-custom/controls/geoloc-control';
 import { MyAttributionControl } from '../ol-custom/controls/my-attribution-control';
 import { LayerControl } from '../ol-custom/controls/layer-control';
 import { VectorStyleType } from '../services/my-map/vector-styles';
+import { DescReferences } from '../om/desc-references';
 
 
 
@@ -71,7 +73,7 @@ export class MyMapComponent implements OnInit {
   constructor(  
     private sentieriLayerService: SentieriLayerService,
     private router:Router,
-    private previewStateService:PreviewStateService ){ }
+    private previewService:PreviewService ){ }
 
 
 
@@ -216,7 +218,7 @@ export class MyMapComponent implements OnInit {
 
     
 
-    let layerLuoghi : VectorLayer = this.sentieriLayerService.getLuoghi();
+    var layerLuoghi : VectorLayer = this.sentieriLayerService.getLuoghi();
     this.map.addLayer(layerLuoghi);
     // create a Select interaction and add it to the map
     var select : SelectInteraction= new SelectInteraction({
@@ -235,21 +237,34 @@ export class MyMapComponent implements OnInit {
     selectedFeatures.on('add', function (event) {
       var feature = event.target.item(0);
       var locId = feature.getProperties().id;
-      self.previewStateService.setState(true);
+      self.previewService.setState(true);
       self.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', locId]} }]);
-      
-
 
     });
 
 
-    this.previewStateService.isOpen$.subscribe(isOpen => 
+    this.previewService.isOpen$.subscribe(isOpen => 
     {
       if(!isOpen)
       {
-        selectedFeatures.clear();
+        selectedFeatures.clear(); 
       }
     })
+
+    this.previewService.newRef$.subscribe(newRef => 
+    {
+      selectedFeatures.clear();
+      this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', newRef.id]} }]);
+
+      let luoghiFeatures: Feature[] =layerLuoghi.getSource().getFeatures() as Feature[];
+      let newFeature:Feature =luoghiFeatures.find(f=> f.getProperties().id == newRef.id);
+      selectedFeatures.push(newFeature);
+
+      let featureCord = newFeature.getGeometry().getCoordinates();
+      this.map.getView().setCenter(featureCord);
+    });
+
+
 
 
     this.geolocControl = new GeolocControl({element: this.geolcationButtonElement.nativeElement}, this.map);

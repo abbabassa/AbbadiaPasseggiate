@@ -3,10 +3,12 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap} from 'rxjs/operators';
 
 import {LocationsService} from '../../services/locations/locations.service';
-import { PreviewStateService } from '../../services/communication/preview-state.service';
-import { LocationPreviewResponse } from '../../om/locPrevResponse';
+import { PreviewService } from '../../services/communication/preview.service';
+import { LocationPreviewResponse } from '../../om/loc-prev.response';
 import { Lightbox } from 'ngx-lightbox';
 import { ImgUrlPipe } from '../../pipes/img-url.pipe';
+import { DescReferences } from '../../om/desc-references';
+import { ComplexDescriptionData } from '../../om/complex-description-data';
 
 
 @Component({
@@ -21,12 +23,31 @@ export class LuoghiPreviewComponent implements OnInit {
  // @HostBinding('class.modal') 
 
  
-  luogoInfos: LocationPreviewResponse = null;
+  _luogoInfos: LocationPreviewResponse = null;
+  _descData: ComplexDescriptionData;
+
+  public get luogoInfos():LocationPreviewResponse
+  {
+    return this._luogoInfos;
+  }
+
+  public set luogoInfos(val: LocationPreviewResponse)
+  {
+
+    this._luogoInfos = val;
+    this.updateDescData()
+  }
+
+  public get descData():ComplexDescriptionData
+  {
+    return this._descData;
+  }
+
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
     private locationService: LocationsService,
-    private previewStateService:PreviewStateService,
+    private previewService:PreviewService,
     private lightBox : Lightbox,
     private imgPipe : ImgUrlPipe ) { }
 
@@ -42,7 +63,8 @@ export class LuoghiPreviewComponent implements OnInit {
         }
       )  
     )
-    .subscribe(res => this.luogoInfos=res )
+    
+    .subscribe(res => this.luogoInfos=res)
   }
 
   openLightBox(index: number): void {
@@ -67,14 +89,30 @@ export class LuoghiPreviewComponent implements OnInit {
   closePopup() {
     // Providing a `null` value to the named outlet
     // clears the contents of the named outlet
-    this.previewStateService.setState(false);
+    this.previewService.setState(false);
     this.router.navigate(
       [{ outlets: { luoghiPopup: null } }],
       {relativeTo: this.activatedRoute.parent} // <--- PARENT activated route.
       );
   }
 
+  updateDescData()
+  {
+    if(this._luogoInfos)
+      this._descData = new ComplexDescriptionData(this._luogoInfos.locData);
+    else  
+      this._descData = new ComplexDescriptionData();
+
+  }
+
+  onDescLinkClick(ref: DescReferences)
+  {
+    this.previewService.setNewRef(ref);
+  }
+
 }
+
+
 
 
 

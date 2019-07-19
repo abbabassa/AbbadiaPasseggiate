@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnChanges, HostListener } from '@angular/core';
-import { APImageData } from '../om/imgData';
+import { APImageData } from '../om/img-data';
 import { ImgUrlPipe } from '../pipes/img-url.pipe';
 import { Lightbox } from 'ngx-lightbox';
 import { windowWhen } from 'rxjs/operators';

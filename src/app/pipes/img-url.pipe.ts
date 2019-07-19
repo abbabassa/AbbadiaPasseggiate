@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { APImageData, APImageTypes } from '../om/imgData';
+import { APImageData, APImageTypes } from '../om/img-data';
 import { environment } from  '../../../src/environments/environment';
 
 @Pipe({

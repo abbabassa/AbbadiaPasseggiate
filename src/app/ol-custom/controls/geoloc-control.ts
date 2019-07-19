@@ -1,6 +1,6 @@
 
 import { geolocationStyle } from '../../services/my-map/vector-styles';
-import { GeolocationData, GeolocationStatus } from '../../om/geolocationData';
+import { GeolocationData, GeolocationStatus } from '../../om/geolocation-data';
 
 import {Control} from 'ol/control';
 import Geolocation from 'ol/Geolocation';

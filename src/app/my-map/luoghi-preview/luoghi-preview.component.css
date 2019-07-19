@@ -16,6 +16,11 @@
     height: 90vh;
 }
 
+.text-primary
+{
+    cursor: pointer;
+}
+
 
 @media (min-width: 992px) {
     :host() { 
