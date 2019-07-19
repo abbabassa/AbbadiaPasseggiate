@@ -19,13 +19,14 @@ import {fromLonLat} from 'ol/proj';
 import {Feature } from 'ol/Feature';
 import {Select as SelectInteraction} from 'ol/interaction';
 import {defaults as controlDefaults, Control} from 'ol/control'
+import{easeIn, easeOut} from 'ol/easing';
 
 
 import { GeolocControl } from '../ol-custom/controls/geoloc-control';
 import { MyAttributionControl } from '../ol-custom/controls/my-attribution-control';
 import { LayerControl } from '../ol-custom/controls/layer-control';
 import { VectorStyleType } from '../services/my-map/vector-styles';
-import { DescReferences } from '../om/desc-references';
+
 
 
 
@@ -240,6 +241,14 @@ export class MyMapComponent implements OnInit {
       self.previewService.setState(true);
       self.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', locId]} }]);
 
+      let featureCord = feature.getGeometry().getCoordinates();
+      // this.map.getView().setCenter(featureCord);
+      self.map.getView().animate({
+        center: featureCord,
+        duration: 1000,
+        easing: easeOut
+      });
+
     });
 
 
@@ -260,8 +269,7 @@ export class MyMapComponent implements OnInit {
       let newFeature:Feature =luoghiFeatures.find(f=> f.getProperties().id == newRef.id);
       selectedFeatures.push(newFeature);
 
-      let featureCord = newFeature.getGeometry().getCoordinates();
-      this.map.getView().setCenter(featureCord);
+    
     });
 
 
