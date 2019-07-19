@@ -25,6 +25,7 @@ export class LuoghiPreviewComponent implements OnInit {
  
   _luogoInfos: LocationPreviewResponse = null;
   _descData: ComplexDescriptionData;
+  expanded :boolean;
 
   public get luogoInfos():LocationPreviewResponse
   {

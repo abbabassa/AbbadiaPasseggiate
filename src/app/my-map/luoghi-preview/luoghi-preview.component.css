@@ -4,7 +4,7 @@
     display: block;
     left: 0;
     width: 100%;
-    top: 10%;
+    bottom: 0%;
     padding: 0;
    
 
@@ -12,6 +12,11 @@
 } 
 
 .modal-content
+{
+    height: 40vh;
+}
+
+.modal-content.expanded
 {
     height: 90vh;
 }
@@ -26,14 +31,20 @@
     :host() { 
     
         width: 60%;
-    
+        top:10%;
     } 
+    .modal-content
+    {
+        height: 90vh;
+    }
+    .hidden-xl-up
+    {
+        display: none;
+    }
 }
 
 @media (min-width: 1200px) { 
     :host() { 
-    
         width: 30%;
-    
     } 
  }
