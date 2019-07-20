@@ -5,12 +5,7 @@
       <h4 class="modal-title">{{luogoInfos?.locData.name}}</h4>
 
       <div class="btn-group" role="group" aria-label="Basic example">
-        <!-- <button type="button" class="close hidden-xl-up"  (click)="expanded = !expanded" > 
-          <span >
-            <i *ngIf="!expanded" class="material-icons">expand_less</i>
-            <i *ngIf="expanded" class="material-icons">expand_more</i>
-          </span>
-        </button> -->
+     
         <button type="button" class="close" (click)="closePopup($event)" aria-label="Close"> 
           <span aria-hidden="true">&times;</span>
         </button>
@@ -51,26 +46,6 @@
     </ng-container>
     
 
-    <!--   <div class="card-group" *ngIf="luogoInfos && luogoInfos.imagesData && luogoInfos.imagesData.length>0">
-        <ng-container *ngIf="imgData && imgData.description && imgData.description.length>0; else noDesc">
-          <div class="card" *ngFor="let imgData of luogoInfos?.imagesData" ngbPopover="{{imgData?.description[0]}}" triggers="mouseenter:mouseleave" popoverTitle="{{imgData.title}}">
-            <img [src]="imgData | imgUrl"  class="card-img-top" alt="{{imgData.title}}" (click)="openLightBox(i)"> 
-            <div class="card-footer">
-              <small class="text-muted">&copy; AbbadiaPasseggiate</small>
-            </div>
-          </div>
-        </ng-container>
-
-        <ng-template #noDesc>
-            <div class="card" *ngFor="let imgData of luogoInfos?.imagesData; let i = index" ngbPopover="{{imgData.title}}" triggers="mouseenter:mouseleave" popoverTitle="{{imgData.title}}">
-              <img [src]="imgData | imgUrl"  class="card-img-top" alt="{{imgData.title}}" (click)="openLightBox(i)"> 
-              <div class="card-footer">
-                <small class="text-muted">&copy; AbbadiaPasseggiate</small>
-              </div>
-            </div>
-          </ng-template>
-      </div>
- -->
 
     <app-image-grid  *ngIf="luogoInfos && luogoInfos.imagesData" [imageInfo] ="luogoInfos?.imagesData" [maxCols]="2" [useLightBox]="true"></app-image-grid>
 
@@ -79,7 +54,7 @@
 
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline-danger" (click)="closePopup()"    >Close</button>
+      <button type="button" class="btn btn-outline-danger" (click)="closePopup($event)"    >Close</button>
     </div>
 
 </div>
