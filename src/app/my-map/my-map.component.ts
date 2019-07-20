@@ -233,22 +233,10 @@ export class MyMapComponent implements OnInit {
     // use the features Collection to detect when a feature is selected,
     // the collection will emit the add event
     var selectedFeatures = select.getFeatures();
-    var self=this;
   
-    selectedFeatures.on('add', function (event) {
+    selectedFeatures.on('add',  (event) => {
       var feature = event.target.item(0);
-      var locId = feature.getProperties().id;
-      self.previewService.setState(true);
-      self.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', locId]} }]);
-
-      let featureCord = feature.getGeometry().getCoordinates();
-      // this.map.getView().setCenter(featureCord);
-      self.map.getView().animate({
-        center: featureCord,
-        duration: 1000,
-        easing: easeOut
-      });
-
+      this.onAddSelectedFeature(feature);
     });
 
 
@@ -284,6 +272,58 @@ export class MyMapComponent implements OnInit {
     this.layerControl.setLayerVisible(LAYER_AERIAL);
 
   }
+
+  onAddSelectedFeature(feature : Feature)
+  {
+    var locId = feature.getProperties().id;
+    this.previewService.setState(true);
+    this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', locId]} }]);
+
+    //let featureCord = feature.getGeometry().getCoordinates();
+    
+    let featureCord = this.calculateCenter(feature);
+
+    this.map.getView().animate({
+      center: featureCord,
+      duration: 1000,
+      easing: easeOut
+    });
+  }
+
+  calculateCenter(feature:Feature) : number[]
+  {
+    let featureCord = feature.getGeometry().getCoordinates();
+    let extent = this.map.getView().calculateExtent();
+    let deltaExt = [];
+    deltaExt[0]= extent[2]-extent[0]; //x
+    deltaExt[1]= extent[3]-extent[1]; //y
+
+    let offset = [];
+    if(window.innerWidth < 992)
+    {
+      offset[0] =  0;
+      offset[1] =  deltaExt[1]*0.25;
+    }
+    else if( window.innerWidth < 1200)
+    {
+      offset[0] =  deltaExt[0] *0.3;
+      offset[1] =  0;
+    }
+    else
+    {
+      offset[0] =  deltaExt[0] *0.15;
+      offset[1] =  0;
+    }
+
+    for(let i= 0; i< featureCord.length; i++)
+    {
+      featureCord[i] -= offset[i];
+    }
+
+    return featureCord;
+    
+  }
+
 
 
   @HostListener('window:resize', ['$event'])

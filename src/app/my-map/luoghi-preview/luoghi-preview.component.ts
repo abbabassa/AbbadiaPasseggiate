@@ -87,7 +87,7 @@ export class LuoghiPreviewComponent implements OnInit {
   }
 
 
-  closePopup() {
+  closePopup(event:any) {
     // Providing a `null` value to the named outlet
     // clears the contents of the named outlet
     this.previewService.setState(false);
@@ -95,6 +95,7 @@ export class LuoghiPreviewComponent implements OnInit {
       [{ outlets: { luoghiPopup: null } }],
       {relativeTo: this.activatedRoute.parent} // <--- PARENT activated route.
       );
+    event.stopPropagation();
   }
 
   updateDescData()
@@ -109,6 +110,11 @@ export class LuoghiPreviewComponent implements OnInit {
   onDescLinkClick(ref: DescReferences)
   {
     this.previewService.setNewRef(ref);
+  }
+
+  expand()
+  {
+    this.expanded = !this.expanded;
   }
 
 }
