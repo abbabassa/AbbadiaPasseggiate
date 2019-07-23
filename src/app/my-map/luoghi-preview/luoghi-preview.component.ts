@@ -114,7 +114,7 @@ export class LuoghiPreviewComponent implements OnInit {
   {
     if(ref.type == DescRefTypes.Location )
     {
-      
+      this.previewService.setNewRef(ref);
     }
     else
     {
