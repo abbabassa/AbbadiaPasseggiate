@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DynamicAnchorComponent } from './dynamic-anchor.component';
+import { ModalAlertComponent } from './modal-alert.component';
 
-describe('DynamicAnchorComponent', () => {
-  let component: DynamicAnchorComponent;
-  let fixture: ComponentFixture<DynamicAnchorComponent>;
+describe('ModalAlertComponent', () => {
+  let component: ModalAlertComponent;
+  let fixture: ComponentFixture<ModalAlertComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DynamicAnchorComponent ]
+      declarations: [ ModalAlertComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DynamicAnchorComponent);
+    fixture = TestBed.createComponent(ModalAlertComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

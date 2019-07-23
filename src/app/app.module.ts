@@ -14,7 +14,7 @@ import { MyMapComponent } from './my-map/my-map.component';
 import { LuoghiPreviewComponent } from './my-map/luoghi-preview/luoghi-preview.component';
 import { ImgUrlPipe } from './pipes/img-url.pipe';
 import { ImageGridComponent } from './image-grid/image-grid.component';
-import { DynamicAnchorComponent } from './dynamic-anchor/dynamic-anchor.component';
+import { ModalAlertComponent } from './modal-alert/modal-alert.component';
 
 
 
@@ -25,7 +25,7 @@ import { DynamicAnchorComponent } from './dynamic-anchor/dynamic-anchor.componen
     LuoghiPreviewComponent,
     ImgUrlPipe,
     ImageGridComponent,
-    DynamicAnchorComponent
+    ModalAlertComponent
   ],
   imports: [
     BrowserModule,
@@ -35,6 +35,7 @@ import { DynamicAnchorComponent } from './dynamic-anchor/dynamic-anchor.componen
     NgbModule,
     LightboxModule
   ] ,
+  entryComponents : [ModalAlertComponent],
   providers: [LocationsService,PreviewService, ImgUrlPipe],
   bootstrap: [AppComponent]
 })

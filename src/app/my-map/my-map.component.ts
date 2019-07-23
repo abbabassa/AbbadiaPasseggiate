@@ -26,6 +26,7 @@ import { GeolocControl } from '../ol-custom/controls/geoloc-control';
 import { MyAttributionControl } from '../ol-custom/controls/my-attribution-control';
 import { LayerControl } from '../ol-custom/controls/layer-control';
 import { VectorStyleType } from '../services/my-map/vector-styles';
+import { DescRefTypes } from '../om/desc-references';
 
 
 
@@ -250,6 +251,10 @@ export class MyMapComponent implements OnInit {
 
     this.previewService.newRef$.subscribe(newRef => 
     {
+      if(newRef.type != DescRefTypes.Location)
+        return;
+
+      
       selectedFeatures.clear();
       this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', newRef.id]} }]);
 

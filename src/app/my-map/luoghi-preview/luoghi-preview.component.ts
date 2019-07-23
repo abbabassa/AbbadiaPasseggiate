@@ -1,14 +1,16 @@
 import { Component, OnInit, HostBinding } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap} from 'rxjs/operators';
+import { switchMap, ignoreElements} from 'rxjs/operators';
 
 import {LocationsService} from '../../services/locations/locations.service';
 import { PreviewService } from '../../services/communication/preview.service';
 import { LocationPreviewResponse } from '../../om/loc-prev.response';
 import { Lightbox } from 'ngx-lightbox';
 import { ImgUrlPipe } from '../../pipes/img-url.pipe';
-import { DescReferences } from '../../om/desc-references';
+import { DescReferences, DescRefTypes } from '../../om/desc-references';
 import { ComplexDescriptionData } from '../../om/complex-description-data';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalAlertComponent } from '../../modal-alert/modal-alert.component';
 
 
 @Component({
@@ -49,6 +51,7 @@ export class LuoghiPreviewComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private locationService: LocationsService,
     private previewService:PreviewService,
+    private modalService: NgbModal,
     private lightBox : Lightbox,
     private imgPipe : ImgUrlPipe ) { }
 
@@ -109,7 +112,24 @@ export class LuoghiPreviewComponent implements OnInit {
 
   onDescLinkClick(ref: DescReferences)
   {
-    this.previewService.setNewRef(ref);
+    if(ref.type == DescRefTypes.Location )
+    {
+      
+    }
+    else
+    {
+
+      let modalRef = this.modalService.open(ModalAlertComponent);
+      // the first callback on then is "onFullfilled"=> 
+      //                                            it's triggered after I call modal.close method, and it's evalueted with the arguments I pass to that method
+      // the second callback on then is "onFullfilled"=> 
+      //                                            it's triggered after I call modal.dismiss method, and it's evalueted with the arguments I pass to that method
+      modalRef.result.then(res=>
+        {
+          window.open(ref.oldLink, "_blank");
+        }, res =>{} );
+    }
+      
   }
 
   expand()
