@@ -241,7 +241,8 @@ export class MyMapComponent implements OnInit {
     // create a Select interaction and add it to the map
     var select : SelectInteraction= new SelectInteraction({
       layers: [layerLuoghi, layerPercorsi],
-      style: this.sentieriLayerService.getFunctionStyle(VectorStyleType.Percorsi, true)
+      style: this.sentieriLayerService.getFunctionStyle(VectorStyleType.Percorsi, true),
+      hitTolerance : 7
     });
 
 
