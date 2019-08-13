@@ -4,6 +4,7 @@ import RegularShape from 'ol/style/RegularShape'
 
 
 import {Style, Stroke, Fill, Text, Circle, Icon} from  'ol/style';
+import { stringify } from 'querystring';
 
 
 
@@ -66,7 +67,8 @@ export enum VectorStyleType
     Tracce,
     Imboscate,
     Viandante,
-    Luoghi
+    Luoghi,
+    Percorsi
 }
 
 
@@ -102,8 +104,63 @@ export function convertIconName(GeoJSONIconName : string): string
     return map[GeoJSONIconName];
 }
 
+export class BootstrapTheme
+{
+    private static _instance : BootstrapTheme;
+    public static get Instance(): BootstrapTheme
+    {
+        if(!this._instance )
+            BootstrapTheme.computeStyles();    
+        return this._instance;
+        
+    }
 
-export function getVectorStyle(styleType:VectorStyleType, resolution )
+    public primary : string;
+    public secondary : string;
+    public success : string;
+    public info : string;
+    public warning : string;
+    public danger : string;
+    public light : string;
+    public dark : string;
+
+    private constructor (){}
+
+    public static GetRGBA(color: string, opacity:number =1) : number[]
+    {
+        color = color.trim();
+         let pattern : RegExp =  /^#([A-Fa-f0-9]{6})$/ ;
+         if(!color.match(pattern))
+            return [0, 0,0, opacity];
+        color = color.replace("#", "");
+        let result : number[] = [];
+        result.push(parseInt( color.substr(0,2), 16));
+        result.push(parseInt( color.substr(2,2), 16));
+        result.push(parseInt( color.substr(4,2), 16)); 
+        result.push( opacity); 
+        return result;
+
+    }
+    private static  computeStyles(): void
+    {
+        var style = getComputedStyle(document.body);
+
+        this._instance = new BootstrapTheme();
+        this._instance.primary = style.getPropertyValue('--primary');
+        this._instance.secondary = style.getPropertyValue('--secondary');
+        this._instance.success = style.getPropertyValue('--success');
+        this._instance.info = style.getPropertyValue('--info');
+        this._instance.warning = style.getPropertyValue('--warning');
+        this._instance.danger = style.getPropertyValue('--danger');
+        this._instance.light = style.getPropertyValue('--light');
+        this._instance.dark = style.getPropertyValue('--dark');
+
+        
+    }
+}
+
+
+export function getVectorStyle(styleType:VectorStyleType, resolution, selected: boolean )
 {
     let style : Style = new Style({});
     switch(styleType)
@@ -218,6 +275,31 @@ export function getVectorStyle(styleType:VectorStyleType, resolution )
      
            
             break;
+        case VectorStyleType.Percorsi:
+            let colorStyle = BootstrapTheme.GetRGBA(BootstrapTheme.Instance.primary, 0.5);
+            if(selected)
+                colorStyle[3] = 1;
+            style = new Style({
+                stroke: new Stroke({
+                    color: colorStyle,
+                    width: resolution < 10? 4 :3,
+                    // lineDash: [8, 10]
+                }),
+                text: new Text({
+                    font: getFont(FontSizes.Small),
+                    placement: TextPlacement.LINE,
+                    fill: new Fill({
+                        color: 'white'
+                    }),
+                    stroke: new Stroke({
+                        color: 'black',
+                        width: resolution < 10 ? 3: 2,
+            
+                        }),
+                    })
+                });
+            break;
+
 
         case VectorStyleType.Luoghi:
             style = new Style({

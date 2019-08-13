@@ -217,15 +217,31 @@ export class MyMapComponent implements OnInit {
 
 
     
+    var layerPercorsi : VectorLayer = this.sentieriLayerService.getPercorsi();
+    this.map.addLayer(layerPercorsi);
 
+    // var selectPercorsi : SelectInteraction = new SelectInteraction({
+    //   layers: [layerPercorsi],
+    //   style: this.sentieriLayerService.getFunctionStyle(VectorStyleType.Percorsi, true)
+    // });
+
+    // this.map.addInteraction(selectPercorsi);
+
+    // selectPercorsi.getFeatures().on('add',  (event) => {
+    //   var feature = event.target.item(0);
+    //   console.log(feature.getProperties().name);
+    // });
+  
     
 
     var layerLuoghi : VectorLayer = this.sentieriLayerService.getLuoghi();
     this.map.addLayer(layerLuoghi);
+
+
     // create a Select interaction and add it to the map
     var select : SelectInteraction= new SelectInteraction({
-      layers: [layerLuoghi],
-      style: this.sentieriLayerService.getFunctionStyle(VectorStyleType.SentieriUfficiali, true)
+      layers: [layerLuoghi, layerPercorsi],
+      style: this.sentieriLayerService.getFunctionStyle(VectorStyleType.Percorsi, true)
     });
 
 
@@ -237,7 +253,8 @@ export class MyMapComponent implements OnInit {
   
     selectedFeatures.on('add',  (event) => {
       var feature = event.target.item(0);
-      this.onAddSelectedFeature(feature);
+      if(feature.getProperties().interactId == 1)
+        this.onAddSelectedFeature(feature);
     });
 
 
@@ -264,6 +281,10 @@ export class MyMapComponent implements OnInit {
 
     
     });
+
+
+
+
 
 
 
