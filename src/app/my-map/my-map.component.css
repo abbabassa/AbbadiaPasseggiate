@@ -4,6 +4,7 @@
     height: 100vh;
 }
 
+
 .geo-dot circle
 {
     stroke:#fff;
@@ -28,6 +29,12 @@
 {
     top: 16em;
 }
+.ap-control.my-menu
+{
+    left: 0.5em;
+    top:1em;
+}
+
 div.ap-control.my-attribution
 {
     background-color: rgba(255,255,255,0.5);
@@ -52,5 +59,7 @@ div.ap-control.my-attribution, div.ap-control.my-layer-ctrl
     max-width: 10em;
     cursor: pointer;
 }
+
+
 
 

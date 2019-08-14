@@ -5,6 +5,8 @@ import {MyMapRoutingModule} from './my-map/my-map-routing.module'
 import { HttpClientModule } from '@angular/common/http';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { LightboxModule } from 'ngx-lightbox';
+import { SidebarModule } from 'ng-sidebar';
+
 
 import {LocationsService} from './services/locations/locations.service'
 import {PreviewService} from './services/communication/preview.service'
@@ -33,7 +35,8 @@ import { ModalAlertComponent } from './modal-alert/modal-alert.component';
     MyMapRoutingModule,
     HttpClientModule,
     NgbModule,
-    LightboxModule
+    LightboxModule,
+    SidebarModule.forRoot()
   ] ,
   entryComponents : [ModalAlertComponent],
   providers: [LocationsService,PreviewService, ImgUrlPipe],

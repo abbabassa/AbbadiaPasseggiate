@@ -21,6 +21,7 @@
               "src/favicon.ico"
             ],
             "styles": [
+              "src/assets/scss/ap-font.css",
               "src/assets/scss/custom.scss",
               "src/styles.css",
               "src/ol.css",

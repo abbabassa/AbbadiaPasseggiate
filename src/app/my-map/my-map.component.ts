@@ -65,6 +65,7 @@ export class MyMapComponent implements OnInit {
   layerControlElement: ElementRef;
 
 
+  isSideMenuOpen= false;  
 
 
 
