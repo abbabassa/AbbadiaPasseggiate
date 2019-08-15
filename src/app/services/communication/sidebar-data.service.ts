@@ -11,28 +11,28 @@ export class SidebarDataService {
   // that's the best option in this case
   private isOpen = new BehaviorSubject<boolean>(false);
   private mainActive = new Subject<number>();
-  private subActive = new Subject<number>();
+  private subActiveChange = new Subject<boolean>();
 
   public readonly menuEntries : MenuTree<MenuEntryData>[];
 
   constructor() 
   {
     this.menuEntries = [];
-    let menuEntry = new MenuEntryData ("Mappa", "", "map", MenuEntryStatus.Default, );
-    let menuSubEntry1 = new MenuEntryData ("Mostra Luoghi", "", "", MenuEntryStatus.Default, false);
-    let menuSubEntry2 = new MenuEntryData ("Mostra Percorsi", "", "", MenuEntryStatus.Default, false);
+    let menuEntry = new MenuEntryData ("Mappa", "map", "map", MenuEntryStatus.Default, );
+    let menuSubEntry1 = new MenuEntryData ("Mostra Luoghi", "loc", "", MenuEntryStatus.Default, false);
+    let menuSubEntry2 = new MenuEntryData ("Mostra Percorsi", "trails", "", MenuEntryStatus.Default, false);
     this.menuEntries.push (new MenuTree<MenuEntryData> (menuEntry, [menuSubEntry1,menuSubEntry2] ));
 
-    menuEntry = new MenuEntryData ("Photos", "", "photo", MenuEntryStatus.Default);
+    menuEntry = new MenuEntryData ("Photos", "photo", "photo", MenuEntryStatus.Default);
     this.menuEntries.push (new MenuTree<MenuEntryData> (menuEntry));
 
-    menuEntry = new MenuEntryData ("Link", "", "", MenuEntryStatus.Disable);
+    menuEntry = new MenuEntryData ("Link", "links", "", MenuEntryStatus.Disable);
     this.menuEntries.push (new MenuTree<MenuEntryData> (menuEntry));
   }
 
   isOpen$ = this.isOpen.asObservable();
   mainActive$ = this.mainActive.asObservable();
-  subActive$ = this.subActive.asObservable();
+  subActiveChange$ = this.subActiveChange.asObservable();
 
   // Service message commands
   setState(isOpen: boolean) {
@@ -99,6 +99,7 @@ export class SidebarDataService {
           else
           {
             newSelChildren.setDefault();
+            this.subActiveChange.next(true);
             return;
           }
 
@@ -109,13 +110,13 @@ export class SidebarDataService {
       if(activeMainIndex >= 0)
         this.resetSubEntryStatus(activeMainIndex, true);
       this.menuEntries[selectedMain].children[selectedSub].setActive();
-      this.subActive.next(selectedSub);
+      this.subActiveChange.next(true);
     }
     else
     {
       if(activeMainIndex >= 0)
         this.resetSubEntryStatus(activeMainIndex);
-      this.subActive.next(-1);
+      this.subActiveChange.next(false);
     }
 
     
@@ -134,6 +135,49 @@ export class SidebarDataService {
       }
     }
   }
+
+  public getActiveSub(mainIndex: number ) : MenuEntryData[]
+  public getActiveSub(routerLinkPath : string ) : MenuEntryData[]
+  public getActiveSub(param : string | number ) : MenuEntryData[]
+  {
+    let mainIndex;
+    let routerLinkPath;
+    if(typeof param === 'string')
+    {
+      routerLinkPath = param;
+    }
+    else
+    {
+      mainIndex = param;
+    }
+
+    if(!mainIndex)
+    {
+      if(!routerLinkPath)
+      {
+        return;
+      }
+      else
+      {
+        for(let i = 0; i < this.menuEntries.length; i++)
+        {
+          if(this.menuEntries[i].value.routerLink == routerLinkPath)
+          {
+            mainIndex = i;
+            break;
+          }
+        }
+      }
+
+    
+
+
+    }
+    return this.menuEntries[mainIndex].children.filter(entry => entry.status == MenuEntryStatus.Active)
+
+  }
+
+
 
 
 

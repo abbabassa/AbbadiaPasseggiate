@@ -69,6 +69,7 @@ export class MyMapComponent implements OnInit {
 
 
   private map:Map
+  private routerLinkPath : string;
   
 
 
@@ -83,7 +84,11 @@ export class MyMapComponent implements OnInit {
 
   ngOnInit() {
 
-    this.activatedRoute.url.subscribe(url => this.sidebarDataService.setMainActiveByRoute(url));
+    this.activatedRoute.url.subscribe(url =>
+      {
+        this.sidebarDataService.setMainActiveByRoute(url);
+        this.routerLinkPath = url[0].path;
+      } );
 
 
 
@@ -222,12 +227,14 @@ export class MyMapComponent implements OnInit {
 
     
     var layerPercorsi : VectorLayer = this.sentieriLayerService.getPercorsi();
+    layerPercorsi.setVisible(false);
     this.map.addLayer(layerPercorsi);
 
   
     
 
     var layerLuoghi : VectorLayer = this.sentieriLayerService.getLuoghi();
+    layerLuoghi.setVisible(false);
     this.map.addLayer(layerLuoghi);
 
 
@@ -275,6 +282,25 @@ export class MyMapComponent implements OnInit {
 
     
     });
+
+    this.sidebarDataService.subActiveChange$.subscribe(flag => 
+      {
+        if(!flag)
+          return;
+        
+        let activeSubEntries = this.sidebarDataService.getActiveSub(this.routerLinkPath);
+
+        if(activeSubEntries.some(data => data.translKey == "loc"))
+          layerLuoghi.setVisible(true);
+        else
+          layerLuoghi.setVisible(false);
+
+        if(activeSubEntries.some(data => data.translKey == "trails"))
+          layerPercorsi.setVisible(true);
+        else
+          layerPercorsi.setVisible(false);
+  
+      });
 
 
 
