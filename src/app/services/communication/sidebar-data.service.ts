@@ -68,7 +68,8 @@ export class SidebarDataService {
   {
     for(let i = 0; i < this.menuEntries.length; i++)
     {
-      this.menuEntries[i].value.setDefault();
+      if(this.menuEntries[i].value.status != MenuEntryStatus.Disable)
+        this.menuEntries[i].value.setDefault();
     }
   }
 
