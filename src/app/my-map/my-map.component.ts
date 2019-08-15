@@ -227,15 +227,17 @@ export class MyMapComponent implements OnInit {
 
     
     var layerPercorsi : VectorLayer = this.sentieriLayerService.getPercorsi();
-    layerPercorsi.setVisible(false);
+    // layerPercorsi.setVisible(false);
     this.map.addLayer(layerPercorsi);
 
   
     
 
     var layerLuoghi : VectorLayer = this.sentieriLayerService.getLuoghi();
-    layerLuoghi.setVisible(false);
+    // layerLuoghi.setVisible(false);
     this.map.addLayer(layerLuoghi);
+
+    this.checkActiveInteractionLayer(layerLuoghi, layerPercorsi);
 
 
     // create a Select interaction and add it to the map
@@ -288,17 +290,7 @@ export class MyMapComponent implements OnInit {
         if(!flag)
           return;
         
-        let activeSubEntries = this.sidebarDataService.getActiveSub(this.routerLinkPath);
-
-        if(activeSubEntries.some(data => data.translKey == "loc"))
-          layerLuoghi.setVisible(true);
-        else
-          layerLuoghi.setVisible(false);
-
-        if(activeSubEntries.some(data => data.translKey == "trails"))
-          layerPercorsi.setVisible(true);
-        else
-          layerPercorsi.setVisible(false);
+          this.checkActiveInteractionLayer(layerLuoghi, layerPercorsi);
   
       });
 
@@ -374,6 +366,22 @@ export class MyMapComponent implements OnInit {
   onMenuClick()
   {
     this.sidebarDataService.setState(true);
+  }
+
+
+  checkActiveInteractionLayer(layerLuoghi : VectorLayer, layerPercorsi : VectorLayer)
+  {
+    let activeSubEntries = this.sidebarDataService.getActiveSub(this.routerLinkPath);
+
+    if(activeSubEntries.some(data => data.translKey == "loc"))
+      layerLuoghi.setVisible(true);
+    else
+      layerLuoghi.setVisible(false);
+
+    if(activeSubEntries.some(data => data.translKey == "trails"))
+      layerPercorsi.setVisible(true);
+    else
+      layerPercorsi.setVisible(false);
   }
 
   
