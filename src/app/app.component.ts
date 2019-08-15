@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterViewChecked } from '@angular/core';
 import { SidebarDataService } from './services/communication/sidebar-data.service';
 import { MenuTree } from './om/menu-tree';
 import { MenuEntryData, MenuEntryStatus } from './om/menu-entry-data';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -9,13 +10,34 @@ import { MenuEntryData, MenuEntryStatus } from './om/menu-entry-data';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  // ngAfterViewChecked(): void {
+  //   if(this.activateRoute.children.length > 0)
+  //     this.activateRoute.children[0].url.subscribe(u => this.sidebarDataService.setMainActiveByRoute(u));
+   
+  // }
   
   ngOnInit(): void {
     
     this.sidebarDataService.isOpen$.subscribe(val=> this.isSideMenuOpen = val);
+
+    this.sidebarDataService.mainActive$.subscribe(index => 
+      {
+        if(index >= 0)
+          this.router.navigate( [this.sidebarDataService.menuEntries[index].value.routerLink]);
+      });
+
+      
+
+   
+    
   }
 
-  constructor(private sidebarDataService: SidebarDataService){}
+
+  constructor(
+    private sidebarDataService: SidebarDataService,
+    private activateRoute:ActivatedRoute,
+    private router: Router
+    ){}
 
 
   public isSideMenuOpen : boolean;

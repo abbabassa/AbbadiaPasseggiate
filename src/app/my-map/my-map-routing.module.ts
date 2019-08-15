@@ -7,7 +7,7 @@ const myMapRoutes: Routes = [
     {
         path: 'map',
         component: MyMapComponent
-      },
+    },
     {
         path: 'luoghiPrewiew/:id',
         component: LuoghiPreviewComponent,

@@ -18,6 +18,7 @@ import { LuoghiPreviewComponent } from './my-map/luoghi-preview/luoghi-preview.c
 import { ImgUrlPipe } from './pipes/img-url.pipe';
 import { ImageGridComponent } from './image-grid/image-grid.component';
 import { ModalAlertComponent } from './modal-alert/modal-alert.component';
+import { PhotoComponent } from './photo/photo.component';
 
 
 
@@ -28,7 +29,8 @@ import { ModalAlertComponent } from './modal-alert/modal-alert.component';
     LuoghiPreviewComponent,
     ImgUrlPipe,
     ImageGridComponent,
-    ModalAlertComponent
+    ModalAlertComponent,
+    PhotoComponent
   ],
   imports: [
     BrowserModule,

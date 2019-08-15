@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
+import {UrlSegment, Router} from '@angular/router';
 import { Subject, BehaviorSubject }    from 'rxjs';
 import { MenuTree } from '../../om/menu-tree';
 import { MenuEntryData, MenuEntryStatus } from '../../om/menu-entry-data';
 
 @Injectable()
 export class SidebarDataService {
-
+  
   // As from documentation: A Subject that requires an initial value and emits its current value to new subscribers
   // that's the best option in this case
   private isOpen = new BehaviorSubject<boolean>(false);
@@ -17,12 +18,12 @@ export class SidebarDataService {
   constructor() 
   {
     this.menuEntries = [];
-    let menuEntry = new MenuEntryData ("Mappa", "", "", MenuEntryStatus.Default, );
+    let menuEntry = new MenuEntryData ("Mappa", "", "map", MenuEntryStatus.Default, );
     let menuSubEntry1 = new MenuEntryData ("Mostra Luoghi", "", "", MenuEntryStatus.Default, false);
     let menuSubEntry2 = new MenuEntryData ("Mostra Percorsi", "", "", MenuEntryStatus.Default, false);
     this.menuEntries.push (new MenuTree<MenuEntryData> (menuEntry, [menuSubEntry1,menuSubEntry2] ));
 
-    menuEntry = new MenuEntryData ("Photos", "", "", MenuEntryStatus.Disable);
+    menuEntry = new MenuEntryData ("Photos", "", "photo", MenuEntryStatus.Default);
     this.menuEntries.push (new MenuTree<MenuEntryData> (menuEntry));
 
     menuEntry = new MenuEntryData ("Link", "", "", MenuEntryStatus.Disable);
@@ -61,6 +62,16 @@ export class SidebarDataService {
       this.menuEntries[mainIndex].children[i].setDefault();
     }
   }
+
+
+  resetMainEntryStatus()
+  {
+    for(let i = 0; i < this.menuEntries.length; i++)
+    {
+      this.menuEntries[i].value.setDefault();
+    }
+  }
+
   setActiveEntries(selectedMain:number, selectedSub : number)
   {
     
@@ -105,7 +116,22 @@ export class SidebarDataService {
         this.resetSubEntryStatus(activeMainIndex);
       this.subActive.next(-1);
     }
+
     
+    
+  }
+  setMainActiveByRoute(u: UrlSegment[]): void {
+
+    let path : string =u.reduce<string>((prevVal, curVal, currIndex, array) => prevVal + (currIndex==0? "": "/") + curVal.path , "");
+    
+    for(let i = 0; i < this.menuEntries.length; i++)
+    {
+      if(this.menuEntries[i].value.routerLink == path)
+      {
+        this.resetMainEntryStatus();
+        this.setActiveEntries(i,-1);
+      }
+    }
   }
 
 

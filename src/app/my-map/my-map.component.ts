@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Self, HostListener } from '@angular/core';
 import { API_KEY_BING } from './api-key-bing'
-import{Router} from '@angular/router'
+import{Router, ActivatedRoute} from '@angular/router'
 
 
 import { SentieriLayerService } from '../services/my-map/sentieri-layer.service'
@@ -75,12 +75,15 @@ export class MyMapComponent implements OnInit {
   constructor(  
     private sentieriLayerService: SentieriLayerService,
     private router:Router,
+    private activatedRoute: ActivatedRoute,
     private previewService:PreviewService,
     private sidebarDataService: SidebarDataService ){ }
 
 
 
   ngOnInit() {
+
+    this.activatedRoute.url.subscribe(url => this.sidebarDataService.setMainActiveByRoute(url));
 
 
 
@@ -221,17 +224,6 @@ export class MyMapComponent implements OnInit {
     var layerPercorsi : VectorLayer = this.sentieriLayerService.getPercorsi();
     this.map.addLayer(layerPercorsi);
 
-    // var selectPercorsi : SelectInteraction = new SelectInteraction({
-    //   layers: [layerPercorsi],
-    //   style: this.sentieriLayerService.getFunctionStyle(VectorStyleType.Percorsi, true)
-    // });
-
-    // this.map.addInteraction(selectPercorsi);
-
-    // selectPercorsi.getFeatures().on('add',  (event) => {
-    //   var feature = event.target.item(0);
-    //   console.log(feature.getProperties().name);
-    // });
   
     
 
