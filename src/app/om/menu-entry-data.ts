@@ -5,6 +5,7 @@ export class MenuEntryData
         public readonly translKey: string,
         public readonly routerLink: string,
         private _status: MenuEntryStatus,
+        public readonly isExclusive = true
     ){}
 
     public get status():MenuEntryStatus

@@ -18,8 +18,8 @@ export class SidebarDataService {
   {
     this.menuEntries = [];
     let menuEntry = new MenuEntryData ("Mappa", "", "", MenuEntryStatus.Default, );
-    let menuSubEntry1 = new MenuEntryData ("Mostra Luoghi", "", "", MenuEntryStatus.Default);
-    let menuSubEntry2 = new MenuEntryData ("Mostra Percorsi", "", "", MenuEntryStatus.Default);
+    let menuSubEntry1 = new MenuEntryData ("Mostra Luoghi", "", "", MenuEntryStatus.Default, false);
+    let menuSubEntry2 = new MenuEntryData ("Mostra Percorsi", "", "", MenuEntryStatus.Default, false);
     this.menuEntries.push (new MenuTree<MenuEntryData> (menuEntry, [menuSubEntry1,menuSubEntry2] ));
 
     menuEntry = new MenuEntryData ("Photos", "", "", MenuEntryStatus.Disable);
@@ -50,25 +50,17 @@ export class SidebarDataService {
   }
 
 
-  getActiveSubEntryIndex(mainIndex : number) : number
+
+  resetSubEntryStatus(mainIndex : number, leaveNotExclusive = false)
   {
     for(let i = 0; i < this.menuEntries[mainIndex].children.length; i++)
     {
-      if(this.menuEntries[mainIndex].children[i].status == MenuEntryStatus.Active)
-        return i;
-    }
+      if(leaveNotExclusive && !this.menuEntries[mainIndex].children[i].isExclusive )
+        continue;
 
-    return -1;
-  }
-
-  resetSubEntryStatus(mainIndex : number)
-  {
-    for(let i = 0; i < this.menuEntries[mainIndex].children.length; i++)
-    {
       this.menuEntries[mainIndex].children[i].setDefault();
     }
   }
-
   setActiveEntries(selectedMain:number, selectedSub : number)
   {
     
@@ -84,15 +76,26 @@ export class SidebarDataService {
     if(selectedSub >= 0)
     {
 
-      // if I already was in the current main index, I check if I really need to push the change sub event
+      // ifthe current main index was already selected, I check if the subindex was already active
       if(activeMainIndex == selectedMain)
       {
-        if(this.getActiveSubEntryIndex(activeMainIndex) == selectedSub)
-          return;
+        let newSelChildren = this.menuEntries[selectedMain].children[selectedSub];
+        if(newSelChildren.status == MenuEntryStatus.Active)
+        {
+          if(newSelChildren.isExclusive)
+            return;
+          else
+          {
+            newSelChildren.setDefault();
+            return;
+          }
+
+        }
+          
       }
 
       if(activeMainIndex >= 0)
-        this.resetSubEntryStatus(activeMainIndex);
+        this.resetSubEntryStatus(activeMainIndex, true);
       this.menuEntries[selectedMain].children[selectedSub].setActive();
       this.subActive.next(selectedSub);
     }

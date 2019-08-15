@@ -17,10 +17,18 @@
                      
                     
                     <ul class="nav flex-column second-level" *ngIf="mainEntry.children?.length >0">
-                            <li class="nav-item" *ngFor="let subEntry of mainEntry.children; let j = index"><a 
+                            
+                                
+                            <li class="nav-item"  *ngFor="let subEntry of mainEntry.children; let j = index">
+                                
+                                <a 
                                 [ngClass]= "getAnchorClass(subEntry)"
                                 (click)="setActiveMenuEntriess(i, j)"
-                                >{{subEntry.defName}}</a></li>
+                                >
+                                    <span><i class="material-icons" [class.hidden]= "subEntry.isExclusive  || !isEntryActive(subEntry)">check</i></span> 
+                                    {{subEntry.defName}}
+                                </a>
+                            </li>
                     </ul>
             </ng-container>
   

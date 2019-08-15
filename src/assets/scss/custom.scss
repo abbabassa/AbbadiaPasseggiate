@@ -98,7 +98,7 @@ div.obscure
 
 .nav.second-level 
 {
-    margin-left: 1.5em;
+    margin-left: 0.75em;
 }
 
 .nav.second-level .nav-item
@@ -111,6 +111,21 @@ div.obscure
     cursor: pointer;
 }
 
+.text-primary.active
+{
+    font-weight: 700;
+}
+
+a.nav-link .material-icons
+{
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+a.nav-link .material-icons.hidden
+{
+    color: rgba(0,0,0,0)
+}
 
 @media (min-width: 576px) {
     .ng-sidebar
