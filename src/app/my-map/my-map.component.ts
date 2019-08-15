@@ -27,6 +27,7 @@ import { MyAttributionControl } from '../ol-custom/controls/my-attribution-contr
 import { LayerControl } from '../ol-custom/controls/layer-control';
 import { VectorStyleType } from '../services/my-map/vector-styles';
 import { DescRefTypes } from '../om/desc-references';
+import { SidebarDataService } from '../services/communication/sidebar-data.service';
 
 
 
@@ -65,8 +66,6 @@ export class MyMapComponent implements OnInit {
   layerControlElement: ElementRef;
 
 
-  isSideMenuOpen= false;  
-
 
 
   private map:Map
@@ -76,7 +75,8 @@ export class MyMapComponent implements OnInit {
   constructor(  
     private sentieriLayerService: SentieriLayerService,
     private router:Router,
-    private previewService:PreviewService ){ }
+    private previewService:PreviewService,
+    private sidebarDataService: SidebarDataService ){ }
 
 
 
@@ -351,6 +351,14 @@ export class MyMapComponent implements OnInit {
     return featureCord;
     
   }
+
+
+  onMenuClick()
+  {
+    this.sidebarDataService.setState(true);
+  }
+
+  
 
 
 

@@ -1,4 +1,47 @@
-<div class=".container-fluid">
-    <router-outlet></router-outlet>
-    <router-outlet name="luoghiPopup"></router-outlet>
-</div>
+<ng-sidebar-container style = "height: 100vh">
+    <!-- A sidebar -->
+    <ng-sidebar [mode]="'over'"   [closeOnClickOutside]="true" [(opened)]="isSideMenuOpen">
+        <a class="navbar-brand"  href="/"><i class ="ap-icon-logo-full bigg"></i></a>
+        <!-- <div class="btn-group" role="group" > -->
+    
+            <button type="button" class="close" aria-label="Close" (click)="isSideMenuOpen =false"> 
+                <span aria-hidden="true">&times;</span>
+            </button>
+        <!-- </div> -->
+        <ul class="nav flex-column">
+            <ng-container *ngFor="let mainEntry of MenuEntries; let i = index">
+                    <li class="nav-item"><a 
+                        [ngClass]= "getAnchorClass(mainEntry.value)"
+                        (click)="setActiveMenuEntriess(i, -1)"
+                        >{{mainEntry.value.defName}}</a></li>
+                     
+                    
+                    <ul class="nav flex-column second-level" *ngIf="mainEntry.children?.length >0">
+                            <li class="nav-item" *ngFor="let subEntry of mainEntry.children; let j = index"><a 
+                                [ngClass]= "getAnchorClass(subEntry)"
+                                (click)="setActiveMenuEntriess(i, j)"
+                                >{{subEntry.defName}}</a></li>
+                    </ul>
+            </ng-container>
+  
+            <!-- <li class="nav-item">
+            <a class="nav-link active" href="#">Map</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled"  tabindex="-1" >Photos</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link disabled"  tabindex="-1" >Link</a>
+            </li> -->
+            
+        </ul>
+    </ng-sidebar>
+
+
+    <div ng-sidebar-content class=".container-fluid">
+        <div  [class.obscure]="isSideMenuOpen"></div>
+        <router-outlet></router-outlet>
+        <router-outlet name="luoghiPopup"></router-outlet>
+    </div>
+
+</ng-sidebar-container>

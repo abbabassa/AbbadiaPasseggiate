@@ -10,6 +10,7 @@ import { SidebarModule } from 'ng-sidebar';
 
 import {LocationsService} from './services/locations/locations.service'
 import {PreviewService} from './services/communication/preview.service'
+import {SidebarDataService} from './services/communication/sidebar-data.service'
 
 import { AppComponent } from './app.component';
 import { MyMapComponent } from './my-map/my-map.component';
@@ -39,7 +40,7 @@ import { ModalAlertComponent } from './modal-alert/modal-alert.component';
     SidebarModule.forRoot()
   ] ,
   entryComponents : [ModalAlertComponent],
-  providers: [LocationsService,PreviewService, ImgUrlPipe],
+  providers: [LocationsService,PreviewService, SidebarDataService, ImgUrlPipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

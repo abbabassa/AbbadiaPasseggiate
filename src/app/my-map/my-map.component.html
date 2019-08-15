@@ -1,74 +1,45 @@
-<ng-sidebar-container style = "height: 100vh">
 
-    
-      <!-- A sidebar -->
-    <ng-sidebar [mode]="'over'"   [closeOnClickOutside]="true" [(opened)]="isSideMenuOpen">
-        <a class="navbar-brand"  href="/"><i class ="ap-icon-logo-full bigg"></i></a>
-        <!-- <div class="btn-group" role="group" > -->
-     
-            <button type="button" class="close" aria-label="Close" (click)="isSideMenuOpen =false"> 
-                <span aria-hidden="true">&times;</span>
-            </button>
-        <!-- </div> -->
-        <ul class="nav flex-column">
-            <li class="nav-item">
-              <a class="nav-link active" href="#">Map</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link disabled"  tabindex="-1" >Photos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link disabled"  tabindex="-1" >Link</a>
-            </li>
-            
-          </ul>
-    </ng-sidebar>
-
-    <div ng-sidebar-content >
-        <div  [class.obscure]="isSideMenuOpen"></div>
-        <div id="map" class="p-0"></div>
+<div id="map" class="p-0"></div>
 
 
-        <button  #geolocBtn class="ap-control my-geoloc btn "     
-            [class.btn-outline-danger]="geolocControl.geolocationData.status==0"   
-            [class.btn-outline-warning]="geolocControl.geolocationData.status==2"   
-            [class.btn-outline-success]="geolocControl.geolocationData.status==1"  
-            [class.tras02]="true" 
-            (click)="geolocControl.toggleLocation()" > <span><i class="material-icons">
-                my_location
-                </i></span></button>
+<button  #geolocBtn class="ap-control my-geoloc btn "     
+    [class.btn-outline-danger]="geolocControl.geolocationData.status==0"   
+    [class.btn-outline-warning]="geolocControl.geolocationData.status==2"   
+    [class.btn-outline-success]="geolocControl.geolocationData.status==1"  
+    [class.tras02]="true" 
+    (click)="geolocControl.toggleLocation()" > <span><i class="material-icons">
+        my_location
+        </i></span></button>
 
 
-        <button  class="ap-control my-menu btn btn-outline-primary tras02 " (click)= "isSideMenuOpen = !isSideMenuOpen">
-            <span><i class="material-icons">
-            menu
-            </i></span></button>
+<button  class="ap-control my-menu btn btn-outline-primary tras02 " (click)= "onMenuClick()">
+    <span><i class="material-icons">
+    menu
+    </i></span></button>
 
 
 
 
 
-        <div  #attributionCtrl class="" >
-            <button type="button" class="ap-control my-attribution btn btn-outline-primary tras02"  [hidden]="attributionControl.collapsed" (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> info </i></span></button>
-            <button type="button" class="ap-control my-attribution btn btn-outline-primary tras02"  [hidden]="!attributionControl.collapsed"  (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
-            <div [ngbCollapse]= "!attributionControl.collapsed" class= "ap-control my-attribution card">
-                <span *ngFor= "let attr of attributionControl.attribution" [innerHTML]="attr"></span>
-            </div>
-        </div>
-
-        <div  #LayerCtrl class="" >
-            <button type="button" class="ap-control my-layer-ctrl btn btn-outline-primary tras02"  [hidden]="layerControl.collapsed" (click)="layerControl.toggleCollapsed()"><span ><i class="material-icons"> layers </i></span></button>
-            <button type="button" class="ap-control my-layer-ctrl btn btn-outline-primary tras02"  [hidden]="!layerControl.collapsed"  (click)="layerControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
-            <div [ngbCollapse]= "!layerControl.collapsed" class= "ap-control my-layer-ctrl card">
-                <div class="row no-gutters" >
-                    <div class="col layer-prew" *ngFor="let opt of layerControl.visibleLayersKeys" >
-                            <a  (click)="layerControl.setLayerVisible(opt)"  >
-                                <img  [src]="'assets/img/thumb/' + opt + '.jpg'" class="img-thumbnail" [class.border-primary]="layerControl.activeLayerKey==opt"  > 
-                            </a>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
+<div  #attributionCtrl class="" >
+    <button type="button" class="ap-control my-attribution btn btn-outline-primary tras02"  [hidden]="attributionControl.collapsed" (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> info </i></span></button>
+    <button type="button" class="ap-control my-attribution btn btn-outline-primary tras02"  [hidden]="!attributionControl.collapsed"  (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
+    <div [ngbCollapse]= "!attributionControl.collapsed" class= "ap-control my-attribution card">
+        <span *ngFor= "let attr of attributionControl.attribution" [innerHTML]="attr"></span>
     </div>
-</ng-sidebar-container>
+</div>
+
+<div  #LayerCtrl class="" >
+    <button type="button" class="ap-control my-layer-ctrl btn btn-outline-primary tras02"  [hidden]="layerControl.collapsed" (click)="layerControl.toggleCollapsed()"><span ><i class="material-icons"> layers </i></span></button>
+    <button type="button" class="ap-control my-layer-ctrl btn btn-outline-primary tras02"  [hidden]="!layerControl.collapsed"  (click)="layerControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
+    <div [ngbCollapse]= "!layerControl.collapsed" class= "ap-control my-layer-ctrl card">
+        <div class="row no-gutters" >
+            <div class="col layer-prew" *ngFor="let opt of layerControl.visibleLayersKeys" >
+                    <a  (click)="layerControl.setLayerVisible(opt)"  >
+                        <img  [src]="'assets/img/thumb/' + opt + '.jpg'" class="img-thumbnail" [class.border-primary]="layerControl.activeLayerKey==opt"  > 
+                    </a>
+            </div>
+        </div>
+        
+    </div>
+</div>

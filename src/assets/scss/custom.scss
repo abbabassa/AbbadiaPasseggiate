@@ -96,6 +96,22 @@ div.obscure
     z-index: 1;
 }
 
+.nav.second-level 
+{
+    margin-left: 1.5em;
+}
+
+.nav.second-level .nav-item
+{
+    font-size: 85%;
+}
+
+.text-primary
+{
+    cursor: pointer;
+}
+
+
 @media (min-width: 576px) {
     .ng-sidebar
     {
