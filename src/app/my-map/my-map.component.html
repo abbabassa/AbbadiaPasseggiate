@@ -12,7 +12,7 @@
         </i></span></button>
 
 
-<button  class="ap-control my-menu btn btn-outline-primary tras02 " (click)= "onMenuClick()">
+<button  class="ap-control my-menu btn btn-outline-aplight tras02 " (click)= "onMenuClick()">
     <span><i class="material-icons">
     menu
     </i></span></button>
@@ -22,16 +22,16 @@
 
 
 <div  #attributionCtrl class="" >
-    <button type="button" class="ap-control my-attribution btn btn-outline-primary tras02"  [hidden]="attributionControl.collapsed" (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> info </i></span></button>
-    <button type="button" class="ap-control my-attribution btn btn-outline-primary tras02"  [hidden]="!attributionControl.collapsed"  (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
+    <button type="button" class="ap-control my-attribution btn btn-outline-aplight tras02"  [hidden]="attributionControl.collapsed" (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> info </i></span></button>
+    <button type="button" class="ap-control my-attribution btn btn-outline-aplight tras02"  [hidden]="!attributionControl.collapsed"  (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
     <div [ngbCollapse]= "!attributionControl.collapsed" class= "ap-control my-attribution card">
         <span *ngFor= "let attr of attributionControl.attribution" [innerHTML]="attr"></span>
     </div>
 </div>
 
 <div  #LayerCtrl class="" >
-    <button type="button" class="ap-control my-layer-ctrl btn btn-outline-primary tras02"  [hidden]="layerControl.collapsed" (click)="layerControl.toggleCollapsed()"><span ><i class="material-icons"> layers </i></span></button>
-    <button type="button" class="ap-control my-layer-ctrl btn btn-outline-primary tras02"  [hidden]="!layerControl.collapsed"  (click)="layerControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
+    <button type="button" class="ap-control my-layer-ctrl btn btn-outline-aplight tras02"  [hidden]="layerControl.collapsed" (click)="layerControl.toggleCollapsed()"><span ><i class="material-icons"> layers </i></span></button>
+    <button type="button" class="ap-control my-layer-ctrl btn btn-outline-aplight tras02"  [hidden]="!layerControl.collapsed"  (click)="layerControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
     <div [ngbCollapse]= "!layerControl.collapsed" class= "ap-control my-layer-ctrl card">
         <div class="row no-gutters" >
             <div class="col layer-prew" *ngFor="let opt of layerControl.visibleLayersKeys" >

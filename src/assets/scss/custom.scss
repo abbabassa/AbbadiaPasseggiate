@@ -1,7 +1,16 @@
-// $theme-colors: (
-//     "light": #b3ffb3
-//   );
+$theme-colors: (
+    // "light": #b3ffb3,
+    "primary" : #009100,
+    "aplight": #4fe85e
+  );
+
+
+
+
 @import "./node_modules/bootstrap/scss/bootstrap";
+
+
+
 
 ng-sidebar-container
 {
@@ -44,37 +53,33 @@ ng-sidebar-container
 
 }
 
-.btn-outline-success.tras02, .btn-outline-warning.tras02, .btn-outline-danger.tras02, .btn-outline-primary.tras02
-{
-    background-color: rgba(255,255,255,0.1)
-}
 
-.btn-outline-primary.tras02:hover
-{
-    background-color:map-get($theme-colors, "primary") ;
-}
+@each $color, $value in $theme-colors {
+    .btn-outline-#{$color}.tras02 {
+        background-color: adjust-color(map-get($theme-colors, "dark"), $alpha: -0.5)  ;
+    }
 
-.btn-outline-success.tras02:hover
-{
-    background-color:map-get($theme-colors, "success") ;
-}
+    .btn-outline-#{$color}.tras02:hover
+    {
+        background-color:$value;
+    }
 
-.btn-outline-warning.tras02:hover
-{
-    background-color:map-get($theme-colors, "warning") ;
-}
+    .text-#{$color}
+    {
+        cursor: pointer;
+    }
+
+    .text-#{$color}.active
+    {
+        font-weight: 700;
+    }
+  }
 
 
-
-.btn-outline-danger.tras02:hover
-{
-    
-    background-color:map-get($theme-colors, "danger") ;
-}
 
 .ng-sidebar
 {
-    background-color: #fff;
+    background-color:map-get($theme-colors, "dark") ;
     z-index: 2;
     width:90%;
     min-width: 16em;
@@ -106,15 +111,7 @@ div.obscure
     font-size: 85%;
 }
 
-.text-primary
-{
-    cursor: pointer;
-}
 
-.text-primary.active
-{
-    font-weight: 700;
-}
 
 a.nav-link .material-icons
 {
@@ -125,6 +122,12 @@ a.nav-link .material-icons
 a.nav-link .material-icons.hidden
 {
     color: rgba(0,0,0,0)
+}
+
+.nav-link.disabled
+{
+    // color:theme-color-level($color-name: "gray", $level: 6)  !important;
+    color:$gray-500 !important;
 }
 
 @media (min-width: 576px) {

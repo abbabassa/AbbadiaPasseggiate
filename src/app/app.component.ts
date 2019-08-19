@@ -74,10 +74,10 @@ export class AppComponent implements OnInit {
       return "nav-link disabled";
 
     if(this.isEntryDefault(entry))
-      return "nav-link text-primary";
+      return "nav-link text-aplight";
     
     if(this.isEntryActive(entry))
-      return "text-primary nav-link active";
+      return "text-aplight nav-link active";
   }
 
 

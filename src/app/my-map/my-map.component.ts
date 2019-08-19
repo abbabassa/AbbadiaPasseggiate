@@ -200,20 +200,20 @@ export class MyMapComponent implements OnInit {
         {
           label: rotateEl,
           // autoHide:false, // for always visible
-          className:  "ap-control btn btn-outline-primary tras02 my-rot"
+          className:  "ap-control btn btn-outline-aplight tras02 my-rot"
         },
         zoom: true,
         zoomOptions : 
         {
-          className : "ap-control btn btn-outline-primary tras02 my-zoom",
+          className : "ap-control btn btn-outline-aplight tras02 my-zoom",
           zoomInLabel: zoomInEl,
           zoomOutLabel: zoomOutEl
         }
       }
     ).getArray();
     
-    (controls[0].element.classList as DOMTokenList).remove("btn", "btn-outline-primary","ol-control", "ol-unselectable");
-    (controls[1].element.classList as DOMTokenList).remove("btn", "btn-outline-primary","ol-control", "ol-unselectable");                                
+    (controls[0].element.classList as DOMTokenList).remove("btn", "btn-outline-aplight","ol-control", "ol-unselectable");
+    (controls[1].element.classList as DOMTokenList).remove("btn", "btn-outline-aplight","ol-control", "ol-unselectable");                                
     
     
     

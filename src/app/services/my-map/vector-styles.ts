@@ -27,7 +27,7 @@ function getFont(size:FontSizes, weight:FontWeights = FontWeights.Default)
 {
     var fontType= "sans-serif"
     var sizeConcat ="";
-    var weightConcat ="";
+    
 
     switch(size){
         case FontSizes.Small:
@@ -42,8 +42,14 @@ function getFont(size:FontSizes, weight:FontWeights = FontWeights.Default)
     }
 
 
-    switch(weight)
-    {
+    let weightConcat = translateFontWeight(weight);
+
+    return weightConcat +  sizeConcat + fontType 
+}
+
+function translateFontWeight(weight: FontWeights) {
+    var weightConcat ="";
+    switch (weight) {
         case FontWeights.Bold:
             weightConcat += "bold ";
             break;
@@ -54,8 +60,17 @@ function getFont(size:FontSizes, weight:FontWeights = FontWeights.Default)
             weightConcat += " ";
             break;
     }
+    return weightConcat;
+}
 
-    return weightConcat +  sizeConcat + fontType 
+function modifyFontWeight(currentFontInfo: string, weight:FontWeights)
+{
+    let info:string[] = currentFontInfo.split(" ");
+    if(info.length > 0)
+    {
+        info[0] = translateFontWeight(weight);
+    }
+    return info.reduce<string>((pr,cur,index,array)=> pr + " " + cur, "");
 }
 
 
@@ -122,6 +137,7 @@ export class BootstrapTheme
     public warning : string;
     public danger : string;
     public light : string;
+    public aplight: string;
     public dark : string;
 
     private constructor (){}
@@ -154,6 +170,7 @@ export class BootstrapTheme
         this._instance.danger = style.getPropertyValue('--danger');
         this._instance.light = style.getPropertyValue('--light');
         this._instance.dark = style.getPropertyValue('--dark');
+        this._instance.aplight= style.getPropertyValue('--aplight');
 
         
     }
@@ -276,7 +293,7 @@ export function getVectorStyle(styleType:VectorStyleType, resolution, selected: 
            
             break;
         case VectorStyleType.Percorsi:
-            let colorStyle = BootstrapTheme.GetRGBA(BootstrapTheme.Instance.primary, 0.5);
+            let colorStyle = BootstrapTheme.GetRGBA(BootstrapTheme.Instance.aplight    , 0.6);
             if(selected)
                 colorStyle[3] = 1;
             style = new Style({
@@ -410,9 +427,12 @@ export function getPointStyle(feature, resolution, selected : boolean) : string
 
     if (selected)
     {
-        let oldWidth =style.getText().getStroke().getWidth();
-        style.getText().getStroke().setWidth(oldWidth * 1.5);
-        style.getText().getStroke().setColor("#004000");
+        let oldStrokeWidth =style.getText().getStroke().getWidth();
+        style.getText().getStroke().setWidth(oldStrokeWidth * 0.7);
+        style.getText().getStroke().setColor(BootstrapTheme.Instance.primary); 
+        style.getText().getFill().setColor(BootstrapTheme.Instance.light); 
+        let fontInfo : string = style.getText().getFont();
+        style.getText().setFont(modifyFontWeight(fontInfo, FontWeights.Bold));
     }
 
     return style;
