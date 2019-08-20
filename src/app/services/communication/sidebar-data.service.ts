@@ -10,17 +10,15 @@ export class SidebarDataService {
   // As from documentation: A Subject that requires an initial value and emits its current value to new subscribers
   // that's the best option in this case
   private isOpen = new BehaviorSubject<boolean>(false);
-  private mainActive = new Subject<number>();
-  private subActiveChange = new Subject<boolean>();
 
   public readonly menuEntries : MenuTree<MenuEntryData>[];
 
-  constructor() 
+  constructor(private router: Router) 
   {
     this.menuEntries = [];
     let menuEntry = new MenuEntryData ("Mappa", "map", "map", MenuEntryStatus.Default, );
-    let menuSubEntry1 = new MenuEntryData ("Mostra Luoghi", "loc", "", MenuEntryStatus.Default, false);
-    let menuSubEntry2 = new MenuEntryData ("Mostra Percorsi", "trails", "", MenuEntryStatus.Default, false);
+    let menuSubEntry1 = new MenuEntryData ("Mostra Luoghi", "loc", "loc", MenuEntryStatus.Default, false);
+    let menuSubEntry2 = new MenuEntryData ("Mostra Percorsi", "trails", "trails", MenuEntryStatus.Default, false);
     this.menuEntries.push (new MenuTree<MenuEntryData> (menuEntry, [menuSubEntry1,menuSubEntry2] ));
 
     menuEntry = new MenuEntryData ("Photos", "photo", "photo", MenuEntryStatus.Default);
@@ -31,8 +29,6 @@ export class SidebarDataService {
   }
 
   isOpen$ = this.isOpen.asObservable();
-  mainActive$ = this.mainActive.asObservable();
-  subActiveChange$ = this.subActiveChange.asObservable();
 
   // Service message commands
   setState(isOpen: boolean) {
@@ -41,13 +37,10 @@ export class SidebarDataService {
 
   getActiveMainEntryIndex() : number
   {
-    for(let i = 0; i < this.menuEntries.length; i++)
-    {
-      if(this.menuEntries[i].value.status == MenuEntryStatus.Active)
-        return i;
-    }
-
-    return -1;
+    if(!this.menuEntries)
+      return -1;
+    
+    return this.menuEntries.findIndex(entry => entry.value.status == MenuEntryStatus.Active)
   }
 
 
@@ -73,7 +66,7 @@ export class SidebarDataService {
     }
   }
 
-  setActiveEntries(selectedMain:number, selectedSub : number)
+  setActiveEntries(selectedMain:number, selectedSub : number, navigate = true)
   {
     
     let activeMainIndex : number= this.getActiveMainEntryIndex();
@@ -82,27 +75,22 @@ export class SidebarDataService {
       if(activeMainIndex >= 0)
         this.menuEntries[activeMainIndex].value.setDefault();
       this.menuEntries[selectedMain].value.setActive();
-      this.mainActive.next(selectedMain);
     }
     
     if(selectedSub >= 0)
     {
 
-      // ifthe current main index was already selected, I check if the subindex was already active
+      // if the current main index was already selected, I check if the subindex was already active
       if(activeMainIndex == selectedMain)
       {
         let newSelChildren = this.menuEntries[selectedMain].children[selectedSub];
         if(newSelChildren.status == MenuEntryStatus.Active)
         {
-          if(newSelChildren.isExclusive)
-            return;
-          else
-          {
+          if(!newSelChildren.isExclusive)
             newSelChildren.setDefault();
-            this.subActiveChange.next(true);
-            return;
-          }
-
+            
+          this.manageNavigation(selectedMain, navigate);
+          return;
         }
           
       }
@@ -110,14 +98,15 @@ export class SidebarDataService {
       if(activeMainIndex >= 0)
         this.resetSubEntryStatus(activeMainIndex, true);
       this.menuEntries[selectedMain].children[selectedSub].setActive();
-      this.subActiveChange.next(true);
+      
     }
     else
     {
       if(activeMainIndex >= 0)
         this.resetSubEntryStatus(activeMainIndex);
-      this.subActiveChange.next(false);
     }
+
+    this.manageNavigation(selectedMain, navigate);
 
     
     
@@ -126,12 +115,40 @@ export class SidebarDataService {
 
     let path : string =u.reduce<string>((prevVal, curVal, currIndex, array) => prevVal + (currIndex==0? "": "/") + curVal.path , "");
     
-    for(let i = 0; i < this.menuEntries.length; i++)
+    this.resetMainEntryStatus();
+    let mainIndex = this.menuEntries.findIndex(entry => entry.value.routerLink == path);
+    this.setActiveEntries(mainIndex,-1, false);
+    this.activateSubEntriesByUrl(mainIndex, u);
+     
+  }
+
+  /**
+   * It activates menu subentries of the provided main index entry based on the optional parameters of the url
+   * 
+   * @param mainIndex main menu entry index
+   * @param u urlsegment array
+   */
+  private activateSubEntriesByUrl(mainIndex: number, u: UrlSegment[])
+  {
+    if(!this.menuEntries[mainIndex].children)
+      return;
+
+    for(let url of u)
     {
-      if(this.menuEntries[i].value.routerLink == path)
+      if(url.parameters)
       {
-        this.resetMainEntryStatus();
-        this.setActiveEntries(i,-1);
+        for(let paramKey of Object.keys( url.parameters))
+        {
+          let index = this.menuEntries[mainIndex].children.findIndex(entry => entry.routerLink == paramKey);
+          if(index >= 0 && this.menuEntries[mainIndex].children[index].status != MenuEntryStatus.Disable)
+          {
+
+            if(+url.parameters[paramKey]==1)
+              this.menuEntries[mainIndex].children[index].setActive();
+            else
+              this.menuEntries[mainIndex].children[index].setDefault();
+          }
+        }
       }
     }
   }
@@ -174,6 +191,34 @@ export class SidebarDataService {
 
     }
     return this.menuEntries[mainIndex].children.filter(entry => entry.status == MenuEntryStatus.Active)
+
+  }
+
+
+  /**
+   * Manages navigation from main index. Active subindexes are passed as optional parameter
+   * @param mainIndex 
+   */
+  private manageNavigation(mainIndex : number, navigate = true)
+  {
+    if(!navigate)
+      return;
+    let mainRouterPath = "/" + this.menuEntries[mainIndex].value.routerLink;
+
+    let optionalParameters : any = {};
+
+    for(let child of this.menuEntries[mainIndex].children)
+    {
+      if(child.status != MenuEntryStatus.Disable)
+      {
+        optionalParameters[child.routerLink] = child.status;
+      }
+    
+    }
+
+    this.router.navigate([mainRouterPath, optionalParameters]);
+
+
 
   }
 

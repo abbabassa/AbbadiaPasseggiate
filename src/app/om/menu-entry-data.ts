@@ -28,7 +28,7 @@ export class MenuEntryData
 
 export enum MenuEntryStatus
 {
-    Default,
-    Active,
-    Disable
+    Default=0,
+    Active=1,
+    Disable=-1
 }

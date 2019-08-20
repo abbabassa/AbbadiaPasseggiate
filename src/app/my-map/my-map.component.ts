@@ -227,17 +227,15 @@ export class MyMapComponent implements OnInit {
 
     
     var layerPercorsi : VectorLayer = this.sentieriLayerService.getPercorsi();
-    // layerPercorsi.setVisible(false);
     this.map.addLayer(layerPercorsi);
 
   
     
 
     var layerLuoghi : VectorLayer = this.sentieriLayerService.getLuoghi();
-    // layerLuoghi.setVisible(false);
     this.map.addLayer(layerLuoghi);
 
-    this.checkActiveInteractionLayer(layerLuoghi, layerPercorsi);
+    // this.checkActiveInteractionLayer(layerLuoghi, layerPercorsi);
 
 
     // create a Select interaction and add it to the map
@@ -285,14 +283,9 @@ export class MyMapComponent implements OnInit {
     
     });
 
-    this.sidebarDataService.subActiveChange$.subscribe(flag => 
-      {
-        if(!flag)
-          return;
-        
-          this.checkActiveInteractionLayer(layerLuoghi, layerPercorsi);
-  
-      });
+
+
+    this.activatedRoute.paramMap.subscribe(mapPar=>this.enableMapLayers(mapPar, layerLuoghi, layerPercorsi));
 
 
 
@@ -309,6 +302,19 @@ export class MyMapComponent implements OnInit {
 
     this.layerControl.setLayerVisible(LAYER_AERIAL);
 
+  }
+
+  private enableMapLayers(mapPar, locLayer: VectorLayer, trailLayer: VectorLayer) {
+    if (mapPar.has("loc") && +mapPar.get("loc") == 1)
+      locLayer.setVisible(true);
+    else
+      locLayer.setVisible(false);
+
+
+    if (mapPar.has("trails") && +mapPar.get("trails") == 1)
+      trailLayer.setVisible(true);
+    else
+      trailLayer.setVisible(false);
   }
 
   onAddSelectedFeature(feature : Feature)
@@ -369,20 +375,6 @@ export class MyMapComponent implements OnInit {
   }
 
 
-  checkActiveInteractionLayer(layerLuoghi : VectorLayer, layerPercorsi : VectorLayer)
-  {
-    let activeSubEntries = this.sidebarDataService.getActiveSub(this.routerLinkPath);
-
-    if(activeSubEntries.some(data => data.translKey == "loc"))
-      layerLuoghi.setVisible(true);
-    else
-      layerLuoghi.setVisible(false);
-
-    if(activeSubEntries.some(data => data.translKey == "trails"))
-      layerPercorsi.setVisible(true);
-    else
-      layerPercorsi.setVisible(false);
-  }
 
   
 

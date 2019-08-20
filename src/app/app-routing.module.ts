@@ -5,7 +5,9 @@ import { PhotoComponent } from './photo/photo.component';
 
 const appRoutes: Routes = [
 
-  { path: '',   redirectTo: '/map', pathMatch: 'full' },
+  { path: '',
+    redirectTo: '/map-default', 
+    pathMatch: 'full' },
   {
     path: 'photo',
     component: PhotoComponent

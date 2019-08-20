@@ -20,11 +20,6 @@ export class AppComponent implements OnInit {
     
     this.sidebarDataService.isOpen$.subscribe(val=> this.isSideMenuOpen = val);
 
-    this.sidebarDataService.mainActive$.subscribe(index => 
-      {
-        if(index >= 0)
-          this.router.navigate( [this.sidebarDataService.menuEntries[index].value.routerLink]);
-      });
 
       
 

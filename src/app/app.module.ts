@@ -19,6 +19,7 @@ import { ImgUrlPipe } from './pipes/img-url.pipe';
 import { ImageGridComponent } from './image-grid/image-grid.component';
 import { ModalAlertComponent } from './modal-alert/modal-alert.component';
 import { PhotoComponent } from './photo/photo.component';
+import { MapRedirectWithParamsComponent } from './my-map/map-redirect-with-params/map-redirect-with-params.component';
 
 
 
@@ -30,7 +31,8 @@ import { PhotoComponent } from './photo/photo.component';
     ImgUrlPipe,
     ImageGridComponent,
     ModalAlertComponent,
-    PhotoComponent
+    PhotoComponent,
+    MapRedirectWithParamsComponent
   ],
   imports: [
     BrowserModule,
