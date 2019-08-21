@@ -254,8 +254,8 @@ export class MyMapComponent implements OnInit {
   
     selectedFeatures.on('add',  (event) => {
       var feature = event.target.item(0);
-      if(feature.getProperties().interactId == 1)
-        this.onAddSelectedFeature(feature);
+      // if(feature.getProperties().interactId == 1)
+      this.onAddSelectedFeature(feature, feature.getProperties().interactId);
     });
 
 
@@ -269,18 +269,21 @@ export class MyMapComponent implements OnInit {
 
     this.previewService.newRef$.subscribe(newRef => 
     {
-      if(newRef.type != DescRefTypes.Location)
-        return;
-
-      
       selectedFeatures.clear();
-      this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', newRef.id]} }]);
-
-      let luoghiFeatures: Feature[] =layerLuoghi.getSource().getFeatures() as Feature[];
-      let newFeature:Feature =luoghiFeatures.find(f=> f.getProperties().id == newRef.id);
+      let features:Feature[];
+      if(newRef.type == DescRefTypes.Location)
+      {
+        features =layerLuoghi.getSource().getFeatures() as Feature[];
+ 
+      }
+      else
+      {
+        features =layerPercorsi.getSource().getFeatures() as Feature[];
+      }
+      this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', newRef.id, newRef.type]} }]);
+      let newFeature:Feature =features.find(f=> f.getProperties().id == newRef.id);
       selectedFeatures.push(newFeature);
 
-    
     });
 
 
@@ -317,21 +320,25 @@ export class MyMapComponent implements OnInit {
       trailLayer.setVisible(false);
   }
 
-  onAddSelectedFeature(feature : Feature)
+  onAddSelectedFeature(feature : Feature, interactionType: DescRefTypes)
   {
     var locId = feature.getProperties().id;
     this.previewService.setState(true);
-    this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', locId]} }]);
+    this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', locId, interactionType]} }]);
 
     //let featureCord = feature.getGeometry().getCoordinates();
     
-    let featureCord = this.calculateCenter(feature);
+    if(interactionType == DescRefTypes.Location)
+    {
+      let featureCord = this.calculateCenter(feature);
 
-    this.map.getView().animate({
-      center: featureCord,
-      duration: 1000,
-      easing: easeOut
-    });
+      this.map.getView().animate({
+        center: featureCord,
+        duration: 1000,
+        easing: easeOut
+      });
+    }
+
   }
 
   calculateCenter(feature:Feature) : number[]

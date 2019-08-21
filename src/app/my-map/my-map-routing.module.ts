@@ -1,6 +1,6 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {LuoghiPreviewComponent} from "./luoghi-preview/luoghi-preview.component";
+import {MapOverlayComponent} from "./map-overlay/map-overlay.component";
 import { MyMapComponent } from './my-map.component';
 import { MapRedirectWithParamsComponent } from './map-redirect-with-params/map-redirect-with-params.component';
 
@@ -14,8 +14,8 @@ const myMapRoutes: Routes = [
         component: MapRedirectWithParamsComponent
     },
     {
-        path: 'luoghiPrewiew/:id',
-        component: LuoghiPreviewComponent,
+        path: 'luoghiPrewiew/:id/:type',
+        component: MapOverlayComponent,
         outlet: 'luoghiPopup'
       }
   ];    

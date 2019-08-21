@@ -25,7 +25,7 @@
                                 [ngClass]= "getAnchorClass(subEntry)"
                                 (click)="setActiveMenuEntriess(i, j)"
                                 >
-                                    <span><i class="material-icons" [class.hidden]= "subEntry.isExclusive  || !isEntryActive(subEntry)">check</i></span> 
+                                    <span><i class="material-icons" *ngIf="canGPHBeProcessed"   [class.hidden]= "subEntry.isExclusive  || !isEntryActive(subEntry)">check</i></span> 
                                     {{subEntry.defName}}
                                 </a>
                             </li>

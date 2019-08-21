@@ -3,6 +3,7 @@ import { SidebarDataService } from './services/communication/sidebar-data.servic
 import { MenuTree } from './om/menu-tree';
 import { MenuEntryData, MenuEntryStatus } from './om/menu-entry-data';
 import { Router, ActivatedRoute } from '@angular/router';
+import { timeInterval } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -10,21 +11,22 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  // ngAfterViewChecked(): void {
-  //   if(this.activateRoute.children.length > 0)
-  //     this.activateRoute.children[0].url.subscribe(u => this.sidebarDataService.setMainActiveByRoute(u));
-   
-  // }
+  
+  /**
+   * Added to skip some view changes on the loading of the page, that are triggered by some modification in sidebarDataServices.
+   * These changes can lead to angular exceptions (ExpressionChangedAfterItHasBeenCheckedError)
+   */
+  public canGPHBeProcessed = false;
   
   ngOnInit(): void {
     
-    this.sidebarDataService.isOpen$.subscribe(val=> this.isSideMenuOpen = val);
+    this.sidebarDataService.isOpen$.subscribe(val=>
+      { 
+        if(!this.canGPHBeProcessed && val)
+          this.canGPHBeProcessed = true;
+        this.isSideMenuOpen = val
+      });
 
-
-      
-
-   
-    
   }
 
 
@@ -65,14 +67,20 @@ export class AppComponent implements OnInit {
 
   public getAnchorClass(entry:MenuEntryData):string
   {
-    if(this.isEntryDisabled(entry))
-      return "nav-link disabled";
+    if(!this.canGPHBeProcessed)
+      return "";
+    let result:string;
 
-    if(this.isEntryDefault(entry))
-      return "nav-link text-aplight";
-    
-    if(this.isEntryActive(entry))
-      return "text-aplight nav-link active";
+
+    if(this.isEntryDisabled(entry))
+      result= "nav-link disabled";
+    else if(this.isEntryDefault(entry))
+      result = "nav-link text-aplight";
+    else if(this.isEntryActive(entry))
+      result = "text-aplight nav-link active";
+
+
+    return result;
   }
 
 

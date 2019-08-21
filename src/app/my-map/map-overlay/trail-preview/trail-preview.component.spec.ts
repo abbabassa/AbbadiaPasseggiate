@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LuoghiPreviewComponent } from './luoghi-preview.component';
+import { TrailPreviewComponent } from './trail-preview.component';
 
-describe('LuoghiPreviewComponent', () => {
-  let component: LuoghiPreviewComponent;
-  let fixture: ComponentFixture<LuoghiPreviewComponent>;
+describe('TrailPreviewComponent', () => {
+  let component: TrailPreviewComponent;
+  let fixture: ComponentFixture<TrailPreviewComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LuoghiPreviewComponent ]
+      declarations: [ TrailPreviewComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LuoghiPreviewComponent);
+    fixture = TestBed.createComponent(TrailPreviewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

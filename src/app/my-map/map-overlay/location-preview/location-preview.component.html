@@ -1,0 +1,37 @@
+<div class="d-flex justify-content-center" *ngIf="!luogoInfos">
+  <div class="spinner-grow  text-primary" role="status">
+    <span class="sr-only">Caricamento...</span>
+  </div>
+</div>
+
+<div *ngIf="luogoInfos && luogoInfos.mainData && luogoInfos.mainData  && luogoInfos.mainData.description && luogoInfos.mainData.description.length> 0 ">
+
+  <p *ngFor="let desc of descData?.descriptions; let i = index">
+    
+    <span *ngFor="let subdesc of desc; let j = index">
+      {{subdesc}}
+      <a class ="text-primary " *ngIf= "j<desc.length -1" (click)=onDescLinkClick(descData.descRefs[i][j])> {{descData.descRefs[i][j].name}}</a>
+    </span>
+
+  </p>
+
+  
+</div> 
+<ng-container *ngIf="luogoInfos && luogoInfos.trailRefs && luogoInfos.trailRefs.length>0">
+  <h5>Come raggiungerlo?</h5>
+  <div>
+    <ul>
+      <li *ngFor="let trailref of luogoInfos?.trailRefs">
+        <a class="text-primary" (click)="this.onDescLinkClick(trailref)">{{trailref.name}} </a>
+      </li>
+    </ul>
+      
+  </div>
+</ng-container>
+
+
+
+<app-image-grid  *ngIf="luogoInfos && luogoInfos.imagesData" [imageInfo] ="luogoInfos?.imagesData" [maxCols]="2" [useLightBox]="true"></app-image-grid>
+
+
+
