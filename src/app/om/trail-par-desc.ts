@@ -1,57 +1,39 @@
-import { APImageData } from './img-data';
 import { DescReferences } from './desc-references';
+import { ParWithRefs, ParWithRefsInput } from './par-with-refs';
 
-export class TrailParDesc 
+export class TrailParDesc extends ParWithRefs
 {
-    public descriptions : string [];
-    public descRefs: DescReferences[];
-    
     constructor(
         description : string,
         initDescRefs: DescReferences[],
+        parIndex : number,
         public mainTrailsID:number,
-        public parId : number,
-        public intersectionsPhotos: APImageData[],
-        public centerCoordinates : number [],
-        public locFeatures : any[], // feature dei luoghi, capire poi se usare oggetto OL
-        public pathFeature: any // feature del percorso, capire poi se usare oggetto OL,
+        public featureId: number,
+
+        //TODO  add here and on the db an array of intersection feature ids. 
+        //      in the feature will be saved a referece to the location id (new kind of location for it), that will link to a photo
 
 
-    ) {
-        
-        this.descriptions = [];
-        
-        if(!description )
-          return;
-        
-        
-        
-
-        
-        this.descriptions = description.split(/\{\d*\}/);
-        this.descRefs = [];
-
-        let continueAnalyze : Boolean = true;
-        while(continueAnalyze)
-        {
-            let matchResult :RegExpMatchArray =description.match(/\{\d*\}/);
-            if (matchResult && matchResult.length > 0)
-            {
-                description = description.substr(matchResult.index+matchResult[0].length)
-                let id = +matchResult[0].substr(1,1);
-                let index =  initDescRefs.findIndex( ref => ref.index == id);
-                this.descRefs.push( initDescRefs[index]);
-
-            }else
-            {
-
-                continueAnalyze = false;
-            }
-        }
-        
-     
-     
+    )
+    {
+        super(description, initDescRefs, parIndex);
     }
 
+
+
+    public static generatePar(input : TrailParDescInput): TrailParDesc
+    {
+        if(!input)
+            return null;
+        return new TrailParDesc(input.description, input.ref, input.parIndex, input.mainTrailsID, input.featureId);
+    }
+
+
     
+}
+
+export interface TrailParDescInput extends ParWithRefsInput
+{
+    mainTrailsID:number;
+    featureId: number;
 }

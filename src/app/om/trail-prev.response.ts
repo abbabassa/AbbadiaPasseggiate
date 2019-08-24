@@ -1,20 +1,22 @@
-import { TrailHeaderData } from "./trail-header-data";
+import { TrailHeaderData, TrailHeaderDataInput } from "./trail-header-data";
 import { PreviewResponse } from './prev.response';
-import { TrailParDesc } from './trail-par-desc';
+import { TrailParDesc, TrailParDescInput } from './trail-par-desc';
 
 export class TrailPreviewResponse implements PreviewResponse {
     public     mainData :TrailHeaderData;
     public     pars: TrailParDesc[]
     
-    constructor
-    (
-        oldLoc: TrailPreviewResponse
-    )
+    constructor(inputLoc: TrailPreviewResponseInput)
     {
-        this.mainData =  TrailHeaderData.clone( oldLoc.mainData);
-        this.pars = oldLoc.pars;
+        this.mainData =  TrailHeaderData.generateMainData( inputLoc.mainData);
+        this.pars = inputLoc.pars.map(inPars =>TrailParDesc.generatePar( inPars));
     }
 
-    
-    
+
+}
+
+export interface TrailPreviewResponseInput
+{
+    mainData: TrailHeaderDataInput;
+    pars : TrailParDescInput[];
 }

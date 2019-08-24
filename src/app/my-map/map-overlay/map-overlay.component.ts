@@ -6,6 +6,7 @@ import {LocationsService} from '../../services/locations/locations.service';
 import { PreviewService } from '../../services/communication/preview.service';
 import {  DescRefTypes} from '../../om/desc-references';
 import { PreviewResponse } from '../../om/prev.response';
+import { TrailsService } from '../../services/trails/trails.service';
 
 
 
@@ -30,6 +31,7 @@ export class MapOverlayComponent implements OnInit {
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
     private locationService: LocationsService,
+    private trailsService : TrailsService,
     private previewService:PreviewService ) { }
 
   ngOnInit() {
@@ -44,7 +46,7 @@ export class MapOverlayComponent implements OnInit {
           if(+params.get('type')==1)
             return this.locationService.getLocationData( +params.get('id'));
           else
-            return null;
+            return this.trailsService.getTrailData( +params.get('id'));
         }
       )  
     )
@@ -67,13 +69,6 @@ export class MapOverlayComponent implements OnInit {
   }
 
 
-  isLocation() :boolean
-  {
-    if(!this.previewResponse || !this.previewResponse.mainData)
-      return false;
-    
-    return this.previewResponse.mainData.type == DescRefTypes.Location;
-  }
 
   expand()
   {

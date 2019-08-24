@@ -6,9 +6,11 @@ import { HttpClientModule } from '@angular/common/http';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { LightboxModule } from 'ngx-lightbox';
 import { SidebarModule } from 'ng-sidebar';
+import { NgScrollbarModule } from 'ngx-scrollbar';
 
 
 import {LocationsService} from './services/locations/locations.service'
+import {TrailsService} from './services/trails/trails.service'
 import {PreviewService} from './services/communication/preview.service'
 import {SidebarDataService} from './services/communication/sidebar-data.service'
 
@@ -22,6 +24,7 @@ import { PhotoComponent } from './photo/photo.component';
 import { MapRedirectWithParamsComponent } from './my-map/map-redirect-with-params/map-redirect-with-params.component';
 import { LocationPreviewComponent } from './my-map/map-overlay/location-preview/location-preview.component';
 import { TrailPreviewComponent } from './my-map/map-overlay/trail-preview/trail-preview.component';
+import { ScrollSpyDirective } from './directives/scroll-spy.directive';
 
 
 
@@ -36,7 +39,8 @@ import { TrailPreviewComponent } from './my-map/map-overlay/trail-preview/trail-
     PhotoComponent,
     MapRedirectWithParamsComponent,
     LocationPreviewComponent,
-    TrailPreviewComponent
+    TrailPreviewComponent,
+    ScrollSpyDirective
   ],
   imports: [
     BrowserModule,
@@ -45,10 +49,11 @@ import { TrailPreviewComponent } from './my-map/map-overlay/trail-preview/trail-
     HttpClientModule,
     NgbModule,
     LightboxModule,
-    SidebarModule.forRoot()
+    SidebarModule.forRoot(),
+    NgScrollbarModule
   ] ,
   entryComponents : [ModalAlertComponent],
-  providers: [LocationsService,PreviewService, SidebarDataService, ImgUrlPipe],
+  providers: [LocationsService, TrailsService, PreviewService, SidebarDataService, ImgUrlPipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
