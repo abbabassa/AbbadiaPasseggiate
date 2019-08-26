@@ -395,10 +395,6 @@ export function getPointStyle(feature, resolution, selected : boolean) : string
             });
 
     }
-    else if (luogo == LOC_TYPE_INCROCIO)
-    {
-        style = new Style({});
-    }
     else 
     {
         style = new Style({
@@ -420,21 +416,25 @@ export function getPointStyle(feature, resolution, selected : boolean) : string
 
     
 
-   
-   
-    if(resolution < 10 || luogo == LOC_TYPE_COMUNE  )
+    if(luogo == LOC_TYPE_INCROCIO)
+    {
+        style.getText().setText("");
+    }
+    else if(resolution < 10 || luogo == LOC_TYPE_COMUNE  )
         style.getText().setText(feature.getProperties().name);
     else
         style.getText().setText("");
 
 
     let imageName:string = convertIconName(feature.getProperties().icon );
+
+
     if (imageName && resolution <10)
     {
         let icon = new Icon({
         src: imageName,
         color: 'white',
-        scale : resolution < 8? 1.15 : 0.8,
+        scale : resolution < 8 && luogo != LOC_TYPE_INCROCIO ? 1.15 : 0.8,
         anchor: [0.5, 0.7]
         })
         style.setImage(icon);

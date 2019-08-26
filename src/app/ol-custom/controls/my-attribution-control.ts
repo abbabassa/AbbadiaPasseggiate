@@ -41,12 +41,8 @@ export class MyAttributionControl extends Control {
     onLayerVisibilityChange(currentLayer : Layer, map : Map)
     {
 
-        // PB [30/06/2019]: this control doesn't work after a build with minimizing process (the contructor name may have changed)
-        //                  better check for actual type
-        //if(!currentLayer || currentLayer.constructor.name == "LayerGroup")
         if(!currentLayer || (currentLayer instanceof GroupLayer))
         {
-            console.log(currentLayer);
             return;
 
         }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject }    from 'rxjs';
+import { Subject, BehaviorSubject }    from 'rxjs';
 import { DescReferences, DescRefTypes } from '../../om/desc-references';
 import { TrailHeaderData } from '../../om/trail-header-data';
 import { TrailParDesc } from '../../om/trail-par-desc';
@@ -10,7 +10,7 @@ export class PreviewService {
   private isOpenSource = new Subject<boolean>();
   private newRef = new Subject<DescReferences>();
   private trailHeaderData = new Subject<TrailHeaderData>();
-  private trailActiveSection = new Subject<TrailParDesc>();
+  private trailActiveSection = new BehaviorSubject<TrailParDesc>(null);
 
 
   constructor() { }
@@ -43,5 +43,11 @@ export class PreviewService {
   {
     this.trailActiveSection.next(as);
   }
+
+  getTrailActiveSectionCurrentVal() : TrailParDesc
+  {
+    return this.trailActiveSection.value;
+  }
+
 
 }

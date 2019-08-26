@@ -28,6 +28,7 @@ import { LayerControl } from '../ol-custom/controls/layer-control';
 import { VectorStyleType } from '../services/my-map/vector-styles';
 import { DescRefTypes } from '../om/desc-references';
 import { SidebarDataService } from '../services/communication/sidebar-data.service';
+import { TrailHeaderData } from '../om/trail-header-data';
 
 
 
@@ -71,6 +72,7 @@ export class MyMapComponent implements OnInit {
   private map:Map
   private routerLinkPath : string;
   private activeTrailLayer : VectorLayer
+  private intersectClickInteractionConfigured = false;
   
 
 
@@ -257,11 +259,12 @@ export class MyMapComponent implements OnInit {
   
     selectedFeatures.on('add',  (event) => {
       var feature = event.target.item(0);
-      this.onAddSelectedFeature(feature, feature.getProperties().interactId);
+      let interactId = feature.getProperties().interactId;
+      this.onAddSelectedFeature(feature, interactId);
       // if it's a trail i immediately remove it... Better use another interaction type in future
-      if(feature.getProperties().interactId == DescRefTypes.Trail)
+      if(interactId == DescRefTypes.Trail)
         selectedFeatures.clear(); 
-      else
+      else if (interactId == DescRefTypes.Location)
         this.previewService.setTrailHeaderData(null);
     });
 
@@ -290,8 +293,12 @@ export class MyMapComponent implements OnInit {
       else
       {
         features =layerPercorsi.getSource().getFeatures() as Feature[];
-        // nothing for now
+        let newFeature:Feature =features.find(f=> f.getProperties().id == newRef.id);
+        if(newFeature)
+          this.moveView(newFeature);
       }
+
+
      
     });
 
@@ -299,48 +306,32 @@ export class MyMapComponent implements OnInit {
 
     this.activatedRoute.paramMap.subscribe(mapPar=>this.enableMapLayers(mapPar, layerLuoghi, layerPercorsi));
 
-    this.previewService.trailHeaderData$.subscribe(hd =>
-    {
-      let layerStep :VectorLayer =this.getLayerStep();
-      if(!hd)
-      {
-        this.restoreMapLayers(layerLuoghi, layerPercorsi);
-        if(layerStep)
-          layerStep.setVisible(false);
-        return;
-      }
-      
-      if(!layerStep)
-      {
-        layerStep =this.sentieriLayerService.getLayerByName(hd.stepsLayerName, "stepTrail");
-        this.map.addLayer(layerStep);
-      }
-      else if(layerStep.getProperties()["trailId"] != hd.id)
-      {
-        
-        layerStep.setSource(this.sentieriLayerService.getVectorSourceByName(hd.stepsLayerName))
-      }
-      layerPercorsi.setVisible(false);
-      layerStep.setVisible(true);
-    });
+    this.previewService.trailHeaderData$.subscribe(hd => this.onSingleTrailActivate(hd, layerLuoghi, layerPercorsi));
 
 
     this.previewService.trailActiveSection$.pipe(debounceTime(500))      
     .subscribe(actsec => 
     {
+      let layerIntersect : VectorLayer = this.getLayerIntesect();
+      if(layerIntersect)
+      {
+        layerIntersect.changed()
+      }
       let layerStep :VectorLayer =this.getLayerStep();
+      if( !layerStep)
+      {
+        //that should never happen... better return anyway
+         return;
+      }
       if(!actsec)
       {
         // this is the case when I scroll to the top
+
         this.moveView(layerStep.getSource())
         return;
       }
 
-      if( !layerStep)
-      {
-        //that should never happen... better return anyway
-        return;
-      }
+     
       let source : Feature = layerStep.getSource()
       if(source instanceof VectorSource)
       {
@@ -348,8 +339,6 @@ export class MyMapComponent implements OnInit {
         if(activeFeature)
           this.moveView(activeFeature);
       }
-     
-
       
     });
 
@@ -360,6 +349,9 @@ export class MyMapComponent implements OnInit {
     this.layerControl = new LayerControl({ element: this.layerControlElement.nativeElement }, layersMap, this.map)
 
     this.layerControl.setLayerVisible(LAYER_AERIAL);
+
+
+    
 
   }
 
@@ -492,6 +484,57 @@ export class MyMapComponent implements OnInit {
     return layerStep
   }
 
+  private getLayerIntesect() : VectorLayer
+  {
+    return (this.map.getLayers().getArray() as any[]).find(layer => layer.getProperties()["layerName"] == "intersectTrail");
+  }
+
+
+  private onSingleTrailActivate(hd : TrailHeaderData, layerLuoghi : VectorLayer, layerPercorsi : VectorLayer)
+  {
+    let layerStep :VectorLayer =this.getLayerStep();
+    let layerIntersect : VectorLayer = this.getLayerIntesect()
+    if(!hd)
+    {
+      this.restoreMapLayers(layerLuoghi, layerPercorsi);
+      if(layerStep)
+        layerStep.setVisible(false);
+      if(layerIntersect)
+        layerIntersect.setVisible(false);
+      return;
+    }
+    
+    if(!layerStep)
+    {
+      layerStep =this.sentieriLayerService.getLayerByName(hd.stepsLayerName, "stepTrail");
+      this.map.addLayer(layerStep);
+    }
+    else if(layerStep.getProperties()["trailId"] != hd.id)
+    {
+      
+      layerStep.setSource(this.sentieriLayerService.getVectorSourceByName(hd.stepsLayerName))
+    }
+
+
+    if(!layerIntersect)
+    {
+      layerIntersect =this.sentieriLayerService.getLayerByName(hd.intersectionsLayerName, "intersectTrail");
+      this.map.addLayer(layerIntersect);
+
+      this.addClickInteractionToMap(layerIntersect, f => console.log(f.getProperties().id))
+    }
+    else if(layerIntersect.getProperties()["trailId"] != hd.id)
+    {
+      
+      layerIntersect.setSource(this.sentieriLayerService.getVectorSourceByName(hd.intersectionsLayerName))
+    }
+
+
+    layerPercorsi.setVisible(false);
+    layerStep.setVisible(true);
+    layerIntersect.setVisible(true);
+  }
+
 
   onMenuClick()
   {
@@ -499,6 +542,34 @@ export class MyMapComponent implements OnInit {
   }
 
 
+
+  addClickInteractionToMap(layer : VectorLayer, callback : (feature: Feature) => void)
+  {
+    let clickCondition = (pixel) =>
+    {
+      var features = [];
+      this.map.forEachFeatureAtPixel(
+        pixel, 
+        (feature, lay) => features.push(feature),
+        {
+          layerFilter: (clickLy => clickLy == layer),
+          hitTolerance: 7
+        }
+        );
+
+      if(features.length > 0)
+      {
+        callback(features[0]);
+      }
+    }
+
+
+    this.map.on('click', (evt) => {
+      var pixel = evt.pixel;
+      clickCondition(pixel) ;
+    });
+
+  }
 
   
 

@@ -73,7 +73,6 @@ export class MapOverlayComponent implements OnInit {
 
   onParChange(elementId:string)
   {
-    console.log("parChanged")
     if(this.trailComponent)
     {
       this.trailComponent.onParChange(elementId);

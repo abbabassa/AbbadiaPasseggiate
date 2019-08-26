@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {UrlSegment, Router} from '@angular/router';
-import { Subject, BehaviorSubject }    from 'rxjs';
+import {  BehaviorSubject }    from 'rxjs';
 import { MenuTree } from '../../om/menu-tree';
 import { MenuEntryData, MenuEntryStatus } from '../../om/menu-entry-data';
 

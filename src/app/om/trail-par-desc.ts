@@ -9,6 +9,7 @@ export class TrailParDesc extends ParWithRefs
         parIndex : number,
         public mainTrailsID:number,
         public featureId: number,
+        public intersectionFeatureIds : number[]
 
         //TODO  add here and on the db an array of intersection feature ids. 
         //      in the feature will be saved a referece to the location id (new kind of location for it), that will link to a photo
@@ -25,7 +26,7 @@ export class TrailParDesc extends ParWithRefs
     {
         if(!input)
             return null;
-        return new TrailParDesc(input.description, input.ref, input.parIndex, input.mainTrailsID, input.featureId);
+        return new TrailParDesc(input.description, input.ref, input.parIndex, input.mainTrailsID, input.featureId, input.intersectionFeatureIds);
     }
 
 
@@ -36,4 +37,5 @@ export interface TrailParDescInput extends ParWithRefsInput
 {
     mainTrailsID:number;
     featureId: number;
+    intersectionFeatureIds : number[];
 }

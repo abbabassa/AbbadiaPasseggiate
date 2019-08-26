@@ -7,6 +7,8 @@ import {GeoJSON as geoJsonFormat} from 'ol/format';
 
 import {Vector as VectorLayer, Group as GroupLayer} from 'ol/layer';
 import { environment } from '../../../environments/environment';
+import { PreviewService } from '../communication/preview.service';
+import { TrailParDesc } from '../../om/trail-par-desc';
 
 
 
@@ -15,7 +17,7 @@ import { environment } from '../../../environments/environment';
 @Injectable()
 export class SentieriLayerService {
 
-  constructor() { }
+  constructor( private previewService : PreviewService) { }
 
 
   
@@ -24,7 +26,7 @@ export class SentieriLayerService {
   
 
   getFunctionStyle(tipoStrada: VectorStyleType, selected : boolean) {
-    return function (feature: any, resolution) {
+    return (feature: any, resolution)  => {
      
       let styleForLines = getVectorStyle(tipoStrada ,resolution, selected) ;
       
@@ -36,9 +38,13 @@ export class SentieriLayerService {
 
       if(feature.getGeometry().getType()== "Point"){
         styleForPoint= getPointStyle(feature, resolution, selected)
+        if(tipoStrada == VectorStyleType.PasseggiataSelez)
+          this.manageIntersectionLayerVisibility(feature,styleForPoint);
 
-        
-       }
+      }
+
+      
+
 
       var stylesForVector = {
         'Point': styleForPoint,
@@ -65,6 +71,17 @@ export class SentieriLayerService {
       style: this.getFunctionStyle(tipoStrada, false)
     });
 
+  }
+
+  manageIntersectionLayerVisibility(feature, definedStyle  )
+  {
+    let activeSec : TrailParDesc= this.previewService.getTrailActiveSectionCurrentVal()
+    if(activeSec)
+    {
+      let currentInterFeatIds = activeSec.intersectionFeatureIds
+      if(!currentInterFeatIds.some(id => id == feature.getProperties().id))
+        definedStyle.setImage(null);
+    }
   }
 
   getSentieri(){
