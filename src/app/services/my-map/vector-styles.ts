@@ -74,16 +74,16 @@ function modifyFontWeight(currentFontInfo: string, weight:FontWeights)
 }
 
 
-export enum VectorStyleType
-{
-    SentieriUfficiali,
-    Piste,
-    Strade,
-    Tracce,
-    Imboscate,
-    Viandante,
-    Luoghi,
-    Percorsi
+export enum VectorStyleType {
+  SentieriUfficiali,
+  Piste,
+  Strade,
+  Tracce,
+  Imboscate,
+  Viandante,
+  Luoghi,
+  Percorsi,
+  PasseggiataSelez
 }
 
 
@@ -92,11 +92,13 @@ export const ICON_TYPE_WATERFALL = "cascata";
 export const ICON_TYPE_HUT = "rifugio";
 export const ICON_TYPE_MUSEUM = "museo";
 export const ICON_TYPE_VIEWSIGHT = "vista";
+export const ICON_TYPE_INFO = "info";
 
 
 export const LOC_TYPE_COMUNE = "comune";
 export const LOC_TYPE_FRAZIONE = "frazione";
 export const LOC_TYPE_LUOGO = "luogo";
+export const LOC_TYPE_INCROCIO = "intersection";
 
 
 export function convertIconName(GeoJSONIconName : string): string
@@ -108,6 +110,7 @@ export function convertIconName(GeoJSONIconName : string): string
     map[ICON_TYPE_HUT] = "assets/icons/material-design-icons/baseline-home-24px.svg";
     map[ICON_TYPE_MUSEUM] ="assets/icons/map-icons/museum.svg";
     map[ICON_TYPE_VIEWSIGHT] = "assets/icons/map-icons/viewpoint.svg";
+    map[ICON_TYPE_INFO] = "assets/icons/material-design-icons/baseline-info-24px.svg";
 
 
     
@@ -180,6 +183,7 @@ export class BootstrapTheme
 export function getVectorStyle(styleType:VectorStyleType, resolution, selected: boolean )
 {
     let style : Style = new Style({});
+    
     switch(styleType)
     {
         case VectorStyleType.SentieriUfficiali:
@@ -316,6 +320,17 @@ export function getVectorStyle(styleType:VectorStyleType, resolution, selected: 
                     })
                 });
             break;
+        
+        case VectorStyleType.PasseggiataSelez:
+            
+            style = new Style({
+                stroke: new Stroke({
+                    color: BootstrapTheme.GetRGBA(BootstrapTheme.Instance.aplight  , 1),
+                    width: resolution < 10? 4 :3,
+                    // lineDash: [8, 10]
+                })
+            });
+            break;
 
 
         case VectorStyleType.Luoghi:
@@ -379,6 +394,10 @@ export function getPointStyle(feature, resolution, selected : boolean) : string
                 })
             });
 
+    }
+    else if (luogo == LOC_TYPE_INCROCIO)
+    {
+        style = new Style({});
     }
     else 
     {

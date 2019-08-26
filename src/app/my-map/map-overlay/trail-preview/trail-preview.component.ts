@@ -20,20 +20,38 @@ export class TrailPreviewComponent  {
   public set  trailInfos (val : TrailPreviewResponse)
   {
     this._trailInfos = val;
+    this.previewService.setTrailHeaderData(this._trailInfos.mainData);
   }
   public get trailInfos() : TrailPreviewResponse
   {
     return this._trailInfos;
   }
   
-  private currentPar: TrailParDesc
+  private _currentPar : TrailParDesc
+
+  private set currentPar(val : TrailParDesc)
+  {
+    this._currentPar = val;
+    this.previewService.setTrailActiveSection(val);
+  }
+
+  private get currentPar() : TrailParDesc
+  {
+    return this._currentPar;
+  }
 
 
   constructor(private previewService : PreviewService) {
    }
 
   onParChange(elemId: string) {
-    console.log("onParChange: " + elemId)
+    console.log("onParChange: " + elemId);
+
+    if(!elemId)
+    {
+      this.currentPar = null;
+      return;
+    }
     let matchResult :RegExpMatchArray =elemId.match(/par_\d*/);
     if(!matchResult || matchResult.length == 0 || !this.trailInfos || ! this.trailInfos.pars )
     {

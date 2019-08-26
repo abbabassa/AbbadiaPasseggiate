@@ -1,4 +1,4 @@
-import { Component, OnInit, HostBinding } from '@angular/core';
+import { Component, OnInit, HostBinding, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap} from 'rxjs/operators';
 
@@ -7,6 +7,7 @@ import { PreviewService } from '../../services/communication/preview.service';
 import {  DescRefTypes} from '../../om/desc-references';
 import { PreviewResponse } from '../../om/prev.response';
 import { TrailsService } from '../../services/trails/trails.service';
+import { TrailPreviewComponent } from './trail-preview/trail-preview.component';
 
 
 
@@ -20,6 +21,8 @@ export class MapOverlayComponent implements OnInit {
   @HostBinding('style.display') display = 'block';
   @HostBinding('style.position') position = 'absolute';
  // @HostBinding('class.modal') 
+
+ @ViewChild(TrailPreviewComponent, {static: false}) trailComponent: TrailPreviewComponent;
 
   previewResponse : PreviewResponse;
 
@@ -68,6 +71,14 @@ export class MapOverlayComponent implements OnInit {
     event.stopPropagation();
   }
 
+  onParChange(elementId:string)
+  {
+    console.log("parChanged")
+    if(this.trailComponent)
+    {
+      this.trailComponent.onParChange(elementId);
+    }
+  }
 
 
   expand()

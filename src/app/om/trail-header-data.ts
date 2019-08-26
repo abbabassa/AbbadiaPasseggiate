@@ -12,9 +12,9 @@ export class TrailHeaderData implements MainData {
         public pars:ParWithRefs[],
         public name:string,
         public level,
-        // public mainPhoto : APImageData,
-        // public trailPhotos : APImageData[],
-        public rating=0
+        public rating=0,
+        public stepsLayerName: string,
+        public intersectionsLayerName : string
         )
     {
         this.type  = DescRefTypes.Trail;
@@ -22,7 +22,14 @@ export class TrailHeaderData implements MainData {
     
     public static generateMainData(input :TrailHeaderDataInput)
     {
-        return new TrailHeaderData(input.id, input.pars.map (inPar => ParWithRefs.generatePar(inPar)), input.name, input.level, input.rating);
+        return new TrailHeaderData(
+                                    input.id, 
+                                    input.pars.map(inPar => ParWithRefs.generatePar(inPar)).sort((par1,par2)=> par1.parIndex - par2.parIndex),
+                                    input.name, 
+                                    input.level, 
+                                    input.rating,
+                                    input.stepsLayerName,
+                                    input.intersectionsLayerName);
     }
 
 }
@@ -34,4 +41,7 @@ export interface TrailHeaderDataInput
     level:number;
     rating:number;
     pars:ParWithRefsInput[];
+    stepsLayerName: string;
+    intersectionsLayerName : string;
+
 }

@@ -27,6 +27,7 @@ export class SentieriLayerService {
     return function (feature: any, resolution) {
      
       let styleForLines = getVectorStyle(tipoStrada ,resolution, selected) ;
+      
       let styleForPoint;
 
       if (styleForLines.getText()) {
@@ -85,6 +86,26 @@ export class SentieriLayerService {
   getPercorsi():VectorLayer
   {
     return this.getJsonLayerFromUrl(environment.protocolName+ environment.serverName +'/vector/percorsi.json',VectorStyleType.Percorsi)
+  }
+
+  getLayerByName(layerName:string, layerNameProperties ?: string, vecotrStyleType = VectorStyleType.PasseggiataSelez )
+  {
+    let layer: VectorLayer = this.getJsonLayerFromUrl(environment.protocolName+ environment.serverName +'/vector/' + layerName + '.json',vecotrStyleType)
+    if(layerNameProperties)
+    {
+      layer.setProperties({"layerName" : layerNameProperties});
+    }
+    return layer;
+  }
+
+  getVectorSourceByName(layerName:string)
+  {
+    return  new VectorSource({
+      format: new geoJsonFormat(),
+      url: environment.protocolName+ environment.serverName +'/vector/' + layerName + '.json',
+
+    });
+
   }
 
 

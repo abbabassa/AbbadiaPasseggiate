@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Self, HostListener } from '@angular/core';
 import { API_KEY_BING } from './api-key-bing'
 import{Router, ActivatedRoute} from '@angular/router'
-
+import { debounceTime } from 'rxjs/operators';
 
 import { SentieriLayerService } from '../services/my-map/sentieri-layer.service'
 import { PreviewService } from '../services/communication/preview.service'
@@ -14,7 +14,7 @@ import { environment } from '../../environments/environment';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
-import {BingMaps as BingSource, OSM as OSMSource, XYZ  } from 'ol/source';
+import {BingMaps as BingSource, OSM as OSMSource, XYZ ,Vector as VectorSource } from 'ol/source';
 import {fromLonLat} from 'ol/proj';
 import {Feature } from 'ol/Feature';
 import {Select as SelectInteraction} from 'ol/interaction';
@@ -70,6 +70,7 @@ export class MyMapComponent implements OnInit {
 
   private map:Map
   private routerLinkPath : string;
+  private activeTrailLayer : VectorLayer
   
 
 
@@ -177,7 +178,9 @@ export class MyMapComponent implements OnInit {
     
     var view:View = new View({
       center: fromLonLat([9.351, 45.89910]),
-      zoom: 15
+      zoom: 15,
+      maxZoom : 18, 
+      minZoom : 5
     });
 
     let zoomInEl :HTMLElement = document.createElement("i");
@@ -254,8 +257,12 @@ export class MyMapComponent implements OnInit {
   
     selectedFeatures.on('add',  (event) => {
       var feature = event.target.item(0);
-      // if(feature.getProperties().interactId == 1)
       this.onAddSelectedFeature(feature, feature.getProperties().interactId);
+      // if it's a trail i immediately remove it... Better use another interaction type in future
+      if(feature.getProperties().interactId == DescRefTypes.Trail)
+        selectedFeatures.clear(); 
+      else
+        this.previewService.setTrailHeaderData(null);
     });
 
 
@@ -264,38 +271,87 @@ export class MyMapComponent implements OnInit {
       if(!isOpen)
       {
         selectedFeatures.clear(); 
+        this.previewService.setTrailHeaderData(null);
       }
     })
 
     this.previewService.newRef$.subscribe(newRef => 
-    {
+    { 
+      this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', newRef.id, newRef.type]} }]);
       selectedFeatures.clear();
       let features:Feature[];
       if(newRef.type == DescRefTypes.Location)
       {
         features =layerLuoghi.getSource().getFeatures() as Feature[];
- 
+        let newFeature:Feature =features.find(f=> f.getProperties().id == newRef.id);
+        selectedFeatures.push(newFeature);
+  
       }
       else
       {
         features =layerPercorsi.getSource().getFeatures() as Feature[];
+        // nothing for now
       }
-      this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', newRef.id, newRef.type]} }]);
-      let newFeature:Feature =features.find(f=> f.getProperties().id == newRef.id);
-      selectedFeatures.push(newFeature);
-
+     
     });
 
 
 
     this.activatedRoute.paramMap.subscribe(mapPar=>this.enableMapLayers(mapPar, layerLuoghi, layerPercorsi));
 
+    this.previewService.trailHeaderData$.subscribe(hd =>
+    {
+      let layerStep :VectorLayer =this.getLayerStep();
+      if(!hd)
+      {
+        this.restoreMapLayers(layerLuoghi, layerPercorsi);
+        if(layerStep)
+          layerStep.setVisible(false);
+        return;
+      }
+      
+      if(!layerStep)
+      {
+        layerStep =this.sentieriLayerService.getLayerByName(hd.stepsLayerName, "stepTrail");
+        this.map.addLayer(layerStep);
+      }
+      else if(layerStep.getProperties()["trailId"] != hd.id)
+      {
+        
+        layerStep.setSource(this.sentieriLayerService.getVectorSourceByName(hd.stepsLayerName))
+      }
+      layerPercorsi.setVisible(false);
+      layerStep.setVisible(true);
+    });
 
 
+    this.previewService.trailActiveSection$.pipe(debounceTime(500))      
+    .subscribe(actsec => 
+    {
+      let layerStep :VectorLayer =this.getLayerStep();
+      if(!actsec)
+      {
+        // this is the case when I scroll to the top
+        this.moveView(layerStep.getSource())
+        return;
+      }
 
+      if( !layerStep)
+      {
+        //that should never happen... better return anyway
+        return;
+      }
+      let source : Feature = layerStep.getSource()
+      if(source instanceof VectorSource)
+      {
+        let activeFeature = source.getFeatures().find(feature => feature.getProperties().id == actsec.featureId);
+        if(activeFeature)
+          this.moveView(activeFeature);
+      }
+     
 
-
-
+      
+    });
 
     this.geolocControl = new GeolocControl({element: this.geolcationButtonElement.nativeElement}, this.map);
 
@@ -320,59 +376,120 @@ export class MyMapComponent implements OnInit {
       trailLayer.setVisible(false);
   }
 
+
+  private restoreMapLayers(locLayer: VectorLayer, trailLayer: VectorLayer)
+  {
+    let activeSubEntries  = this.sidebarDataService.getActiveSub("map");
+    if(activeSubEntries.some(entry => entry.routerLink == "loc"))
+      locLayer.setVisible(true);
+    else 
+      locLayer.setVisible(false);
+
+    if(activeSubEntries.some(entry => entry.routerLink == "trails"))
+      trailLayer.setVisible(true);
+    else 
+      trailLayer.setVisible(false);
+    
+  }
+
   onAddSelectedFeature(feature : Feature, interactionType: DescRefTypes)
   {
     var locId = feature.getProperties().id;
     this.previewService.setState(true);
     this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', locId, interactionType]} }]);
 
-    //let featureCord = feature.getGeometry().getCoordinates();
-    
-    if(interactionType == DescRefTypes.Location)
-    {
-      let featureCord = this.calculateCenter(feature);
+    this.moveView(feature);
 
-      this.map.getView().animate({
-        center: featureCord,
-        duration: 1000,
-        easing: easeOut
-      });
-    }
+   
+ 
 
   }
-
-  calculateCenter(feature:Feature) : number[]
+  moveView (input : VectorSource) : void
+  moveView (input : Feature) : void
+  moveView (input : Feature | VectorSource)
   {
-    let featureCord = feature.getGeometry().getCoordinates();
-    let extent = this.map.getView().calculateExtent();
-    let deltaExt = [];
-    deltaExt[0]= extent[2]-extent[0]; //x
-    deltaExt[1]= extent[3]-extent[1]; //y
+    let mapExtent = this.map.getView().calculateExtent();
+    let deltaExtMap = [];
+    deltaExtMap[0]= mapExtent[2]-mapExtent[0]; //x
+    deltaExtMap[1]= mapExtent[3]-mapExtent[1]; //y
 
-    let offset = [];
-    if(window.innerWidth < 992)
+    if(input instanceof VectorSource)
     {
-      offset[0] =  0;
-      offset[1] =  deltaExt[1]*0.25;
-    }
-    else if( window.innerWidth < 1200)
-    {
-      offset[0] =  deltaExt[0] *0.3;
-      offset[1] =  0;
+      let source = input as VectorSource;
+      this.moveViewFromExtent(source.getExtent());
     }
     else
-    {
-      offset[0] =  deltaExt[0] *0.15;
-      offset[1] =  0;
+    {      
+      let feature = input as Feature;
+      if(feature.getGeometry().getType() == "Point")
+      {  
+        let featureCord = feature.getGeometry().getCoordinates();
+
+
+        let offset = [];
+        if(window.innerWidth < 992)
+        {
+          offset[0] =  0;
+          offset[1] =  deltaExtMap[1]*0.25;
+        }
+        else if( window.innerWidth < 1200)
+        {
+          offset[0] =  deltaExtMap[0] *0.3;
+          offset[1] =  0;
+        }
+        else
+        {
+          offset[0] =  deltaExtMap[0] *0.15;
+          offset[1] =  0;
+        }
+
+        for(let i= 0; i< featureCord.length; i++)
+        {
+          featureCord[i] -= offset[i];
+        }
+
+        
+        this.map.getView().animate({
+          center: featureCord,
+          duration: 1000,
+          easing: easeOut
+        });
+      }
+      else
+      {
+
+        let featureExt =feature.getGeometry().getExtent();
+        this.moveViewFromExtent(featureExt);
+
+      }
     }
 
-    for(let i= 0; i< featureCord.length; i++)
-    {
-      featureCord[i] -= offset[i];
-    }
-
-    return featureCord;
     
+  }
+
+
+  private moveViewFromExtent(featureExt: any) {
+    let padding = [0, 0, 0, 0];
+    if (window.innerWidth < 992) {
+      padding[2] = window.innerHeight * 0.5;
+    }
+    else if (window.innerWidth < 1200) {
+      padding[3] = window.innerWidth * 0.6;
+    }
+    else {
+      padding[3] = window.innerWidth * 0.3;
+    }
+    this.map.getView().fit(featureExt, {
+      duration: 1000,
+      easing: easeOut,
+      padding: padding
+    });
+  }
+
+  private getLayerStep() : VectorLayer
+  {
+    let layerStep :VectorLayer = (this.map.getLayers().getArray() as any[]).find(layer => layer.getProperties()["layerName"] == "stepTrail");
+    return layerStep
   }
 
 

@@ -3,7 +3,7 @@ import { SidebarDataService } from './services/communication/sidebar-data.servic
 import { MenuTree } from './om/menu-tree';
 import { MenuEntryData, MenuEntryStatus } from './om/menu-entry-data';
 import { Router, ActivatedRoute } from '@angular/router';
-import { timeInterval } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-root',

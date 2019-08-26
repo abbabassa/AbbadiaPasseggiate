@@ -11,7 +11,7 @@
         </button>
       </div>
     </div>
-    <div class="modal-body">
+    <div class="modal-body" scrollSpy [querySelector]="'p[scroll-inspect]'" (sectionChange)="onParChange($event)">
 
       <app-location-preview *ngIf="previewResponse?.mainData?.type == 1" [luogoInfos] = "previewResponse"></app-location-preview>
       <app-trail-preview *ngIf="previewResponse?.mainData?.type == 2" [trailInfos] = "previewResponse"></app-trail-preview>

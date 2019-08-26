@@ -1,17 +1,24 @@
 import { Injectable } from '@angular/core';
 import { Subject }    from 'rxjs';
-import { DescReferences } from '../../om/desc-references';
+import { DescReferences, DescRefTypes } from '../../om/desc-references';
+import { TrailHeaderData } from '../../om/trail-header-data';
+import { TrailParDesc } from '../../om/trail-par-desc';
 
 @Injectable()
 export class PreviewService {
 
   private isOpenSource = new Subject<boolean>();
   private newRef = new Subject<DescReferences>();
+  private trailHeaderData = new Subject<TrailHeaderData>();
+  private trailActiveSection = new Subject<TrailParDesc>();
+
 
   constructor() { }
 
   isOpen$ = this.isOpenSource.asObservable();
   newRef$ = this.newRef.asObservable();
+  trailHeaderData$ = this.trailHeaderData.asObservable();
+  trailActiveSection$= this.trailActiveSection.asObservable();
 
   // Service message commands
   setState(isOpen: boolean) {
@@ -21,6 +28,20 @@ export class PreviewService {
   setNewRef(ref:DescReferences )
   {
     this.newRef.next(ref);
+    if(ref.type == DescRefTypes.Location)
+    {
+      this.setTrailHeaderData(null);
+    }
+  }
+
+  setTrailHeaderData(hd : TrailHeaderData)
+  {
+    this.trailHeaderData.next(hd);
+  }
+
+  setTrailActiveSection(as : TrailParDesc)
+  {
+    this.trailActiveSection.next(as);
   }
 
 }
