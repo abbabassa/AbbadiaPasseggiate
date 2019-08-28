@@ -29,6 +29,9 @@ import { VectorStyleType } from '../services/my-map/vector-styles';
 import { DescRefTypes } from '../om/desc-references';
 import { SidebarDataService } from '../services/communication/sidebar-data.service';
 import { TrailHeaderData } from '../om/trail-header-data';
+import { TrailsService } from '../services/trails/trails.service';
+import { ImgUrlPipe } from '../pipes/img-url.pipe';
+import { Lightbox } from 'ngx-lightbox';
 
 
 
@@ -81,7 +84,10 @@ export class MyMapComponent implements OnInit {
     private router:Router,
     private activatedRoute: ActivatedRoute,
     private previewService:PreviewService,
-    private sidebarDataService: SidebarDataService ){ }
+    private sidebarDataService: SidebarDataService,
+    private trailsService : TrailsService,
+    private lightBox : Lightbox,
+    private imgPipe : ImgUrlPipe, ){ }
 
 
 
@@ -521,7 +527,7 @@ export class MyMapComponent implements OnInit {
       layerIntersect =this.sentieriLayerService.getLayerByName(hd.intersectionsLayerName, "intersectTrail");
       this.map.addLayer(layerIntersect);
 
-      this.addClickInteractionToMap(layerIntersect, f => console.log(f.getProperties().id))
+      this.addClickInteractionToMap(layerIntersect, f =>  this.openLightBoxForIntersection(hd.id, f.getProperties().id)  )
     }
     else if(layerIntersect.getProperties()["trailId"] != hd.id)
     {
@@ -568,6 +574,30 @@ export class MyMapComponent implements OnInit {
       var pixel = evt.pixel;
       clickCondition(pixel) ;
     });
+
+  }
+
+
+
+  openLightBoxForIntersection(mainTrailId: number, featureId: number): void {
+    this.trailsService.getIntersectionImageData(mainTrailId, featureId)
+      .subscribe(apPhotos => {
+        let lightBoxAlbum = apPhotos.map (image=> 
+          {
+            let desc: string = "<h5>" +image.title + "</h5>";
+            if(image.description != null)
+              image.description.forEach(descPar => desc += "<p>" + descPar + "</p> ");
+      
+            return {
+              src : this.imgPipe.transform(image, true) ,
+              caption : desc,
+              thumb: this.imgPipe.transform(image, false) 
+              
+            } ;
+          });
+          this.lightBox.open(lightBoxAlbum, 0);
+      });
+
 
   }
 

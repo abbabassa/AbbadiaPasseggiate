@@ -17,7 +17,9 @@ export class APImageData
         public photoname: string,
         public type: APImageTypes,
         public locid: number,
-        public ext: string
+        public ext: string,
+        public trailId : number,
+        public featureId : number
             )
     {    }
     
