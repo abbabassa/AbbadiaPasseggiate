@@ -79,8 +79,8 @@ export class SentieriLayerService {
     if(activeSec)
     {
       let currentInterFeatIds = activeSec.intersectionFeatureIds
-      if(!currentInterFeatIds.some(id => id == feature.getProperties().id))
-        definedStyle.setImage(null);
+      if(currentInterFeatIds.some(id => id == feature.getProperties().id))
+        definedStyle.getImage().setScale( 1.15);
     }
   }
 
