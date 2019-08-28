@@ -130,6 +130,14 @@ a.nav-link .material-icons.hidden
     color:$gray-500 !important;
 }
 
+
+div.lightboxOverlay
+{
+    // override default behavior of lightbox component overlay
+    width: 100% !important;
+    height: 100% !important;
+}
+
 @media (min-width: 576px) {
     .ng-sidebar
     {
