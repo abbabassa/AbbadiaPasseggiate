@@ -22,7 +22,7 @@ export class TrailPreviewComponent  {
     this._trailInfos = val;
     this.previewService.setTrailHeaderData(this._trailInfos.mainData);
     // reset paragraph position when a new location is loaded
-    this.previewService.setTrailActiveSection(null);
+    this.previewService.setTrailActiveSection(TrailParDesc.getDummyTrailParDesc());
   }
   public get trailInfos() : TrailPreviewResponse
   {

@@ -3,6 +3,7 @@ import { ParWithRefs, ParWithRefsInput } from './par-with-refs';
 
 export class TrailParDesc extends ParWithRefs
 {
+
     constructor(
         description : string,
         initDescRefs: DescReferences[],
@@ -21,12 +22,23 @@ export class TrailParDesc extends ParWithRefs
     }
 
 
+    isDummySec() : boolean
+    {
+        return this.parIndex == -1;
+    }
+
+
 
     public static generatePar(input : TrailParDescInput): TrailParDesc
     {
         if(!input)
             return null;
         return new TrailParDesc(input.description, input.ref, input.parIndex, input.mainTrailsID, input.featureId, input.intersectionFeatureIds);
+    }
+
+    public static getDummyTrailParDesc() :TrailParDesc
+    {
+        return new TrailParDesc(null, [],-1, -1, -1, []);
     }
 
 

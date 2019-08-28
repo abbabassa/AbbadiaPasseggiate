@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Self, HostListener } from '@angular/core';
 import { API_KEY_BING } from './api-key-bing'
 import{Router, ActivatedRoute} from '@angular/router'
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, filter } from 'rxjs/operators';
 
 import { SentieriLayerService } from '../services/my-map/sentieri-layer.service'
 import { PreviewService } from '../services/communication/preview.service'
@@ -301,7 +301,10 @@ export class MyMapComponent implements OnInit {
         features =layerPercorsi.getSource().getFeatures() as Feature[];
         let newFeature:Feature =features.find(f=> f.getProperties().id == newRef.id);
         if(newFeature)
+        {
           this.moveView(newFeature);
+        }
+          
       }
 
 
@@ -315,7 +318,9 @@ export class MyMapComponent implements OnInit {
     this.previewService.trailHeaderData$.subscribe(hd => this.onSingleTrailActivate(hd, layerLuoghi, layerPercorsi));
 
 
-    this.previewService.trailActiveSection$.pipe(debounceTime(500))      
+    this.previewService.trailActiveSection$.pipe(
+      filter(actscec => !actscec || !actscec.isDummySec()), // this kind of active section is pushed on the stream when the page is loaded the first time
+      debounceTime(500))      
     .subscribe(actsec => 
     {
       let layerIntersect : VectorLayer = this.getLayerIntesect();
@@ -332,7 +337,6 @@ export class MyMapComponent implements OnInit {
       if(!actsec)
       {
         // this is the case when I scroll to the top
-
         this.moveView(layerStep.getSource())
         return;
       }
@@ -343,7 +347,10 @@ export class MyMapComponent implements OnInit {
       {
         let activeFeature = source.getFeatures().find(feature => feature.getProperties().id == actsec.featureId);
         if(activeFeature)
+        {
           this.moveView(activeFeature);
+
+        }
       }
       
     });
@@ -395,6 +402,7 @@ export class MyMapComponent implements OnInit {
     var locId = feature.getProperties().id;
     this.previewService.setState(true);
     this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', locId, interactionType]} }]);
+
 
     this.moveView(feature);
 
@@ -467,6 +475,13 @@ export class MyMapComponent implements OnInit {
 
 
   private moveViewFromExtent(featureExt: any) {
+   
+    if(!this.checkExtent(featureExt))
+    {
+      console.warn("An invalid extent was passed to moveViewFromExtent")
+      return;
+    }
+
     let padding = [0, 0, 0, 0];
     if (window.innerWidth < 992) {
       padding[2] = window.innerHeight * 0.5;
@@ -482,6 +497,27 @@ export class MyMapComponent implements OnInit {
       easing: easeOut,
       padding: padding
     });
+  }
+
+  /**
+   * Used to check if an array of number is a valid extent
+   * 
+   * @param featureExtent extent to be check
+   */
+  private checkExtent(featureExtent : number[]): boolean
+  {
+    if(!featureExtent)
+      return false;
+    if(featureExtent.length != 4) 
+      return false;
+    
+    for(let vertex of featureExtent)
+    {
+      if(!isFinite(vertex))
+        return false;
+    }
+
+    return true;
   }
 
   private getLayerStep() : VectorLayer
