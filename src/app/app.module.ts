@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import {AppRoutingModule} from './app-routing.module'
 import {MyMapRoutingModule} from './my-map/my-map-routing.module'
 import { HttpClientModule } from '@angular/common/http';
@@ -25,6 +25,7 @@ import { MapRedirectWithParamsComponent } from './my-map/map-redirect-with-param
 import { LocationPreviewComponent } from './my-map/map-overlay/location-preview/location-preview.component';
 import { TrailPreviewComponent } from './my-map/map-overlay/trail-preview/trail-preview.component';
 import { ScrollSpyDirective } from './directives/scroll-spy.directive';
+import { environment } from '../environments/environment';
 
 
 
@@ -53,7 +54,13 @@ import { ScrollSpyDirective } from './directives/scroll-spy.directive';
     NgScrollbarModule
   ] ,
   entryComponents : [ModalAlertComponent],
-  providers: [LocationsService, TrailsService, PreviewService, SidebarDataService, ImgUrlPipe],
+  providers: [  LocationsService,
+                TrailsService,
+                PreviewService,
+                SidebarDataService,
+                ImgUrlPipe,
+                { provide: LOCALE_ID, useValue: environment.locale }
+              ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

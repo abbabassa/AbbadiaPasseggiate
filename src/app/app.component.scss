@@ -1,0 +1,19 @@
+.flag-icon
+{
+    display:inline-block;
+    background: none;
+    width: 22px; 
+    height: 20px;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.flag-icon.it
+{
+    background-image: url('assets/icons/icons/ap/it.svg');
+}
+
+.flag-icon.en
+{
+    background-image: url('assets/icons/icons/ap/en.svg');
+}

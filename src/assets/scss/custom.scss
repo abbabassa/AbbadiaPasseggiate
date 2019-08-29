@@ -12,6 +12,7 @@ $theme-colors: (
 
 
 
+
 ng-sidebar-container
 {
     height: 100vh;
@@ -83,6 +84,7 @@ ng-sidebar-container
     z-index: 2;
     width:90%;
     min-width: 16em;
+    height: 100%;
 }
 
 .ng-sidebar .close {
@@ -137,6 +139,27 @@ div.lightboxOverlay
     width: 100% !important;
     height: 100% !important;
 }
+
+div#bottom {
+    color: map-get($theme-colors, "dark");
+    background: map-get($theme-colors, "aplight");
+    height: 5rem;
+    font-size: 80%;
+    font-weight: 500;
+    
+
+}
+
+.wrapper {
+    box-sizing: border-box;
+    position: relative;
+    min-height: calc(100% - 5em);    
+    background-image: url("../img/mountainfooter2.svg");
+    background-repeat: no-repeat;
+    background-position:center bottom;
+    background-size: contain;
+    
+  }
 
 @media (min-width: 576px) {
     .ng-sidebar

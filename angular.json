@@ -55,6 +55,35 @@
                   "with": "src/environments/environment.local.ts"
                 }
               ]
+            },
+            "local-en": {
+              "outputPath": "dist/en/",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local-en.ts"
+                }
+              ]
+            },
+            "production-en":
+            {
+              "outputPath": "dist/en/",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod-en.ts"
+                }
+              ]
+            },
+            "en":
+            {
+              "outputPath": "dist/en/",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.en.ts"
+                }
+              ]
             }
           }
         },
@@ -66,10 +95,19 @@
           "configurations": {
             "production": {
               "browserTarget": "ap3.0:build:production"
-            },
+              },
             "local": {
               "browserTarget": "ap3.0:build:local"
-            }
+              },
+            "local-en": {
+              "browserTarget": "ap3.0:build:local-en"
+              },
+            "production-en": {
+              "browserTarget": "ap3.0:build:production-en"
+              },
+            "en": {
+              "browserTarget": "ap3.0:build:en"
+              }
           }
         },
         "extract-i18n": {

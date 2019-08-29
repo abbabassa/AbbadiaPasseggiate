@@ -3,5 +3,5 @@ export const environment = {
   serverName: "abbadiapasseggiate.herokuapp.com",
   protocolName: "https://",
   tileServerName:"abbadiapasseggiate-tiles.herokuapp.com",
-  locale : "it"
+  locale : "en"
 };

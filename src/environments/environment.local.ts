@@ -7,5 +7,6 @@ export const environment = {
   production: false,
   serverName: "192.168.0.201:3000",
   protocolName: "http://",
-  tileServerName:"192.168.0.201:3001"
+  tileServerName:"192.168.0.201:3001",
+  locale : "it"
 };

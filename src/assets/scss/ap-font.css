@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'ap-font';
-  src: url('font/ap-font.eot?55634826');
-  src: url('font/ap-font.eot?55634826#iefix') format('embedded-opentype'),
-       url('font/ap-font.woff2?55634826') format('woff2'),
-       url('font/ap-font.woff?55634826') format('woff'),
-       url('font/ap-font.ttf?55634826') format('truetype'),
-       url('font/ap-font.svg?55634826#ap-font') format('svg');
+  src: url('font/ap-font.eot?54372885');
+  src: url('font/ap-font.eot?54372885#iefix') format('embedded-opentype'),
+       url('font/ap-font.woff2?54372885') format('woff2'),
+       url('font/ap-font.woff?54372885') format('woff'),
+       url('font/ap-font.ttf?54372885') format('truetype'),
+       url('font/ap-font.svg?54372885#ap-font') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -15,7 +15,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'ap-font';
-    src: url('font/ap-font.svg?55634826#ap-font') format('svg');
+    src: url('../font/ap-font.svg?54372885#ap-font') format('svg');
   }
 }
 */
@@ -55,9 +55,18 @@
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
  
+.ap-icon-instagram:before { content: '\e800'; } /* '' */
+.ap-icon-facebook:before { content: '\e801'; } /* '' */
+.ap-icon-twitter:before { content: '\e802'; } /* '' */
 .ap-icon-logo:before { content: '\e803'; } /* '' */
+
 
 i.bigg
 {
   font-size: 500%;
+}
+
+i.big
+{
+  font-size: 120%;
 }
