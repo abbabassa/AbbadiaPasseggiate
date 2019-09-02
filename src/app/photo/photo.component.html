@@ -1,5 +1,5 @@
 <nav class="navbar navbar-light bg-dark">
-  <button  class="btn btn-outline-aplight " (click)= "onMenuClick()">
+  <button  class="btn btn-outline-aplight " (click)= "onMenuClick()" i18n-title="@@menu"   title="Menu">
     <span><i class="material-icons">menu</i></span>
   </button>
 </nav>
@@ -7,10 +7,10 @@
 
   <section class="jumbotron mb-0 text-center">
     <div class="container">
-      <h1 class="jumbotron-heading">Galleria Fotografica</h1>
-      <p class="lead text-muted">In corrispondenza del suo primo anniversario, Abbadia Passeggiate innaugura questa galleria immagini contenente le migliori foto delle (e dalle) nostre montagne.</p>
+      <h1 class="jumbotron-heading" i18n="@@fotogallery">Photo gallery</h1>
+      <p class="lead text-muted" i18n="@@galleryDesc1">On the occasion of its first anniversary, Abbadia Passeggiate is glad to offer you this image gallery containing the best photos of (and from) our mountains.</p>
 
-      <p>Tutte le immagini, salvo dove indicato diversamente, provengono dalla collezione di Abbadia Passeggiate.</p>
+      <p i18n="@@galleryDesc2">All the photos, except where written otherwise, are made from Abbadia Passeggiate owners.</p>
       <!-- <p>
         <a href="#" class="btn btn-primary my-2">Main call to action</a>
         <a href="#" class="btn btn-secondary my-2">Secondary action</a>

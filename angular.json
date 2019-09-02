@@ -41,6 +41,9 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
+              "i18nFile": "src/locale/messages.it.xlf",
+              "i18nFormat": "xlf",
+              "i18nLocale": "it",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -49,6 +52,18 @@
               ]
             },
             "local": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "i18nFile": "src/locale/messages.it.xlf",
+              "i18nFormat": "xlf",
+              "i18nLocale": "it",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -57,6 +72,15 @@
               ]
             },
             "local-en": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
               "outputPath": "dist/en/",
               "fileReplacements": [
                 {
@@ -67,6 +91,15 @@
             },
             "production-en":
             {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
               "outputPath": "dist/en/",
               "fileReplacements": [
                 {
@@ -77,6 +110,15 @@
             },
             "en":
             {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
               "outputPath": "dist/en/",
               "fileReplacements": [
                 {

@@ -3,5 +3,12 @@ export const environment = {
   serverName: "localhost:3000",
   protocolName: "http://",
   tileServerName:"localhost:3001",
-  locale : "en"
+  dynamicTransl : 
+  {
+    map : "Map",
+    loc : "Show Locations",
+    trails : "Show Trails",
+    photo : "Photo",
+    links : "Links"
+  }
 };

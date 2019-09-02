@@ -3,5 +3,12 @@ export const environment = {
   serverName: "abbadiapasseggiate.herokuapp.com",
   protocolName: "https://",
   tileServerName:"abbadiapasseggiate-tiles.herokuapp.com",
-  locale : "it"
+  dynamicTransl : 
+  {
+    map : "Mappa",
+    loc : "Mostra Luoghi",
+    trails : "Mostra Percorsi",
+    photo : "Foto",
+    links : "Link"
+  }
 };

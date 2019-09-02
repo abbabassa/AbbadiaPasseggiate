@@ -4,13 +4,14 @@ import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { LocationPreviewResponse } from '../../om/loc-prev.response';
 import { map} from 'rxjs/operators';
+import { getLocaleForAPI } from '../../om/locale-utils';
 
 @Injectable()
 export class LocationsService {
 
   private locale : string;
   constructor(private http : HttpClient, @Inject(LOCALE_ID) locale: string) { 
-    this.locale = locale;
+    this.locale = getLocaleForAPI(locale);
   }
 
   getLocationData(id:number) : Observable<LocationPreviewResponse>

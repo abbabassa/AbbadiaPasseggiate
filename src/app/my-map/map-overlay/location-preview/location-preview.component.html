@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center" *ngIf="!luogoInfos">
   <div class="spinner-grow  text-primary" role="status">
-    <span class="sr-only">Caricamento...</span>
+    <span class="sr-only"><ng-container  i18n="@@caricamento">Loading</ng-container>...</span>
   </div>
 </div>
 
@@ -18,7 +18,7 @@
   
 </div> 
 <ng-container *ngIf="luogoInfos && luogoInfos.trailRefs && luogoInfos.trailRefs.length>0">
-  <h5>Come raggiungerlo?</h5>
+  <h5 i18n="@@comeRagg">How to get there</h5>
   <div>
     <ul>
       <li *ngFor="let trailref of luogoInfos?.trailRefs">

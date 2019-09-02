@@ -2,7 +2,7 @@
 <div id="map" class="p-0"></div>
 
 
-<button  #geolocBtn class="ap-control my-geoloc btn "     
+<button  #geolocBtn class="ap-control my-geoloc btn "  i18n-title="@@geoloc"   title="My position"
     [class.btn-outline-danger]="geolocControl.geolocationData.status==0"   
     [class.btn-outline-warning]="geolocControl.geolocationData.status==2"   
     [class.btn-outline-success]="geolocControl.geolocationData.status==1"  
@@ -12,7 +12,7 @@
         </i></span></button>
 
 
-<button  class="ap-control my-menu btn btn-outline-aplight tras02 " (click)= "onMenuClick()">
+<button  class="ap-control my-menu btn btn-outline-aplight tras02 " (click)= "onMenuClick()" i18n-title="@@menu"   title="Menu">
     <span><i class="material-icons">
     menu
     </i></span></button>
@@ -22,7 +22,7 @@
 
 
 <div  #attributionCtrl class="" >
-    <button type="button" class="ap-control my-attribution btn btn-outline-aplight tras02"  [hidden]="attributionControl.collapsed" (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> info </i></span></button>
+    <button type="button" class="ap-control my-attribution btn btn-outline-aplight tras02"  [hidden]="attributionControl.collapsed" (click)="attributionControl.toggleCollapsed()" i18n-title="@@info"   title="Info"><span ><i class="material-icons" >info </i></span></button>
     <button type="button" class="ap-control my-attribution btn btn-outline-aplight tras02"  [hidden]="!attributionControl.collapsed"  (click)="attributionControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
     <div [ngbCollapse]= "!attributionControl.collapsed" class= "ap-control my-attribution card">
         <span *ngFor= "let attr of attributionControl.attribution" [innerHTML]="attr"></span>
@@ -30,7 +30,7 @@
 </div>
 
 <div  #LayerCtrl class="" >
-    <button type="button" class="ap-control my-layer-ctrl btn btn-outline-aplight tras02"  [hidden]="layerControl.collapsed" (click)="layerControl.toggleCollapsed()"><span ><i class="material-icons"> layers </i></span></button>
+    <button type="button" class="ap-control my-layer-ctrl btn btn-outline-aplight tras02"  [hidden]="layerControl.collapsed" (click)="layerControl.toggleCollapsed()" i18n-title="@@layers"   title="Map style"><span ><i class="material-icons"> layers </i></span></button>
     <button type="button" class="ap-control my-layer-ctrl btn btn-outline-aplight tras02"  [hidden]="!layerControl.collapsed"  (click)="layerControl.toggleCollapsed()"><span ><i class="material-icons"> chevron_left </i></span></button>
     <div [ngbCollapse]= "!layerControl.collapsed" class= "ap-control my-layer-ctrl card">
         <div class="row no-gutters" >

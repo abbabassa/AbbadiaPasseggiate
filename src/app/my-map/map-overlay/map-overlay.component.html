@@ -6,7 +6,7 @@
 
       <div class="btn-group" role="group" >
      
-        <button type="button" class="close" (click)="closePopup($event)" aria-label="Close"> 
+        <button type="button" class="close" (click)="closePopup($event)" aria-label="Close" title="Close" i18n-title="@@chiudi"> 
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -17,7 +17,7 @@
       <app-trail-preview *ngIf="previewResponse?.mainData?.type == 2" [trailInfos] = "previewResponse"></app-trail-preview>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline-danger" (click)="closePopup($event)"    >Close</button>
+      <button type="button" class="btn btn-outline-danger" (click)="closePopup($event)"    i18n="@@chiudi">Close</button>
     </div>
 
 </div>

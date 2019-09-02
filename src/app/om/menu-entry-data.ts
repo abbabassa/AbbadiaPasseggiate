@@ -1,12 +1,25 @@
+import { environment } from '../../environments/environment';
+
 export class MenuEntryData
 {
+    public readonly name: string;
     public constructor(
-        public readonly defName:string,
-        public readonly translKey: string,
+        defName:string,
+        translKey: string,
         public readonly routerLink: string,
         private _status: MenuEntryStatus,
         public readonly isExclusive = true
-    ){}
+    )
+    {
+        if(environment.dynamicTransl && environment.dynamicTransl[translKey])
+        {
+            this.name = environment.dynamicTransl[translKey];
+        }
+        else
+        {
+            this.name = defName;
+        }
+    }
 
     public get status():MenuEntryStatus
     {

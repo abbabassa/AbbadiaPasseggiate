@@ -4,9 +4,17 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 export const environment = {
-  production: false,
+  production: true,
   serverName: "192.168.0.201:3000",
   protocolName: "http://",
   tileServerName:"192.168.0.201:3001",
-  locale : "en"
+  dynamicTransl : 
+  {
+    map : "Map",
+    loc : "Show Locations",
+    trails : "Show Trails",
+    photo : "Photo",
+    links : "Links"
+  }
+  
 };

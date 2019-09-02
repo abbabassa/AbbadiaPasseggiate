@@ -478,7 +478,7 @@ export class MyMapComponent implements OnInit {
    
     if(!this.checkExtent(featureExt))
     {
-      console.warn("An invalid extent was passed to moveViewFromExtent")
+      console.warn("An invalid extent was passed to moveViewFromExtent<")
       return;
     }
 

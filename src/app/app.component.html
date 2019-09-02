@@ -3,12 +3,12 @@
     <ng-sidebar [mode]="'over'"   [closeOnClickOutside]="true" [(opened)]="isSideMenuOpen">
         <div class="wrapper">
             
-            <button type="button" class="close cl-light" aria-label="Close" (click)="isSideMenuOpen =false"> 
+            <button type="button" class="close cl-light" aria-label="Close" title="Close" i18n-title="@@chiudi" (click)="isSideMenuOpen =false"> 
                 <span aria-hidden="true">&times;</span>
             </button>
             <div class="ml-3 mt-0 p-0">
-                    <span class="mr-2"><a  href="/"class="text-hide flag-icon it" >Italiano</a></span>
-                    <span class="mr-2"><a href="/en" class="text-hide flag-icon en" >English</a></span>
+                    <span class="mr-2"><a  href="/"class="text-hide flag-icon it"     i18n-title="@@linguaIT"   title="Italian"  i18n="@@linguaIT" >Italian</a></span>
+                    <span class="mr-2"><a href="/en" class="text-hide flag-icon en"   i18n-title="@@linguaEN"   title="English"   i18n="@@linguaEN">English</a></span>
             </div>
             <a class="navbar-brand pt-0 text-aplight"  href="/"><i class ="ap-icon-logo bigg"></i></a>  
             <ul class="nav flex-column">
@@ -16,7 +16,7 @@
                         <li class="nav-item"><a 
                             [ngClass]= "getAnchorClass(mainEntry.value)"
                             (click)="setActiveMenuEntriess(i, -1)"
-                            >{{mainEntry.value.defName}}</a></li>
+                            >{{mainEntry.value.name}}</a></li>
                         
                         
                         <ul class="nav flex-column second-level" *ngIf="mainEntry.children?.length >0">
@@ -29,7 +29,7 @@
                                     (click)="setActiveMenuEntriess(i, j)"
                                     >
                                         <span><i class="material-icons" *ngIf="canGPHBeProcessed"   [class.hidden]= "subEntry.isExclusive  || !isEntryActive(subEntry)">check</i></span> 
-                                        {{subEntry.defName}}
+                                        {{subEntry.name}}
                                     </a>
                                 </li>
                         </ul>

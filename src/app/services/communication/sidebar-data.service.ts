@@ -16,15 +16,15 @@ export class SidebarDataService {
   constructor(private router: Router) 
   {
     this.menuEntries = [];
-    let menuEntry = new MenuEntryData ("Mappa", "map", "map", MenuEntryStatus.Default, );
-    let menuSubEntry1 = new MenuEntryData ("Mostra Luoghi", "loc", "loc", MenuEntryStatus.Default, false);
-    let menuSubEntry2 = new MenuEntryData ("Mostra Percorsi", "trails", "trails", MenuEntryStatus.Default, false);
+    let menuEntry = new MenuEntryData ("Map", "map", "map", MenuEntryStatus.Default, );
+    let menuSubEntry1 = new MenuEntryData ("Show Locations", "loc", "loc", MenuEntryStatus.Default, false);
+    let menuSubEntry2 = new MenuEntryData ("Show Trails", "trails", "trails", MenuEntryStatus.Default, false);
     this.menuEntries.push (new MenuTree<MenuEntryData> (menuEntry, [menuSubEntry1,menuSubEntry2] ));
 
     menuEntry = new MenuEntryData ("Photos", "photo", "photo", MenuEntryStatus.Default);
     this.menuEntries.push (new MenuTree<MenuEntryData> (menuEntry));
 
-    menuEntry = new MenuEntryData ("Link", "links", "", MenuEntryStatus.Disable);
+    menuEntry = new MenuEntryData ("Links", "links", "", MenuEntryStatus.Disable);
     this.menuEntries.push (new MenuTree<MenuEntryData> (menuEntry));
   }
 
