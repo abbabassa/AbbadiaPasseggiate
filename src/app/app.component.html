@@ -1,3 +1,61 @@
-<router-outlet></router-outlet>
+<ng-sidebar-container style = "height: 100vh">
+    <!-- A sidebar -->
+    <ng-sidebar [mode]="'over'"   [closeOnClickOutside]="true" [(opened)]="isSideMenuOpen">
+        <div class="wrapper">
+            
+            <button type="button" class="close cl-light" aria-label="Close" title="Close" i18n-title="@@chiudi" (click)="isSideMenuOpen =false"> 
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="ml-3 mt-0 p-0">
+                    <span class="mr-2"><a  href="/"class="text-hide flag-icon it"     i18n-title="@@linguaIT"   title="Italian"  i18n="@@linguaIT" >Italian</a></span>
+                    <span class="mr-2"><a href="/en" class="text-hide flag-icon en"   i18n-title="@@linguaEN"   title="English"   i18n="@@linguaEN">English</a></span>
+            </div>
+            <a class="navbar-brand pt-0 text-aplight"  href="/"><i class ="ap-icon-logo bigg"></i></a>  
+            <ul class="nav flex-column">
+                <ng-container *ngFor="let mainEntry of MenuEntries; let i = index">
+                        <li class="nav-item"><a 
+                            [ngClass]= "getAnchorClass(mainEntry.value)"
+                            (click)="setActiveMenuEntriess(i, -1)"
+                            >{{mainEntry.value.name}}</a></li>
+                        
+                        
+                        <ul class="nav flex-column second-level" *ngIf="mainEntry.children?.length >0">
+                                
+                                    
+                                <li class="nav-item"  *ngFor="let subEntry of mainEntry.children; let j = index">
+                                    
+                                    <a 
+                                    [ngClass]= "getAnchorClass(subEntry)"
+                                    (click)="setActiveMenuEntriess(i, j)"
+                                    >
+                                        <span><i class="material-icons" *ngIf="canGPHBeProcessed"   [class.hidden]= "subEntry.isExclusive  || !isEntryActive(subEntry)">check</i></span> 
+                                        {{subEntry.name}}
+                                    </a>
+                                </li>
+                        </ul>
+                </ng-container>
+               
+            </ul>
+        </div>
 
-<router-outlet name="luoghiPopup"></router-outlet>
+        <div id="bottom" class="row ml-0 mr-0 text-center">
+
+            <div class="col-12  align-self-end h4">
+                <a class="text-dark mr-2" href="https://www.facebook.com/abbadiapasseggiate" target="_blank"><i class ="ap-icon-facebook"></i></a>
+                <a class="text-dark" href="https://twitter.com/abbadiapass" target="_blank"><i class ="ap-icon-twitter"></i></a>
+                <a class="text-dark ml-2" href="https://www.instagram.com/abbadiapasseggiate/" target="_blank"><i class ="ap-icon-instagram"></i></a>
+            </div>
+            <div class="col-12  align-self-end ">
+            Copyright &copy; 2019 AbbadiaPasseggiate
+            </div>
+        </div>
+    </ng-sidebar>
+
+
+    <div ng-sidebar-content class=".container-fluid">
+        <div  [class.obscure]="isSideMenuOpen"></div>
+        <router-outlet></router-outlet>
+        <router-outlet name="luoghiPopup"></router-outlet>
+    </div>
+
+</ng-sidebar-container>

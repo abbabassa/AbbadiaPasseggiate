@@ -1,0 +1,186 @@
+$theme-colors: (
+    // "light": #b3ffb3,
+    "primary" : #009100,
+    "aplight": #4fe85e
+  );
+
+
+
+
+@import "./node_modules/bootstrap/scss/bootstrap";
+
+
+
+
+
+ng-sidebar-container
+{
+    height: 100vh;
+}
+
+.ap-control
+{
+    position: absolute;
+    right: 0.5em;
+}
+
+
+.ap-control.my-rot
+{
+    top:1em;
+}
+
+.ap-control.my-rot.ol-hidden
+{
+    display: none;
+}
+
+
+.ap-control.my-zoom
+{
+    top:3em;
+
+}
+
+.ap-control.my-zoom
+{
+    top:4em;
+}
+
+.ap-control.my-zoom-in, .ap-control.my-zoom-out, .ap-control.my-rot-reset
+{
+    position: unset;
+    display: block;
+
+}
+
+
+@each $color, $value in $theme-colors {
+    .btn-outline-#{$color}.tras02 {
+        background-color: adjust-color(map-get($theme-colors, "dark"), $alpha: -0.5)  ;
+    }
+
+    .btn-outline-#{$color}.tras02:hover
+    {
+        background-color:$value;
+    }
+
+    .text-#{$color}
+    {
+        cursor: pointer;
+    }
+
+    .text-#{$color}.active
+    {
+        font-weight: 700;
+    }
+  }
+
+
+
+.ng-sidebar
+{
+    background-color:map-get($theme-colors, "dark") ;
+    z-index: 2;
+    width:90%;
+    min-width: 16em;
+    height: 100%;
+}
+
+.ng-sidebar .close {
+    padding: 1rem 1rem;
+}
+
+div.obscure
+{
+    background-color: rgb(0,0,0);
+    opacity:0.5;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left:0;
+    top:0;
+    z-index: 1;
+}
+
+.nav.second-level 
+{
+    margin-left: 0.75em;
+}
+
+.nav.second-level .nav-item
+{
+    font-size: 85%;
+}
+
+
+
+a.nav-link .material-icons
+{
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+a.nav-link .material-icons.hidden
+{
+    color: rgba(0,0,0,0)
+}
+
+.nav-link.disabled
+{
+    // color:theme-color-level($color-name: "gray", $level: 6)  !important;
+    color:$gray-500 !important;
+}
+
+
+div.lightboxOverlay
+{
+    // override default behavior of lightbox component overlay
+    width: 100% !important;
+    height: 100% !important;
+}
+
+div#bottom {
+    color: map-get($theme-colors, "dark");
+    background: map-get($theme-colors, "aplight");
+    height: 5rem;
+    font-size: 80%;
+    font-weight: 500;
+    
+
+}
+
+.wrapper {
+    box-sizing: border-box;
+    position: relative;
+    min-height: calc(100% - 5em);    
+    background-image: url("../img/mountainfooter2.svg");
+    background-repeat: no-repeat;
+    background-position:center bottom;
+    background-size: contain;
+    
+  }
+
+@media (min-width: 576px) {
+    .ng-sidebar
+    {
+        width:50%;
+    }
+}
+
+@media (min-width: 768px) 
+{ 
+    .ng-sidebar
+    {
+        width:35%;
+    }
+}
+
+@media (min-width: 992px) 
+{ 
+
+    .ng-sidebar
+    {
+        width:25%;
+    }
+}

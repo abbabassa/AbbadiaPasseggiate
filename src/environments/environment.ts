@@ -5,5 +5,15 @@
 
 export const environment = {
   production: false,
-  serverName: "localhost:3000"
+  serverName: "localhost:3000",
+  protocolName: "http://",
+  tileServerName:"localhost:3001",
+  dynamicTransl : 
+  {
+    map : "Mappa",
+    loc : "Mostra Luoghi",
+    trails : "Mostra Percorsi",
+    photo : "Foto",
+    links : "Link"
+  }
 };

@@ -1,0 +1,1 @@
+Default language of the application is English (for simplicity with i18n). 

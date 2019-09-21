@@ -1,0 +1,47 @@
+<nav class="navbar navbar-light bg-dark">
+  <button  class="btn btn-outline-aplight " (click)= "onMenuClick()" i18n-title="@@menu"   title="Menu">
+    <span><i class="material-icons">menu</i></span>
+  </button>
+</nav>
+<main role="main">
+
+  <section class="jumbotron mb-0 text-center">
+    <div class="container">
+      <h1 class="jumbotron-heading" i18n="@@fotogallery">Photo gallery</h1>
+      <p class="lead text-muted" i18n="@@galleryDesc1">On the occasion of its first anniversary, Abbadia Passeggiate is glad to offer you this image gallery containing the best photos of (and from) our mountains.</p>
+
+      <p i18n="@@galleryDesc2">All the photos, except where written otherwise, are made from Abbadia Passeggiate owners.</p>
+      <!-- <p>
+        <a href="#" class="btn btn-primary my-2">Main call to action</a>
+        <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+      </p> -->
+    </div>
+  </section>
+
+  <div class="album py-5 bg-light">
+    <div class="container">
+
+      <div class="row" >
+        
+        <div class="col-md-4"   *ngFor="let photo of photos">
+          <div class="card mb-4 box-shadow" >
+            <img class="card-img-top" src ="..\..\assets\icons\icons\ap\logo.svg" alt="Card image cap">
+            <div class="card-body">
+              <p class="card-text">Descrizione della bellissima immagine {{photo}}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        
+      </div>
+    </div>
+  </div>
+
+</main>
+

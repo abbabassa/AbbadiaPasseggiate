@@ -1,4 +1,65 @@
-.ol-unselectable{
-    top:0px;
-    left:50%;
+
+
+#map {
+    height: 100vh;
 }
+
+
+.geo-dot circle
+{
+    stroke:#fff;
+    stroke-width:3;
+    fill:#2A93EE;
+    fill-opacity:1;
+    opacity:1;
+}
+
+
+.ap-control.my-geoloc
+{
+    top: 10em;
+}
+
+.ap-control.my-attribution.btn, div.ap-control.my-attribution
+{
+    top: 13em;
+}
+
+.ap-control.my-layer-ctrl.btn, div.ap-control.my-layer-ctrl
+{
+    top: 16em;
+}
+.ap-control.my-menu
+{
+    left: 0.5em;
+    top:1em;
+}
+
+div.ap-control.my-attribution
+{
+    background-color: rgba(255,255,255,0.5);
+}
+div.ap-control.my-layer-ctrl
+{
+    background-color: rgba(255,255,255,0);
+}
+div.ap-control.my-attribution, div.ap-control.my-layer-ctrl
+{
+    
+    
+    padding: 0.2em;
+    right: 3.75em;
+    min-height:2.25em;
+    max-width:50%;
+
+}
+
+.layer-prew
+{
+    max-width: 10em;
+    cursor: pointer;
+}
+
+
+
+

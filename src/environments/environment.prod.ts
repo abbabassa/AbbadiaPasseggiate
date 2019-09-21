@@ -1,4 +1,14 @@
 export const environment = {
   production: true,
-  serverName: "lokipc:3000"
+  serverName: "abbadiapasseggiate.herokuapp.com",
+  protocolName: "https://",
+  tileServerName:"abbadiapasseggiate-tiles.herokuapp.com",
+  dynamicTransl : 
+  {
+    map : "Mappa",
+    loc : "Mostra Luoghi",
+    trails : "Mostra Percorsi",
+    photo : "Foto",
+    links : "Link"
+  }
 };

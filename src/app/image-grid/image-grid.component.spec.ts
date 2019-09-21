@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LuoghiPreviewComponent } from './luoghi-preview.component';
+import { ImageGridComponent } from './image-grid.component';
 
-describe('LuoghiPreviewComponent', () => {
-  let component: LuoghiPreviewComponent;
-  let fixture: ComponentFixture<LuoghiPreviewComponent>;
+describe('ImageGridComponent', () => {
+  let component: ImageGridComponent;
+  let fixture: ComponentFixture<ImageGridComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LuoghiPreviewComponent ]
+      declarations: [ ImageGridComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LuoghiPreviewComponent);
+    fixture = TestBed.createComponent(ImageGridComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

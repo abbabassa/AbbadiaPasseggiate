@@ -1,56 +1,62 @@
 import { Injectable } from '@angular/core';
-import { vectorStyles } from './vector-styles';
+import { getVectorStyle, getPointStyle, convertIconName, VectorStyleType } from './vector-styles';
+import { Icon } from 'ol/style';
 
-import Style from 'ol/style/style';
-import Stroke from 'ol/style/stroke';
-import Fill from 'ol/style/fill';
-import Circle from 'ol/style/circle';
-import VectorSource from 'ol/source/vector';
-import geoJsonFormat from 'ol/format/geojson';
-import Text from 'ol/style/text';
-import TextPlacement from 'ol/style/textplacement'
-import VectorLayer from 'ol/layer/vector';
-import GroupLayer from 'ol/layer/group';
+import {Vector as VectorSource} from 'ol/source';
+import {GeoJSON as geoJsonFormat} from 'ol/format';
+
+import {Vector as VectorLayer, Group as GroupLayer} from 'ol/layer';
 import { environment } from '../../../environments/environment';
+import { PreviewService } from '../communication/preview.service';
+import { TrailParDesc } from '../../om/trail-par-desc';
+
+
+
 
 
 @Injectable()
 export class SentieriLayerService {
 
-  constructor() { }
+  constructor( private previewService : PreviewService) { }
 
 
+  
+ 
 
+  
 
-  getFunctionStyle(tipoStrada: string) {
-    return function (feature: any) {
-      var image = new Circle({
-        radius: 5,
-        fill: new Fill({color: 'green'}),
-        stroke: new Stroke({ color: '#00CC00', width: 1 })
-      });
-
-      let styleForLines = vectorStyles[tipoStrada] ? vectorStyles[tipoStrada] : vectorStyles["SENTIERI_UFFICIALI"];
+  getFunctionStyle(tipoStrada: VectorStyleType, selected : boolean) {
+    return (feature: any, resolution)  => {
+     
+      let styleForLines = getVectorStyle(tipoStrada ,resolution, selected) ;
+      
+      let styleForPoint;
 
       if (styleForLines.getText()) {
         styleForLines.getText().setText(feature.getProperties().name)
       }
 
+      if(feature.getGeometry().getType()== "Point"){
+        styleForPoint= getPointStyle(feature, resolution, selected)
+        if(tipoStrada == VectorStyleType.PasseggiataSelez)
+          this.manageIntersectionLayerVisibility(feature,styleForPoint);
+
+      }
+
+      
+
+
       var stylesForVector = {
-        'Point': new Style({
-          image: image
-        }),
+        'Point': styleForPoint,
         'LineString': styleForLines,
         'MultiLineString': styleForLines,
-        'MultiPoint': new Style({
-          image: image
-        }),
+        'MultiPoint': styleForPoint,
 
       };
       return stylesForVector[feature.getGeometry().getType()];
     }
   }
-  getJsonLayerFromUrl(url: string, tipoStrada: string) {
+  getJsonLayerFromUrl(url: string, tipoStrada: VectorStyleType) {
     var vectorSource = new VectorSource({
       format: new geoJsonFormat(),
       url: url,
@@ -62,25 +68,61 @@ export class SentieriLayerService {
       source: vectorSource,
       minResolution: 0.5,
       maxResolution: 20,
-      style: this.getFunctionStyle(tipoStrada)
+      style: this.getFunctionStyle(tipoStrada, false)
     });
 
+  }
+
+  manageIntersectionLayerVisibility(feature, definedStyle  )
+  {
+    let activeSec : TrailParDesc= this.previewService.getTrailActiveSectionCurrentVal()
+    if(activeSec)
+    {
+      let currentInterFeatIds = activeSec.intersectionFeatureIds
+      if(currentInterFeatIds.some(id => id == feature.getProperties().id))
+        definedStyle.getImage().setScale( 1.15);
+    }
   }
 
   getSentieri(){
     let layersPercorsi = [];
 
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://'+environment.serverName +'/vector/sentieriUfficiali.json', "SENTIERI_UFFICIALI"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://'+environment.serverName +'/vector/piste.json', "PISTE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://'+environment.serverName +'/vector/strade.json', "STRADE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://'+environment.serverName +'/vector/traccia.json', "TRACCE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://'+environment.serverName +'/vector/tracceImboscate.json', "IMBOSCATE"));
-    layersPercorsi.push(this.getJsonLayerFromUrl('http://'+environment.serverName +'/vector/viandante.json', "VIANDANTE"));
+    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/sentieriUfficiali.json', VectorStyleType.SentieriUfficiali));
+    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/piste.json', VectorStyleType.Piste));
+    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/strade.json', VectorStyleType.Strade));
+    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/traccia.json', VectorStyleType.Tracce));
+    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/tracceImboscate.json', VectorStyleType.Imboscate));
+    layersPercorsi.push(this.getJsonLayerFromUrl(environment.protocolName + environment.serverName +'/vector/viandante.json', VectorStyleType.Viandante));
     return new GroupLayer({ layers: layersPercorsi });
   }
 
   getLuoghi():VectorLayer{
-    return this.getJsonLayerFromUrl('http://'+ environment.serverName +'/vector/luoghi.json',"LUOGHI")
+    return this.getJsonLayerFromUrl(environment.protocolName+ environment.serverName +'/vector/luoghi.json',VectorStyleType.Luoghi)
+  }
+
+  getPercorsi():VectorLayer
+  {
+    return this.getJsonLayerFromUrl(environment.protocolName+ environment.serverName +'/vector/percorsi.json',VectorStyleType.Percorsi)
+  }
+
+  getLayerByName(layerName:string, layerNameProperties ?: string, vecotrStyleType = VectorStyleType.PasseggiataSelez )
+  {
+    let layer: VectorLayer = this.getJsonLayerFromUrl(environment.protocolName+ environment.serverName +'/vector/' + layerName + '.json',vecotrStyleType)
+    if(layerNameProperties)
+    {
+      layer.setProperties({"layerName" : layerNameProperties});
+    }
+    return layer;
+  }
+
+  getVectorSourceByName(layerName:string)
+  {
+    return  new VectorSource({
+      format: new geoJsonFormat(),
+      url: environment.protocolName+ environment.serverName +'/vector/' + layerName + '.json',
+
+    });
+
   }
 
 

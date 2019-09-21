@@ -1,25 +1,50 @@
-import { Component, OnInit, ViewChild, ElementRef, Self } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Self, HostListener } from '@angular/core';
 import { API_KEY_BING } from './api-key-bing'
-import{Router} from '@angular/router'
-import { ControlloLayer } from '../ol-custom/controls/controllo-layer'
+import{Router, ActivatedRoute} from '@angular/router'
+import { debounceTime, filter } from 'rxjs/operators';
 
 import { SentieriLayerService } from '../services/my-map/sentieri-layer.service'
+import { PreviewService } from '../services/communication/preview.service'
 
 
-
+import { environment } from '../../environments/environment';
 
 
 // import 'ol/ol.css';
-import Map from 'ol/map';
-import View from 'ol/view';
-import TileLayer from 'ol/layer/tile';
-import XYZ from 'ol/source/xyz';
-import OSMSource from 'ol/source/osm';
-import BingSource from 'ol/source/bingmaps';
-import proj from 'ol/proj';
-import Attribution from 'ol/attribution';
-import SelectInteraction from 'ol/interaction/select';
-import { environment } from '../../environments/environment';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
+import {BingMaps as BingSource, OSM as OSMSource, XYZ ,Vector as VectorSource } from 'ol/source';
+import {fromLonLat} from 'ol/proj';
+import {Feature } from 'ol/Feature';
+import {Select as SelectInteraction} from 'ol/interaction';
+import {defaults as controlDefaults, Control} from 'ol/control'
+import{easeIn, easeOut} from 'ol/easing';
+
+
+import { GeolocControl } from '../ol-custom/controls/geoloc-control';
+import { MyAttributionControl } from '../ol-custom/controls/my-attribution-control';
+import { LayerControl } from '../ol-custom/controls/layer-control';
+import { VectorStyleType } from '../services/my-map/vector-styles';
+import { DescRefTypes } from '../om/desc-references';
+import { SidebarDataService } from '../services/communication/sidebar-data.service';
+import { TrailHeaderData } from '../om/trail-header-data';
+import { TrailsService } from '../services/trails/trails.service';
+import { ImgUrlPipe } from '../pipes/img-url.pipe';
+import { Lightbox } from 'ngx-lightbox';
+
+
+
+
+
+
+
+
+const LAYER_ROAD:string ='Road'
+const LAYER_AERIAL:string ='Aerial'
+const LAYER_AERIAL_LBLS:string ='AerialWithLabels'
+const LAYER_ARC_GIS:string ='ArcGIS'
+const LAYER_OPEN_TOPO:string ='OpenTopoMap'
 
 
 
@@ -31,31 +56,61 @@ import { environment } from '../../environments/environment';
   providers: [SentieriLayerService]
 })
 export class MyMapComponent implements OnInit {
-  controlloLayer: ControlloLayer;
-  @ViewChild("selectMappa", { read: ElementRef }) select: ElementRef;
+  geolocControl: GeolocControl;
+  attributionControl:MyAttributionControl
+  layerControl: LayerControl;
+
+  @ViewChild("geolocBtn", { read: ElementRef, static: true }) 
+  geolcationButtonElement: ElementRef;
+
+  @ViewChild("attributionCtrl", { read: ElementRef, static: true }) 
+  attributionControlElement: ElementRef;
+
+  @ViewChild("LayerCtrl", { read: ElementRef, static: true }) 
+  layerControlElement: ElementRef;
 
 
-  constructor(private sentieriLayerService: SentieriLayerService,
-  private router:Router) { }
+
+
+  private map:Map
+  private routerLinkPath : string;
+  private activeTrailLayer : VectorLayer
+  private intersectClickInteractionConfigured = false;
+  
+
+
+  constructor(  
+    private sentieriLayerService: SentieriLayerService,
+    private router:Router,
+    private activatedRoute: ActivatedRoute,
+    private previewService:PreviewService,
+    private sidebarDataService: SidebarDataService,
+    private trailsService : TrailsService,
+    private lightBox : Lightbox,
+    private imgPipe : ImgUrlPipe, ){ }
+
+
 
   ngOnInit() {
 
+    this.activatedRoute.url.subscribe(url =>
+      {
+        this.sidebarDataService.setMainActiveByRoute(url);
+        this.routerLinkPath = url[0].path;
+      } );
 
 
-    var attributionArcGIS = new Attribution({
-      html: 'Tiles &copy; <a href="http://services.arcgisonline.com/ArcGIS/' +
-        'rest/services/World_Topo_Map/MapServer">ArcGIS</a>'
-    });
 
-    var attributionAP = new Attribution({
-      html: 'Tiles &copy; <a href="http://www.abbadiapasseggiate.altervista.org">ABBADIA PASSEGGIATE</a>'
-    });
+    var attributionArcGIS = 'Tiles &copy; <a href="http://services.arcgisonline.com/ArcGIS/' +
+         'rest/services/World_Topo_Map/MapServer">ArcGIS</a>';
+    var attributionAP ='Tiles &copy; <a href="http://www.abbadiapasseggiate.altervista.org">ABBADIA PASSEGGIATE</a>';
+    var layersPrimariMap: { [property: string]: any } = {};
+    layersPrimariMap[LAYER_ROAD] = null;
+    layersPrimariMap[LAYER_AERIAL] = null;
+    layersPrimariMap[LAYER_AERIAL_LBLS] = null;
 
-    var layersPrimariMap: { [property: string]: any } = {
-      'Road': null,
-      'Aerial': null,
-      'AerialWithLabels': null
-    };
+    
+
     var layersMap = {
       layersPrimariMap: layersPrimariMap,
       overlaysAP: {}
@@ -73,7 +128,7 @@ export class MyMapComponent implements OnInit {
       })
 
       layers.push(layer);
-      layer.isCtrVisible = property != "Road";
+      layer.isCtrVisible = property != LAYER_ROAD;
       layer.isSentieriVisible = true;
       layersPrimariMap[property] = layer;
 
@@ -84,7 +139,7 @@ export class MyMapComponent implements OnInit {
 
 
 
-    layersPrimariMap['ArcGIS terrain'] = new TileLayer({
+    layersPrimariMap[LAYER_ARC_GIS] = new TileLayer({
       source: new XYZ({
         attributions: [attributionArcGIS],
         url: 'http://server.arcgisonline.com/ArcGIS/rest/services/' +
@@ -93,21 +148,18 @@ export class MyMapComponent implements OnInit {
 
       })
     })
-    layersPrimariMap['ArcGIS terrain'].isSentieriVisible = true;
-    layers.push(layersPrimariMap['ArcGIS terrain']);
+    layersPrimariMap[LAYER_ARC_GIS].isSentieriVisible = true;
+    layers.push(layersPrimariMap[LAYER_ARC_GIS]);
 
-    layersPrimariMap['OpenCycleMap'] = new TileLayer({
+    layersPrimariMap[LAYER_OPEN_TOPO] = new TileLayer({
       source: new OSMSource({
         attributions: [
-          new Attribution({
-            html: 'Tiles &copy; <a href="http://www.opencyclemap.org/">' +
-              'OpenCycleMap</a>'
-          })
+          'Kartendaten: © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, SRTM | Kartendarstellung: © <a href="http://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)' 
         ],
-        url: 'http://{a-c}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png'
+        url: 'https://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
       })
     });
-    layers.push(layersPrimariMap['OpenCycleMap']);
+    layers.push(layersPrimariMap[LAYER_OPEN_TOPO]);
 
     layersMap.overlaysAP["ctr"] = new TileLayer({
       opacity: 0.3,
@@ -116,7 +168,7 @@ export class MyMapComponent implements OnInit {
       visible: true,
       source: new XYZ({
         attributions: [attributionAP],
-        url: 'http://'+ environment.serverName +  '/tiles/trasCTR/{z}/{x}/{-y}.png',
+        url: environment.protocolName + environment.tileServerName +  '/tiles/trasCTR/{z}/{x}/{-y}.png',
         minZoom: 14,
         maxZoom: 18
       })
@@ -131,54 +183,471 @@ export class MyMapComponent implements OnInit {
 
 
 
-
-    var view = new View({
-      center: proj.fromLonLat([9.351, 45.89910]),
-      zoom: 15
+    
+    var view:View = new View({
+      center: fromLonLat([9.351, 45.89910]),
+      zoom: 15,
+      maxZoom : 18, 
+      minZoom : 5
     });
-    var map = new Map({
+
+    let zoomInEl :HTMLElement = document.createElement("i");
+    zoomInEl.innerText = "add";
+    zoomInEl.className = "material-icons"
+
+    let zoomOutEl :HTMLElement = document.createElement("i");
+    zoomOutEl.innerText = "remove";
+    zoomOutEl.className = "material-icons"
+
+    let rotateEl :HTMLElement = document.createElement("i");
+    rotateEl.innerText = "navigation";
+    rotateEl.className = "material-icons"
+    
+    let controls: Control = controlDefaults(
+      {
+        attribution:false,
+        rotate : true,
+        rotateOptions:
+        {
+          label: rotateEl,
+          // autoHide:false, // for always visible
+          className:  "ap-control btn btn-outline-aplight tras02 my-rot"
+        },
+        zoom: true,
+        zoomOptions : 
+        {
+          className : "ap-control btn btn-outline-aplight tras02 my-zoom",
+          zoomInLabel: zoomInEl,
+          zoomOutLabel: zoomOutEl
+        }
+      }
+    ).getArray();
+    
+    (controls[0].element.classList as DOMTokenList).remove("btn", "btn-outline-aplight","ol-control", "ol-unselectable");
+    (controls[1].element.classList as DOMTokenList).remove("btn", "btn-outline-aplight","ol-control", "ol-unselectable");                                
+    
+    
+    
+    this.map = new Map({
+      controls: controls,
       target: 'map',
       layers: layers,
-      //  9.33645°E,  45.89910°N
       view: view
     });
 
 
+    
+    var layerPercorsi : VectorLayer = this.sentieriLayerService.getPercorsi();
+    this.map.addLayer(layerPercorsi);
 
-    this.controlloLayer = new ControlloLayer({ element: this.select.nativeElement }, layersMap);
-    this.controlloLayer.onChange();
-    map.addControl(this.controlloLayer);
+  
+    
+
+    var layerLuoghi : VectorLayer = this.sentieriLayerService.getLuoghi();
+    this.map.addLayer(layerLuoghi);
+
+    // this.checkActiveInteractionLayer(layerLuoghi, layerPercorsi);
 
 
-    let layerLuoghi = this.sentieriLayerService.getLuoghi();
-    map.addLayer(layerLuoghi);
     // create a Select interaction and add it to the map
-    var select = new SelectInteraction({
-      layers: [layerLuoghi],
-      style: this.sentieriLayerService.getFunctionStyle("SENTIERI_UFFICIALI")
+    var select : SelectInteraction= new SelectInteraction({
+      layers: [layerLuoghi, layerPercorsi],
+      style: this.sentieriLayerService.getFunctionStyle(VectorStyleType.Percorsi, true),
+      hitTolerance : 7
     });
 
 
-    map.addInteraction(select);
+    this.map.addInteraction(select);
 
     // use the features Collection to detect when a feature is selected,
     // the collection will emit the add event
     var selectedFeatures = select.getFeatures();
-    var self=this;
-    selectedFeatures.on('add', function (event) {
+  
+    selectedFeatures.on('add',  (event) => {
       var feature = event.target.item(0);
-      var name = feature.getProperties().name;
-      self.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', name]} }]);
-      console.log(name)
-
-
-    });
-
-    // when a feature is removed, clear the photo-info div
-    selectedFeatures.on('remove', function (event) {
-
+      let interactId = feature.getProperties().interactId;
+      this.onAddSelectedFeature(feature, interactId);
+      // if it's a trail i immediately remove it... Better use another interaction type in future
+      if(interactId == DescRefTypes.Trail)
+        selectedFeatures.clear(); 
+      else if (interactId == DescRefTypes.Location)
+        this.previewService.setTrailHeaderData(null);
     });
 
 
+    this.previewService.isOpen$.subscribe(isOpen => 
+    {
+      if(!isOpen)
+      {
+        selectedFeatures.clear(); 
+        this.previewService.setTrailHeaderData(null);
+      }
+    })
+
+    this.previewService.newRef$.subscribe(newRef => 
+    { 
+      this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', newRef.id, newRef.type]} }]);
+      selectedFeatures.clear();
+      let features:Feature[];
+      if(newRef.type == DescRefTypes.Location)
+      {
+        features =layerLuoghi.getSource().getFeatures() as Feature[];
+        let newFeature:Feature =features.find(f=> f.getProperties().id == newRef.id);
+        selectedFeatures.push(newFeature);
+  
+      }
+      else
+      {
+        features =layerPercorsi.getSource().getFeatures() as Feature[];
+        let newFeature:Feature =features.find(f=> f.getProperties().id == newRef.id);
+        if(newFeature)
+        {
+          this.moveView(newFeature);
+        }
+          
+      }
+
+
+     
+    });
+
+
+
+    this.activatedRoute.paramMap.subscribe(mapPar=>this.enableMapLayers(mapPar, layerLuoghi, layerPercorsi));
+
+    this.previewService.trailHeaderData$.subscribe(hd => this.onSingleTrailActivate(hd, layerLuoghi, layerPercorsi));
+
+
+    this.previewService.trailActiveSection$.pipe(
+      filter(actscec => !actscec || !actscec.isDummySec()), // this kind of active section is pushed on the stream when the page is loaded the first time
+      debounceTime(500))      
+    .subscribe(actsec => 
+    {
+      let layerIntersect : VectorLayer = this.getLayerIntesect();
+      if(layerIntersect)
+      {
+        layerIntersect.changed()
+      }
+      let layerStep :VectorLayer =this.getLayerStep();
+      if( !layerStep)
+      {
+        //that should never happen... better return anyway
+         return;
+      }
+      if(!actsec)
+      {
+        // this is the case when I scroll to the top
+        this.moveView(layerStep.getSource())
+        return;
+      }
+
+     
+      let source : Feature = layerStep.getSource()
+      if(source instanceof VectorSource)
+      {
+        let activeFeature = source.getFeatures().find(feature => feature.getProperties().id == actsec.featureId);
+        if(activeFeature)
+        {
+          this.moveView(activeFeature);
+
+        }
+      }
+      
+    });
+
+    this.geolocControl = new GeolocControl({element: this.geolcationButtonElement.nativeElement}, this.map);
+
+    this.attributionControl = new MyAttributionControl({element: this.attributionControlElement.nativeElement}, this.map);
+    
+    this.layerControl = new LayerControl({ element: this.layerControlElement.nativeElement }, layersMap, this.map)
+
+    this.layerControl.setLayerVisible(LAYER_AERIAL);
+
+
+    
+
+  }
+
+  private enableMapLayers(mapPar, locLayer: VectorLayer, trailLayer: VectorLayer) {
+    if (mapPar.has("loc") && +mapPar.get("loc") == 1)
+      locLayer.setVisible(true);
+    else
+      locLayer.setVisible(false);
+
+
+    if (mapPar.has("trails") && +mapPar.get("trails") == 1)
+      trailLayer.setVisible(true);
+    else
+      trailLayer.setVisible(false);
+  }
+
+
+  private restoreMapLayers(locLayer: VectorLayer, trailLayer: VectorLayer)
+  {
+    let activeSubEntries  = this.sidebarDataService.getActiveSub("map");
+    if(activeSubEntries.some(entry => entry.routerLink == "loc"))
+      locLayer.setVisible(true);
+    else 
+      locLayer.setVisible(false);
+
+    if(activeSubEntries.some(entry => entry.routerLink == "trails"))
+      trailLayer.setVisible(true);
+    else 
+      trailLayer.setVisible(false);
+    
+  }
+
+  onAddSelectedFeature(feature : Feature, interactionType: DescRefTypes)
+  {
+    var locId = feature.getProperties().id;
+    this.previewService.setState(true);
+    this.router.navigate([{ outlets: { luoghiPopup: ['luoghiPrewiew', locId, interactionType]} }]);
+
+
+    this.moveView(feature);
+
+   
+ 
+
+  }
+  moveView (input : VectorSource) : void
+  moveView (input : Feature) : void
+  moveView (input : Feature | VectorSource)
+  {
+    let mapExtent = this.map.getView().calculateExtent();
+    let deltaExtMap = [];
+    deltaExtMap[0]= mapExtent[2]-mapExtent[0]; //x
+    deltaExtMap[1]= mapExtent[3]-mapExtent[1]; //y
+
+    if(input instanceof VectorSource)
+    {
+      let source = input as VectorSource;
+      this.moveViewFromExtent(source.getExtent());
+    }
+    else
+    {      
+      let feature = input as Feature;
+      if(feature.getGeometry().getType() == "Point")
+      {  
+        let featureCord = feature.getGeometry().getCoordinates();
+
+
+        let offset = [];
+        if(window.innerWidth < 992)
+        {
+          offset[0] =  0;
+          offset[1] =  deltaExtMap[1]*0.25;
+        }
+        else if( window.innerWidth < 1200)
+        {
+          offset[0] =  deltaExtMap[0] *0.3;
+          offset[1] =  0;
+        }
+        else
+        {
+          offset[0] =  deltaExtMap[0] *0.15;
+          offset[1] =  0;
+        }
+
+        for(let i= 0; i< featureCord.length; i++)
+        {
+          featureCord[i] -= offset[i];
+        }
+
+        
+        this.map.getView().animate({
+          center: featureCord,
+          duration: 1000,
+          easing: easeOut
+        });
+      }
+      else
+      {
+
+        let featureExt =feature.getGeometry().getExtent();
+        this.moveViewFromExtent(featureExt);
+
+      }
+    }
+
+    
+  }
+
+
+  private moveViewFromExtent(featureExt: any) {
+   
+    if(!this.checkExtent(featureExt))
+    {
+      console.warn("An invalid extent was passed to moveViewFromExtent<")
+      return;
+    }
+
+    let padding = [0, 0, 0, 0];
+    if (window.innerWidth < 992) {
+      padding[2] = window.innerHeight * 0.5;
+    }
+    else if (window.innerWidth < 1200) {
+      padding[3] = window.innerWidth * 0.6;
+    }
+    else {
+      padding[3] = window.innerWidth * 0.3;
+    }
+    this.map.getView().fit(featureExt, {
+      duration: 1000,
+      easing: easeOut,
+      padding: padding
+    });
+  }
+
+  /**
+   * Used to check if an array of number is a valid extent
+   * 
+   * @param featureExtent extent to be check
+   */
+  private checkExtent(featureExtent : number[]): boolean
+  {
+    if(!featureExtent)
+      return false;
+    if(featureExtent.length != 4) 
+      return false;
+    
+    for(let vertex of featureExtent)
+    {
+      if(!isFinite(vertex))
+        return false;
+    }
+
+    return true;
+  }
+
+  private getLayerStep() : VectorLayer
+  {
+    let layerStep :VectorLayer = (this.map.getLayers().getArray() as any[]).find(layer => layer.getProperties()["layerName"] == "stepTrail");
+    return layerStep
+  }
+
+  private getLayerIntesect() : VectorLayer
+  {
+    return (this.map.getLayers().getArray() as any[]).find(layer => layer.getProperties()["layerName"] == "intersectTrail");
+  }
+
+
+  private onSingleTrailActivate(hd : TrailHeaderData, layerLuoghi : VectorLayer, layerPercorsi : VectorLayer)
+  {
+    let layerStep :VectorLayer =this.getLayerStep();
+    let layerIntersect : VectorLayer = this.getLayerIntesect()
+    if(!hd)
+    {
+      this.restoreMapLayers(layerLuoghi, layerPercorsi);
+      if(layerStep)
+        layerStep.setVisible(false);
+      if(layerIntersect)
+        layerIntersect.setVisible(false);
+      return;
+    }
+    
+    if(!layerStep)
+    {
+      layerStep =this.sentieriLayerService.getLayerByName(hd.stepsLayerName, "stepTrail");
+      this.map.addLayer(layerStep);
+    }
+    else if(layerStep.getProperties()["trailId"] != hd.id)
+    {
+      
+      layerStep.setSource(this.sentieriLayerService.getVectorSourceByName(hd.stepsLayerName))
+    }
+
+
+    if(!layerIntersect)
+    {
+      layerIntersect =this.sentieriLayerService.getLayerByName(hd.intersectionsLayerName, "intersectTrail");
+      this.map.addLayer(layerIntersect);
+
+      this.addClickInteractionToMap(layerIntersect, f =>  this.openLightBoxForIntersection(f.getProperties().id)  )
+    }
+    else if(layerIntersect.getProperties()["trailId"] != hd.id)
+    {
+      
+      layerIntersect.setSource(this.sentieriLayerService.getVectorSourceByName(hd.intersectionsLayerName))
+    }
+
+
+    layerPercorsi.setVisible(false);
+    layerStep.setVisible(true);
+    layerIntersect.setVisible(true);
+  }
+
+
+  onMenuClick()
+  {
+    this.sidebarDataService.setState(true);
+  }
+
+
+
+  addClickInteractionToMap(layer : VectorLayer, callback : (feature: Feature) => void) 
+  {
+    let clickCondition = (pixel) =>
+    {
+      var features = [];
+      this.map.forEachFeatureAtPixel(
+        pixel, 
+        (feature, lay) => features.push(feature),
+        {
+          layerFilter: (clickLy => clickLy == layer),
+          hitTolerance: 7
+        }
+        );
+
+      if(features.length > 0)
+      {
+        callback(features[0]);
+      }
+
+      return features.length > 0;
+    }
+
+
+    this.map.on('click', (evt) => {
+      var pixel = evt.pixel;
+      if(clickCondition(pixel))
+        evt.stopPropagation();
+    });
+
+  }
+
+
+
+  openLightBoxForIntersection(featureId : number): void {
+    let mainTrailId : number= this.previewService.getTrailHeaderDataCurrentVal().id;
+    this.trailsService.getIntersectionImageData(mainTrailId, featureId)
+      .subscribe(apPhotos => {
+        let lightBoxAlbum = apPhotos.map (image=> 
+          {
+            let desc: string = "<h5>" +image.title + "</h5>";
+            if(image.description != null)
+              image.description.forEach(descPar => desc += "<p>" + descPar + "</p> ");
+      
+            return {
+              src : this.imgPipe.transform(image, true) ,
+              caption : desc,
+              thumb: this.imgPipe.transform(image, false) 
+              
+            } ;
+          });
+          this.lightBox.open(lightBoxAlbum, 0);
+      });
+
+
+  }
+
+  
+
+
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    event.target.innerWidth;
+    this.map.updateSize();
   }
 }

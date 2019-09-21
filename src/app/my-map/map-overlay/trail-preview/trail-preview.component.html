@@ -1,0 +1,23 @@
+<section class="jumbotron mt-0 text-center">
+
+    <div  class="container" *ngIf="trailInfos && trailInfos.mainData">
+        <p *ngFor="let par of trailInfos.mainData.pars; let i  = index"> 
+            <span *ngFor="let subdesc of par.descriptions; let j = index">
+                {{subdesc}}
+                <a class ="text-primary " (click) = "onRefClick(par.descRefs[j])"  *ngIf= "j<par.descriptions.length -1"> {{par.descRefs[j].name}}</a>
+            </span>
+        </p>
+    </div>
+
+</section>
+
+<div *ngIf="trailInfos && trailInfos.pars" >
+    <p *ngFor="let par of trailInfos.pars; let i  = index" [id]="'par_' + par.parIndex" [class.emph] ="isParSelected(par)" scroll-inspect> 
+        <span *ngFor="let subdesc of par.descriptions; let j = index">
+            {{subdesc}}
+            <a class ="text-primary " (click) = "onRefClick(par.descRefs[j])" *ngIf= "j<par.descriptions.length -1"> {{par.descRefs[j].name}}</a>
+        </span>
+    </p>
+</div>
+
+

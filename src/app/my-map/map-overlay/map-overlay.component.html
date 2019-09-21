@@ -1,0 +1,23 @@
+
+<div class="modal-dialog 	modal-lg modal-dialog-scrollable m-0" role="document">
+  <div class="modal-content" [class.expanded]="expanded">
+    <div class="modal-header" (click)="expand()">
+      <h4 class="modal-title">{{previewResponse?.mainData.name}}</h4>
+
+      <div class="btn-group" role="group" >
+     
+        <button type="button" class="close" (click)="closePopup($event)" aria-label="Close" title="Close" i18n-title="@@chiudi"> 
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+    <div class="modal-body" scrollSpy [querySelector]="'p[scroll-inspect]'" (sectionChange)="onParChange($event)">
+
+      <app-location-preview *ngIf="previewResponse?.mainData?.type == 1" [luogoInfos] = "previewResponse"></app-location-preview>
+      <app-trail-preview *ngIf="previewResponse?.mainData?.type == 2" [trailInfos] = "previewResponse"></app-trail-preview>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-danger" (click)="closePopup($event)"    i18n="@@chiudi">Close</button>
+    </div>
+
+</div>
