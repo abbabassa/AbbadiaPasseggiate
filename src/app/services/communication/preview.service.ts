@@ -9,7 +9,7 @@ export class PreviewService {
 
   private isOpenSource = new Subject<boolean>();
   private newRef = new Subject<DescReferences>();
-  private trailHeaderData = new Subject<TrailHeaderData>();
+  private trailHeaderData = new BehaviorSubject<TrailHeaderData>(null);
   private trailActiveSection = new BehaviorSubject<TrailParDesc>(null);
 
 
@@ -47,6 +47,11 @@ export class PreviewService {
   getTrailActiveSectionCurrentVal() : TrailParDesc
   {
     return this.trailActiveSection.value;
+  }
+
+  getTrailHeaderDataCurrentVal() : TrailHeaderData
+  {
+    return this.trailHeaderData.value;
   }
 
 

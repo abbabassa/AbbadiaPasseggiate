@@ -563,7 +563,7 @@ export class MyMapComponent implements OnInit {
       layerIntersect =this.sentieriLayerService.getLayerByName(hd.intersectionsLayerName, "intersectTrail");
       this.map.addLayer(layerIntersect);
 
-      this.addClickInteractionToMap(layerIntersect, f =>  this.openLightBoxForIntersection(hd.id, f.getProperties().id)  )
+      this.addClickInteractionToMap(layerIntersect, f =>  this.openLightBoxForIntersection(f.getProperties().id)  )
     }
     else if(layerIntersect.getProperties()["trailId"] != hd.id)
     {
@@ -585,7 +585,7 @@ export class MyMapComponent implements OnInit {
 
 
 
-  addClickInteractionToMap(layer : VectorLayer, callback : (feature: Feature) => void)
+  addClickInteractionToMap(layer : VectorLayer, callback : (feature: Feature) => void) 
   {
     let clickCondition = (pixel) =>
     {
@@ -603,19 +603,23 @@ export class MyMapComponent implements OnInit {
       {
         callback(features[0]);
       }
+
+      return features.length > 0;
     }
 
 
     this.map.on('click', (evt) => {
       var pixel = evt.pixel;
-      clickCondition(pixel) ;
+      if(clickCondition(pixel))
+        evt.stopPropagation();
     });
 
   }
 
 
 
-  openLightBoxForIntersection(mainTrailId: number, featureId: number): void {
+  openLightBoxForIntersection(featureId : number): void {
+    let mainTrailId : number= this.previewService.getTrailHeaderDataCurrentVal().id;
     this.trailsService.getIntersectionImageData(mainTrailId, featureId)
       .subscribe(apPhotos => {
         let lightBoxAlbum = apPhotos.map (image=> 
